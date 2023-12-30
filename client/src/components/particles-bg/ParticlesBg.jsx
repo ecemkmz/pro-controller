@@ -21,7 +21,7 @@ return (
         options={{
             background: {
                 color: {
-                    value: "#EEF5FF",
+                    value: "#012030",
                 },
             },
             fpsLimit: 120,
