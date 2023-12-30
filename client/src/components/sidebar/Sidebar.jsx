@@ -4,7 +4,7 @@ import Login from '../login/Login';
 import Employees from '../employees/Employees';
 
 function Sidebar() {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   const [activeMenu, setActiveMenu] = useState(null);
   const [activeSubMenu, setActiveSubMenu] = useState(null);
   const [hoveredMenu, setHoveredMenu] = useState(null);
@@ -39,10 +39,10 @@ function Sidebar() {
         className={`${open ? "w-72" : "w-20"} h-screen p-5 pt-8 relative duration-300 shadow-lg`}
       >
         <img
-          src="https://i.ibb.co/d7Pk7v9/Procontroller-logo.png"
-          className={`cursor-pointer duration-500 ${open && "rotate-[360deg]"}`}
-          onClick={() => setOpen(!open)}
-        />
+  src="https://i.ibb.co/d7Pk7v9/Procontroller-logo.png"
+  className={`cursor-pointer duration-500 ${open && "rotate-[360deg]"} max-w-full max-h-40`}  // Maksimum genişlik ve yükseklik eklendi
+  onClick={() => setOpen(!open)}
+/>
         <h1
           className={`text-white origin-left font-medium text-xl duration-200 ${!open && "scale-0"}`}
         >
