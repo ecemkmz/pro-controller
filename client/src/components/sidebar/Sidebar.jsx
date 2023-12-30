@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 import { AppstoreOutlined, TeamOutlined, SettingOutlined, PlusOutlined, DownOutlined, UpOutlined, UserOutlined } from '@ant-design/icons';
-import Login from '../login/Login';
 import Employees from '../employees/Employees';
 
 function Sidebar() {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
   const [activeMenu, setActiveMenu] = useState(null);
   const [activeSubMenu, setActiveSubMenu] = useState(null);
   const [hoveredMenu, setHoveredMenu] = useState(null);
@@ -39,10 +38,11 @@ function Sidebar() {
         className={`${open ? "w-72" : "w-20"} h-screen p-5 pt-8 relative duration-300 shadow-lg`}
       >
         <img
-  src="https://i.ibb.co/d7Pk7v9/Procontroller-logo.png"
-  className={`cursor-pointer duration-500 ${open && "rotate-[360deg]"} max-w-full max-h-40`}  // Maksimum genişlik ve yükseklik eklendi
-  onClick={() => setOpen(!open)}
-/>
+          src="https://i.ibb.co/d7Pk7v9/Procontroller-logo.png"
+          className={`cursor-pointer duration-500 ${open && "rotate-[360deg]"}`}
+          alt="logo"
+          onClick={() => setOpen(!open)}
+        />
         <h1
           className={`text-white origin-left font-medium text-xl duration-200 ${!open && "scale-0"}`}
         >
@@ -52,7 +52,7 @@ function Sidebar() {
           {Menus.map((Menu, index) => (
             <React.Fragment key={index}>
               <li
-                className={`flex rounded-md p-3 cursor-pointer hover:bg-light-white text-gray-700 text-sm items-center gap-x-4 ${Menu.bottom ? "mt-auto" : "mt-3"} border-b border-gray-200 ${
+                className={`flex rounded-md p-3 transition ease-out  cursor-pointer hover:bg-light-white text-gray-700 text-sm items-center gap-x-4 ${Menu.bottom ? "mt-auto" : "mt-3"} border-b border-gray-200 ${
                   activeMenu === Menu.title || hoveredMenu === Menu.title ? "text-blue-500" : ""
                 }`}
                 onClick={() => handleMenuClick(Menu.title)}
