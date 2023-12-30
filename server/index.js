@@ -1,23 +1,30 @@
 const express = require("express");
-const mysql = require("mysql");
 const dotenv = require("dotenv");
+const mysql = require('mysql');
 
 dotenv.config();
 
 const connection = mysql.createConnection({
   host: process.env.DB_HOST,
-  port: process.env.DB_PORT,
-  database: process.env.DB_NAME,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
 });
 
-
+console.log(connection.state);
 connection.connect((err) => {
   if (err) {
-    throw err;
+    console.error('MySQL bağlantısı hatası:', err);
+  } else {
+    console.log('MySQL sunucusuna bağlandı!');
+
   }
 });
+console.log(connection.state);
+
+
+
+
 const app = express();
 app.use(express.json());
 
