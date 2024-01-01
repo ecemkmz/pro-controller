@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { AppstoreOutlined, TeamOutlined, SettingOutlined, PlusOutlined, DownOutlined, UpOutlined, UserOutlined } from '@ant-design/icons';
+import { AppstoreOutlined, TeamOutlined, SettingOutlined, PlusOutlined, DownOutlined, UpOutlined, UserOutlined, FileTextOutlined  } from '@ant-design/icons';
 import Employees from '../employees/Employees';
 import Projects from "../projects/ListProjects"
 
@@ -11,6 +11,7 @@ function Sidebar() {
 
   const Menus = [
     { title: "Projeler", icon: <AppstoreOutlined />, subMenu: ["Proje Oluştur"] },
+    { title: "Görevler", icon: <FileTextOutlined />, subMenu: ["Görev Oluştur"] },
     { title: "Çalışanlar", icon: <TeamOutlined /> },
     { title: "Ayarlar", icon: <SettingOutlined />, bottom: true },
   ];
