@@ -9,6 +9,53 @@ function classNames(...classes) {
 const SignUp = () => {
   const [selectedOption, setSelectedOption] = useState("Seçenekler");
   const [selectedPosition, setSelectedPosition] = useState(null);
+  const [formData, setFormData] = useState({
+    Ad: "",
+    Soyad: "",
+    "Email adresi": "",
+    password: "",
+  });
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await fetch("http://localhost:5000/api/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ad: formData.Ad,
+          soyad: formData.Soyad,
+          email: formData["Email adresi"],
+          password: formData.password,
+          position: selectedOption,
+        }),
+      });
+
+      if (response.ok) {
+        console.log("Kayıt işlemi alındı!");
+        // İsteğe bağlı olarak başka bir işlem yapabilirsiniz, örneğin kullanıcıyı başka bir sayfaya yönlendirebilirsiniz.
+      } else {
+        const data = await response.json();
+        console.error("Kayıt sırasında bir hata oluştu:", data.error);
+
+        // Backend'den gelen hatayı kontrol et
+        if (data.error === "Bu mail adresi zaten kayıtlı.") {
+          // Kullanıcıya hatayı göster
+          alert(
+            "Bu mail adresi zaten kayıtlı. Lütfen farklı bir mail adresi kullanın."
+          );
+        } else {
+          // Diğer hatalar için genel bir hata mesajı göster
+          alert("Kayıt sırasında bir hata oluştu.");
+        }
+      }
+    } catch (error) {
+      console.error("İstek gönderilirken bir hata oluştu:", error);
+    }
+  };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-indigo-50">
@@ -22,7 +69,7 @@ const SignUp = () => {
           Üye Olun
         </h2>
 
-        <form className="mt-4 space-y-4" action="#" method="POST">
+        <form className="mt-4 space-y-4">
           {["Ad", "Soyad", "Email adresi"].map((label) => (
             <div key={label}>
               <label
@@ -38,6 +85,13 @@ const SignUp = () => {
                   type="text"
                   autoComplete="email"
                   required
+                  value={formData[label]}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      [label]: e.target.value,
+                    })
+                  }
                   className="block w-full rounded-md border-gray-300 py-2 text-gray-700 shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
                 />
               </div>
@@ -59,6 +113,13 @@ const SignUp = () => {
                   type="password"
                   autoComplete="new-password"
                   required
+                  value={formData[passwordType]}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      [passwordType]: e.target.value,
+                    })
+                  }
                   className="block w-full rounded-md border-gray-300 py-2 text-gray-700 shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
                 />
               </div>
@@ -101,7 +162,6 @@ const SignUp = () => {
                             <Menu.Item key={menuItem}>
                               {({ active }) => (
                                 <a
-                                  href="#"
                                   onClick={() => {
                                     setSelectedOption(menuItem);
                                     setSelectedPosition(index); // Seçilen pozisyonu güncelle
@@ -122,7 +182,6 @@ const SignUp = () => {
                             </Menu.Item>
                           )
                         )}
-                       
                       </div>
                     </Menu.Items>
                   </Transition>
@@ -135,6 +194,7 @@ const SignUp = () => {
             <button
               type="submit"
               className="flex w-full justify-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold leading-5 text-white shadow-sm hover:bg-indigo-500 focus:outline-none focus:ring focus:border-indigo-700"
+              onClick={handleSubmit}
             >
               Üye Ol
             </button>
