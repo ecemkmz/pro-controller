@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { AppstoreOutlined, TeamOutlined, SettingOutlined, PlusOutlined, DownOutlined, UpOutlined, UserOutlined } from '@ant-design/icons';
+import { AppstoreOutlined, TeamOutlined, SettingOutlined, PlusOutlined, DownOutlined, UpOutlined, UserOutlined, FileTextOutlined  } from '@ant-design/icons';
 import Employees from '../employees/Employees';
 
 function Sidebar() {
@@ -10,6 +10,7 @@ function Sidebar() {
 
   const Menus = [
     { title: "Projeler", icon: <AppstoreOutlined />, subMenu: ["Proje Oluştur"] },
+    { title: "Görevler", icon: <FileTextOutlined />, subMenu: ["Görev Oluştur"] },
     { title: "Çalışanlar", icon: <TeamOutlined /> },
     { title: "Ayarlar", icon: <SettingOutlined />, bottom: true },
   ];
@@ -27,32 +28,32 @@ function Sidebar() {
 
   const renderMenuTitle = () => {
     if (activeMenu) {
-      return `ProController / ${activeMenu}${activeSubMenu ? ` / ${activeSubMenu}` : ''}`;
+      return `ProController > ${activeMenu}${activeSubMenu ? ` > ${activeSubMenu}` : ''}`;
     }
     return "ProController";
   };
 
   return (
     <div className="flex">
-      <div
-        className={`${open ? "w-72" : "w-20"} h-screen p-5 pt-8 relative duration-300 shadow-lg`}
-      >
+      {/* Sidebar */}
+      <div className={`${open ? "w-72" : "w-20"} h-screen p-5 pt-8 relative duration-300 shadow-md`}>
+        {/* Logo */}
         <img
           src="https://i.ibb.co/d7Pk7v9/Procontroller-logo.png"
           className={`cursor-pointer duration-500 ${open && "rotate-[360deg]"}`}
           alt="logo"
           onClick={() => setOpen(!open)}
         />
-        <h1
-          className={`text-white origin-left font-medium text-xl duration-200 ${!open && "scale-0"}`}
-        >
+        <h1 className={`text-black origin-left font-medium text-xl duration-200 ${!open && "scale-0"}`}>
           ProController
         </h1>
-        <ul className="pt-6">
+        {/* Menu List */}
+        <ul className="pt-6 divide-y">
           {Menus.map((Menu, index) => (
             <React.Fragment key={index}>
+              {/* Main Menu Item */}
               <li
-                className={`flex rounded-md p-3 transition ease-out  cursor-pointer hover:bg-light-white text-gray-700 text-sm items-center gap-x-4 ${Menu.bottom ? "mt-auto" : "mt-3"} border-b border-gray-200 ${
+                className={`flex  p-3 transition ease-out cursor-pointer hover:bg-light-white text-gray-700 text-sm items-center gap-x-4 ${Menu.bottom ? "mt-auto" : "mt-3"} ${
                   activeMenu === Menu.title || hoveredMenu === Menu.title ? "text-blue-500" : ""
                 }`}
                 onClick={() => handleMenuClick(Menu.title)}
@@ -62,19 +63,18 @@ function Sidebar() {
                 {React.cloneElement(Menu.icon, {
                   className: `${activeMenu === Menu.title || hoveredMenu === Menu.title ? "text-blue-500" : "text-gray-700"}`
                 })}
-                <span className={`${!open && "hidden"} origin-left duration-200`}>
-                  {Menu.title}
-                </span>
+                <span className={`${!open && "hidden"} origin-left duration-200`}>{Menu.title}</span>
                 {open && Menu.subMenu && (
                   <span className="ml-auto">
                     {activeMenu === Menu.title ? <UpOutlined /> : <DownOutlined />}
                   </span>
                 )}
               </li>
+              {/* Sub Menu Items */}
               {open && Menu.subMenu && activeMenu === Menu.title && Menu.subMenu.map((subItem, subIndex) => (
                 <li
                   key={subIndex}
-                  className={`flex rounded-md p-3 pl-12 cursor-pointer hover:bg-light-white text-gray-700 text-sm items-center gap-x-4 ${
+                  className={`flex  p-3 pl-12 cursor-pointer hover:bg-light-white text-gray-700 text-sm items-center gap-x-4 ${
                     activeSubMenu === subItem ? "text-blue-500" : ""
                   }`}
                   onClick={() => handleMenuClick(Menu.title, subItem)}
@@ -87,19 +87,24 @@ function Sidebar() {
           ))}
         </ul>
       </div>
+      {/* Main Content */}
       <div className="flex-1 flex flex-col">
         {/* Navbar */}
-        <div className="flex justify-between items-center p-4 shadow-md">
-          <h1 className="text-xl font-semibold text-gray-800">{renderMenuTitle()}</h1>
+        <div className="flex justify-between items-center p-4 shadow">
+          <nav className="flex" aria-label="Breadcrumb">
+            <ol className="flex items-center text-xl space-x-4  text--gray-500 font-medium">
+              {renderMenuTitle()}
+            </ol>
+          </nav>
           <button className="flex items-center gap-x-2 text-gray-800">
             <UserOutlined />
             <span>Hesabım</span>
           </button>
         </div>
-        {/* Ana içerik */}
-        <div className="flex-1 p-7 overflow-y-auto">
-          {/* İçerik burada */}
-          <Employees/>
+        {/* Main Content Area */}
+        <div className="p-7  overflow-y-auto" style={{ maxHeight: 'calc(100vh - 68px)' }}>
+          {/* Content will be here */}
+          <Employees />
         </div>
       </div>
     </div>
