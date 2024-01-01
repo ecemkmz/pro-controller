@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { AppstoreOutlined, TeamOutlined, SettingOutlined, PlusOutlined, DownOutlined, UpOutlined, UserOutlined, FileTextOutlined  } from '@ant-design/icons';
 import Employees from '../employees/Employees';
+import Projects from "../projects/ListProjects"
 
 function Sidebar() {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   const [activeMenu, setActiveMenu] = useState(null);
   const [activeSubMenu, setActiveSubMenu] = useState(null);
   const [hoveredMenu, setHoveredMenu] = useState(null);
@@ -16,14 +17,8 @@ function Sidebar() {
   ];
 
   const handleMenuClick = (title, sub = null) => {
-    if (sub) {
-      setActiveSubMenu(sub === activeSubMenu ? null : sub);
-    } else {
-      setActiveMenu(title === activeMenu ? null : title);
-      if (!Menus.find(menu => menu.title === title).subMenu) {
-        setActiveSubMenu(null);
-      }
-    }
+    setActiveMenu(title === activeMenu ? null : title);
+    setActiveSubMenu(sub === activeSubMenu ? null : sub);
   };
 
   const renderMenuTitle = () => {
@@ -32,6 +27,18 @@ function Sidebar() {
     }
     return "ProController";
   };
+
+  const renderContent = () => {
+    switch (activeMenu) {
+      case "Projeler":
+        return <Projects />;
+      case "Çalışanlar":
+        return <Employees />;
+      default:
+        return null;
+    }
+  };
+
 
   return (
     <div className="flex">
@@ -103,8 +110,7 @@ function Sidebar() {
         </div>
         {/* Main Content Area */}
         <div className="p-7  overflow-y-auto" style={{ maxHeight: 'calc(100vh - 68px)' }}>
-          {/* Content will be here */}
-          <Employees />
+        {renderContent()}
         </div>
       </div>
     </div>

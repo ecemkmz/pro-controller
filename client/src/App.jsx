@@ -5,6 +5,8 @@ import Sidebar from './components/sidebar/Sidebar';
 import Employees from './components/employees/Employees';
 import Home from './pages/home/Home';
 import UserEdit from "./components/userEdit/userEdit";
+import ListProjects from './components/projects/ListProjects';
+
 function App() {
   return (
     <BrowserRouter>
@@ -15,6 +17,7 @@ function App() {
         <Route path="/employees" element={<Employees />} />
         <Route path="/" element={<Home />} />
         <Route path="/userEdit" element={<UserEdit />} />
+        <Route path="/listProjects" element={<ListProjects />} />
       </Routes>
     </BrowserRouter>
   );
