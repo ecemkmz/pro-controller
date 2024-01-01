@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { AppstoreOutlined, TeamOutlined, SettingOutlined, PlusOutlined, DownOutlined, UpOutlined, UserOutlined, FileTextOutlined  } from '@ant-design/icons';
 import Employees from '../employees/Employees';
 import Projects from "../projects/ListProjects"
+import Profile from '../profile/Profile';
 
 function Sidebar() {
   const [open, setOpen] = useState(false);
@@ -34,6 +35,8 @@ function Sidebar() {
         return <Projects />;
       case "Çalışanlar":
         return <Employees />;
+        case "Hesabım":
+          return <Profile />;
       default:
         return null;
     }
@@ -105,7 +108,7 @@ function Sidebar() {
           </nav>
           <button className="flex items-center gap-x-2 text-gray-800">
             <UserOutlined />
-            <span>Hesabım</span>
+            <span  onClick={() => handleMenuClick("Hesabım")}>Hesabım </span>
           </button>
         </div>
         {/* Main Content Area */}
