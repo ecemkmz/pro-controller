@@ -22,7 +22,7 @@ function Sidebar() {
 
   const renderMenuTitle = () => {
     if (activeMenu) {
-      return `ProController / ${activeMenu}${activeSubMenu ? ` / ${activeSubMenu}` : ''}`;
+      return `ProController > ${activeMenu}${activeSubMenu ? ` > ${activeSubMenu}` : ''}`;
     }
     return "ProController";
   };
