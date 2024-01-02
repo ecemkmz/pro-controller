@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { PlusIcon } from '@heroicons/react/20/solid'
-import AddProject from '../addProject/AddProject';
+import AddProject from './AddProject';
 
 export default function NoProject() {
   const [open, setOpen] = useState(false)
