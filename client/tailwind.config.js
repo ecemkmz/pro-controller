@@ -9,7 +9,7 @@ module.exports = {
         customBlue: '#012030'
       },
       fontWeight: {
-        normal: 800 // Normal font ağırlığını 500 olarak ayarla
+        normal: 500 
       },
       fontSize: {
         sm: '1rem',
