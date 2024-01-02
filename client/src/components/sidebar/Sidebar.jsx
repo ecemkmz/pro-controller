@@ -5,7 +5,7 @@ import ListProjects from "../projects/ListProjects"
 import Profile from '../profile/Profile';
 import ListTasks from '../tasks/ListTasks';
 import NoTask from '../tasks/NoTask';
-import AddProject from '../addProject/AddProject';
+import AddProject from '../projects/AddProject';
 import NoProject from '../projects/NoProject';
 
 function Sidebar() {

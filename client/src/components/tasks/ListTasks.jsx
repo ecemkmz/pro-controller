@@ -3,6 +3,8 @@ import { Menu, Transition, Popover } from '@headlessui/react'
 import { EllipsisHorizontalIcon } from '@heroicons/react/20/solid'
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
 import AddTask from './AddTask'
+import NoTask from "./NoTask"
+
 const sortOptions = [
   { name: 'A-Z Sıralama', key: 'isim', order: 'asc' },
   { name: 'Z-A Sıralama', key: 'isim', order: 'desc' },
@@ -62,10 +64,10 @@ export default function ListTasks() {
   const [open, setOpen] = useState(false)
   const [addTaskOpen, setAddTaskOpen] = useState(false);
   
-  
+  const hasProjects = clients.length > 0;
   return (
     <div>
-     
+     {hasProjects && (
       <section className='mb-8' aria-labelledby="filter-heading">
         <h2 id="filter-heading" className="sr-only">
           Filters
@@ -216,8 +218,9 @@ export default function ListTasks() {
           </div>
         </div>
       </section>
-      
+      )}
       <div>
+      {hasProjects ? (
          <ul role="list" className="grid grid-cols-1 gap-x-6 gap-y-8 lg:grid-cols-3 xl:gap-x-8">
       {clients.map((client) => (
         <li key={client.id} className="overflow-hidden rounded-xl border border-gray-200">
@@ -306,7 +309,11 @@ export default function ListTasks() {
         </li>
       ))}
     </ul>
+    ) : (
+      <NoTask />
+    )}
       </div>
+      {hasProjects && (
       <div className="mt-4 sm:absolute sm:bottom-0 sm:right-0 sm:mr-4 sm:mb-4">
         <button
           type="button"
@@ -316,6 +323,7 @@ export default function ListTasks() {
           Görev ekle
         </button>
       </div>
+      )}
       {addTaskOpen && <AddTask setAddTaskOpen={setAddTaskOpen} />},
     </div>
     

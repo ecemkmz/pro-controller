@@ -55,7 +55,7 @@ function AddTask({setAddTaskOpen}) {
 
   return (
     <Transition.Root show={open} as={Fragment}>
-      <Dialog as="div" className="relative z-10" onClose={setOpen}>
+      <Dialog as="div" className="relative z-10" onClose={handleClose}>
         <div className="fixed inset-0" />
 
         <div className="fixed inset-0 overflow-hidden">

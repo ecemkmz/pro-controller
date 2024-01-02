@@ -2,7 +2,8 @@ import { Fragment, useState } from 'react'
 import { Menu, Transition, Popover } from '@headlessui/react'
 import { EllipsisHorizontalIcon } from '@heroicons/react/20/solid'
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
-import AddProject from '../addProject/AddProject'
+import AddProject from './AddProject'
+import NoProject from "./NoProject"
 
 const sortOptions = [
   { name: 'A-Z Sıralama', key: 'isim', order: 'asc' },
@@ -57,10 +58,16 @@ export default function ListProjects() {
   const [open, setOpen] = useState(false)
   const [addProjectOpen, setAddProjectOpen] = useState(false);
   
+  const handleAddProjectClose = () => {
+    setOpen(false); // Overlay'ı kapat
+    setAddProjectOpen(false); // AddProject dialogunu kapat
+  };
   
+  const hasProjects = clients.length > 0;
+
   return (
     <div>
-     
+      {hasProjects && (
       <section className='mb-8' aria-labelledby="filter-heading">
         <h2 id="filter-heading" className="sr-only">
           Filters
@@ -211,8 +218,9 @@ export default function ListProjects() {
           </div>
         </div>
       </section>
-      
+      )}
       <div>
+      {hasProjects ? (
          <ul role="list" className="grid grid-cols-1 gap-x-6 gap-y-8 lg:grid-cols-3 xl:gap-x-8">
       {clients.map((client) => (
         <li key={client.id} className="overflow-hidden rounded-xl border border-gray-200">
@@ -295,7 +303,11 @@ export default function ListProjects() {
         </li>
       ))}
     </ul>
+    ) : (
+      <NoProject />
+    )}
       </div>
+      {hasProjects && (
       <div className="mt-4 sm:absolute sm:bottom-0 sm:right-0 sm:mr-4 sm:mb-4">
         <button
           type="button"
@@ -305,7 +317,8 @@ export default function ListProjects() {
           Proje ekle
         </button>
       </div>
-      {addProjectOpen && <AddProject setAddProjectOpen={setAddProjectOpen} />}
+      )}
+      {addProjectOpen && <AddProject setAddProjectOpen={handleAddProjectClose} />}
     </div>
     
   )
