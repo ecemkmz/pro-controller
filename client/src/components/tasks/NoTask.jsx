@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import { PlusIcon } from '@heroicons/react/20/solid'
-import AddProject from '../addProject/AddProject';
+import AddTask from './AddTask';
 
-export default function NoProject() {
+export default function NoTask() {
   const [open, setOpen] = useState(false)
-  const [addProjectOpen, setAddProjectOpen] = useState(false);
+  const [addTaskOpen, setAddTaskOpen] = useState(false);
   return (
     <div className="text-center justify-center align-middle">
       <svg
@@ -22,19 +22,19 @@ export default function NoProject() {
           d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"
         />
       </svg>
-      <h3 className="mt-2 text-sm font-semibold text-gray-900">Proje Bulunamadı.</h3>
-      <p className="mt-1 text-sm text-gray-500">İlk Projeyi Oluştur</p>
+      <h3 className="mt-2 text-sm font-semibold text-gray-900">Görev Bulunamadı.</h3>
+      <p className="mt-1 text-sm text-gray-500">İlk Görevi Oluştur</p>
       <div className="mt-6">
         <button
           type="button"
           className="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-          onClick={() => setAddProjectOpen(true)}
+          onClick={() => setAddTaskOpen(true)}
         >
           <PlusIcon className="-ml-0.5 mr-1.5 h-5 w-5" aria-hidden="true" />
-          Yeni Proje
+          Yeni Görev
         </button>
       </div>
-      {addProjectOpen && <AddProject setAddProjectOpen={setAddProjectOpen} />}
+      {addTaskOpen && <AddTask setAddTaskOpen={setAddTaskOpen} />}
     </div>
   )
 }

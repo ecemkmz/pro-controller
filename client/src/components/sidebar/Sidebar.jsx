@@ -1,8 +1,12 @@
 import React, { useState } from "react";
 import { AppstoreOutlined, TeamOutlined, SettingOutlined, PlusOutlined, DownOutlined, UpOutlined, UserOutlined, FileTextOutlined  } from '@ant-design/icons';
 import Employees from '../employees/Employees';
-import Projects from "../projects/ListProjects"
+import ListProjects from "../projects/ListProjects"
 import Profile from '../profile/Profile';
+import ListTasks from '../tasks/ListTasks';
+import NoTask from '../tasks/NoTask';
+import AddProject from '../addProject/AddProject';
+import NoProject from '../projects/NoProject';
 
 function Sidebar() {
   const [open, setOpen] = useState(false);
@@ -32,11 +36,14 @@ function Sidebar() {
   const renderContent = () => {
     switch (activeMenu) {
       case "Projeler":
-        return <Projects />;
+        return <ListProjects/>;
       case "Çalışanlar":
         return <Employees />;
         case "Hesabım":
           return <Profile />;
+          case "Görevler":
+            return <ListTasks/>;
+
       default:
         return null;
     }
@@ -102,17 +109,17 @@ function Sidebar() {
         {/* Navbar */}
         <div className="flex justify-between items-center p-4 shadow">
           <nav className="flex" aria-label="Breadcrumb">
-            <ol className="flex items-center text-xl space-x-4  text--gray-500 font-medium">
+            <ol className="flex items-center text-xl space-x-4  text-gray-700 font-serif font-medium">
               {renderMenuTitle()}
             </ol>
           </nav>
           <button className="flex items-center gap-x-2 text-gray-800">
+            <div className=" text-gray-700 font-serif font-medium" onClick={() => handleMenuClick("Hesabım")}>Hesabım </div>
             <UserOutlined />
-            <span  onClick={() => handleMenuClick("Hesabım")}>Hesabım </span>
           </button>
         </div>
         {/* Main Content Area */}
-        <div className="p-7  overflow-y-auto" style={{ maxHeight: 'calc(100vh - 68px)' }}>
+        <div className="p-7  overflow-y-auto " style={{ maxHeight: 'calc(100vh - 68px)' }}>
         {renderContent()}
         </div>
       </div>
