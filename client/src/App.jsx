@@ -6,6 +6,7 @@ import Employees from './components/employees/Employees';
 import Home from './pages/home/Home';
 import UserEdit from "./components/userEdit/userEdit";
 import ListProjects from './components/projects/ListProjects';
+import EmpInfo from './components/empInfo/EmpInfo';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/userEdit" element={<UserEdit />} />
         <Route path="/listProjects" element={<ListProjects />} />
+        <Route path="/empInfo" element={<EmpInfo />} />
       </Routes>
     </BrowserRouter>
   );
