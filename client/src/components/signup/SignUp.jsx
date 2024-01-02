@@ -7,7 +7,7 @@ function classNames(...classes) {
 }
 
 const SignUp = () => {
-  const [selectedOption, setSelectedOption] = useState("Seçenekler");
+  const [selectedOption, setSelectedOption] = useState(null);
   const [selectedPosition, setSelectedPosition] = useState(null);
   const [formData, setFormData] = useState({
     Ad: "",
@@ -36,6 +36,8 @@ const SignUp = () => {
 
       if (response.ok) {
         console.log("Kayıt işlemi alındı!");
+        const data = await response.json();
+        data.message && alert(data.message);
         // İsteğe bağlı olarak başka bir işlem yapabilirsiniz, örneğin kullanıcıyı başka bir sayfaya yönlendirebilirsiniz.
       } else {
         const data = await response.json();
@@ -47,7 +49,11 @@ const SignUp = () => {
           alert(
             "Bu mail adresi zaten kayıtlı. Lütfen farklı bir mail adresi kullanın."
           );
-        } else {
+        }
+        else if(data.error === "Lütfen pozisyon seçiniz.") {
+          alert("Lütfen pozisyon seçiniz.");
+        }
+        else {
           // Diğer hatalar için genel bir hata mesajı göster
           alert("Kayıt sırasında bir hata oluştu.");
         }

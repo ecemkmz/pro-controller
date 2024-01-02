@@ -21,21 +21,24 @@ const Login = () => {
           password: formData.password,
         }),
       });
-      
+
       const data = await response.json();
       if (response.ok) {
         console.log("Giriş işlemi alındı!");
-        if (data.message === "Kullanıcı girişi başarılı.") {
+        if (data.message === "Giriş Başarılı") {
           alert("Giriş başarılı.");
         }
         // İsteğe bağlı olarak başka bir işlem yapabilirsiniz, örneğin kullanıcıyı başka bir sayfaya yönlendirebilirsiniz.
       } else {
-        console.error("Giriş sırasında bir hata oluştu:", data.error);
-
-        if (data.error === "Kullanıcı bulunamadı veya şifre yanlış. Lütfen bilgilerinizi kontrol ediniz.") {
+        if (
+          data.error ===
+          "Kullanıcı bulunamadı veya şifre yanlış. Lütfen bilgilerinizi kontrol ediniz."
+        ) {
           alert(
             "Kullanıcı bulunamadı veya şifre yanlış. Lütfen bilgilerinizi kontrol ediniz."
           );
+        } else if (data.error === "Şifre boş olamaz.") {
+          alert("Şifre boş olamaz.");
         } else {
           alert("Giriş sırasında bir hata oluştu.");
         }
