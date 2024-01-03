@@ -6,18 +6,35 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 function Profile() {
-  const [user, setUser] = useState(null);
+  const [employee, setEmployee] = useState(null);
 
-  useEffect(() => {
-    const userData = localStorage.getItem('user');
-    if (userData) {
-      setUser(JSON.parse(userData));
+    useEffect(() => {
+      const fetchEmployeeInfo = async () => {
+        const token = localStorage.getItem('token');
+        try {
+          const response = await fetch('http://localhost:5000/employee-info', {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
+      
+          if (response.ok) {
+            const data = await response.json();
+            setEmployee(data);
+          } else {
+            console.error('Bilgiler alınamadı.');
+          }
+        } catch (error) {
+          console.error('Sunucu hatası', error);
+        }
+      };
+  
+      fetchEmployeeInfo();
+    }, []);
+
+    if (!employee) {
+      return <div>Yükleniyor...</div>;
     }
-  }, []);
-
-  if (!user) {
-    return <div>Yükleniyor...</div>;
-  }
   return (
     <div className="p-16 max-w-2xl space-y-16 sm:space-y-20 lg:mx-0 lg:max-w-none">
       <div>
@@ -30,7 +47,7 @@ function Profile() {
           <div className="pt-6 sm:flex">
             <dt className="font-medium text-gray-900 sm:w-64 sm:flex-none sm:pr-6">Ad Soyad</dt>
             <dd className="mt-1 flex justify-between gap-x-6 sm:mt-0 sm:flex-auto">
-              <div className="text-gray-900">{user.name} {user.surname}</div>
+              <div className="text-gray-900">{employee.empName} {employee.empSurname}</div>
               <button type="button" className="font-semibold text-indigo-600 hover:text-indigo-500">
                 Düzenle
               </button>
@@ -39,7 +56,7 @@ function Profile() {
           <div className="pt-6 sm:flex">
             <dt className="font-medium text-gray-900 sm:w-64 sm:flex-none sm:pr-6">Email Adresi</dt>
             <dd className="mt-1 flex justify-between gap-x-6 sm:mt-0 sm:flex-auto">
-              <div className="text-gray-900">{user.email}</div>
+              <div className="text-gray-900">{employee.empEmail}</div>
               <button type="button" className="font-semibold text-indigo-600 hover:text-indigo-500">
                 Düzenle
               </button>
@@ -48,7 +65,7 @@ function Profile() {
           <div className="pt-6 sm:flex">
             <dt className="font-medium text-gray-900 sm:w-64 sm:flex-none sm:pr-6">Pozisyon</dt>
             <dd className="mt-1 flex justify-between gap-x-6 sm:mt-0 sm:flex-auto">
-              <div className="text-gray-900">{user.position}</div>
+              <div className="text-gray-900">{employee.empPosition}</div>
               <button type="button" className="font-semibold text-indigo-600 hover:text-indigo-500">
                 Düzenle
               </button>

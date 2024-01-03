@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import {UserOutlined } from '@ant-design/icons';
+import { useNavigate } from "react-router-dom";
 
 function Navbar({ activeMenu, activeSubMenu }) {
-
+  const navigate = useNavigate()
   const [showAccountDropdown, setShowAccountDropdown] = useState(false);
 
 
@@ -20,9 +21,8 @@ function Navbar({ activeMenu, activeSubMenu }) {
   };
 
   const logout = () => {
-    // Çıkış yapma işlemini burada gerçekleştir
-    // Örneğin, token'ı kaldır ve/veya kullanıcı durumunu güncelle
-    console.log("Çıkış yapıldı");
+    localStorage.removeItem('token');
+    navigate('/');
   };
   return (
     <div className="flex justify-between items-center p-4 shadow">
