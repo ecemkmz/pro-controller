@@ -30,6 +30,7 @@ const Login = () => {
         if (data.message === "Giriş Başarılı") {
           console.log(data,data.user);
           localStorage.setItem("token", data.token);
+          localStorage.setItem("user",data.user.id);
           alert("Giriş başarılı.");
         }
         // İsteğe bağlı olarak başka bir işlem yapabilirsiniz, örneğin kullanıcıyı başka bir sayfaya yönlendirebilirsiniz.
