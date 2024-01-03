@@ -1,5 +1,6 @@
 import { CalendarDaysIcon, UserCircleIcon } from "@heroicons/react/20/solid";
-
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 const projectsArray = [
   {
     projName: "Proj1",
@@ -60,15 +61,34 @@ const projectsArray = [
 ];
 
 function EmpInfo() {
-  const PersonInfo = {
-    name: "Margot ",
-    surname: "Foster",
-    email: "margotfoster@example.com",
-    role: "Backend Developer",
-    numOfProjects: projectsArray.length,
-    about:
-      "Fugiat ipsum ipsum deserunt culpa aute sint do nostrud anim incididunt cillum culpa consequat. Excepteur qui ipsum aliquip consequat sint. Sit id mollit nulla mollit nostrud in ea officia proident. Irure nostrud pariatur mollit ad adipisicing reprehenderit deserunt qui eu.",
-  };
+  const id = useParams().empID;
+
+  const [PersonInfo, setPersonInfo] = useState({
+    empName: "",
+    empSurname: "",
+    empPosition: "",
+    empEmail: "",
+    numOfProjects: "",
+    empAbout: "",
+  });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:5000/api/employees/${id}`
+        );
+        const data = await response.json();
+        if (data && data.length > 0) {
+          setPersonInfo(data[0]);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, [id]);
 
   const renderProjects = () => {
     const groupedProjects = [];
@@ -173,7 +193,7 @@ function EmpInfo() {
             </dt>
 
             <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
-              {PersonInfo.name} {PersonInfo.surname}
+              {PersonInfo.empName} {PersonInfo.empSurname}
             </dd>
           </div>
           <div className="bg-white px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-3">
@@ -181,7 +201,7 @@ function EmpInfo() {
               Rolü
             </dt>
             <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
-              {PersonInfo.role}
+              {PersonInfo.empPosition}
             </dd>
           </div>
           <div className="bg-gray-50 px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-3">
@@ -189,7 +209,7 @@ function EmpInfo() {
               E-Mail Adresi
             </dt>
             <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
-              {PersonInfo.email}
+              {PersonInfo.empEmail}
             </dd>
           </div>
           <div className="bg-white px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-3">
@@ -197,7 +217,7 @@ function EmpInfo() {
               Dahil Olduğu Proje Sayısı
             </dt>
             <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
-              {PersonInfo.numOfProjects}
+              {projectsArray.length}
             </dd>
           </div>
           <div className="bg-gray-50 px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-3">
@@ -205,7 +225,7 @@ function EmpInfo() {
               Hakkında
             </dt>
             <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
-              {PersonInfo.about}
+              {PersonInfo.empAbout}
             </dd>
           </div>
           <div className="bg-white px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-3">
