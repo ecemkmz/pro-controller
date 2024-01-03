@@ -1,7 +1,7 @@
 import React, { Fragment, useState } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
-
+import { useNavigate } from "react-router-dom";
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
@@ -15,7 +15,7 @@ const SignUp = () => {
     "Email adresi": "",
     password: "",
   });
-
+  const navigate = useNavigate()
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -38,6 +38,8 @@ const SignUp = () => {
         console.log("Kayıt işlemi alındı!");
         const data = await response.json();
         data.message && alert(data.message);
+        localStorage.setItem("token", data.token);
+        navigate('/Home');
         // İsteğe bağlı olarak başka bir işlem yapabilirsiniz, örneğin kullanıcıyı başka bir sayfaya yönlendirebilirsiniz.
       } else {
         const data = await response.json();

@@ -107,7 +107,14 @@ app.post('/api/register', async (req, res) => {
           }
 
           console.log('Kullanıcı Eklendi.');
-          res.status(201).json({ message: 'Kullanıcı başarıyla eklendi.' });
+          const tokenUser = { email: email, id: result.insertId }; // Burada, kullanıcının eşsiz bir kimliğini eklemeyi unutmayın
+          const token = jwt.sign(tokenUser, process.env.JWT_SECRET, {
+            expiresIn: '1h' // Token'ın geçerlilik süresi
+          });
+  
+          // Token'ı yanıt olarak döndür
+          res.status(201).json({ message: 'Kullanıcı başarıyla eklendi.', token });
+        
         });
       }
     });
@@ -123,27 +130,24 @@ app.post('/api/login', async (req, res) => {
 
   console.log(`------------------------------------\n${email} login request received.`);
 
-  const checkUserQuery = `SELECT empID, empName, empSurname, empPosition, empPassword FROM Employees WHERE empEmail = ?`;
+  const checkUserQuery = `SELECT empID, empPassword FROM Employees WHERE empEmail = ?`;
 
   try {
-    const user = await connection.query(checkUserQuery, [email], (err, result) => {
-
-      if (err || result[0].empPassword.length === 0 || !bcrypt.compareSync(password, result[0].empPassword)) {
+    const result = await connection.query(checkUserQuery, [email], (err, result) => {
+      const user = result[0];
+      if (err ||user.empPassword.length === 0 || !bcrypt.compareSync(password, user.empPassword)) {
         console.error("Kullanıcı bulunamadı veya şifre yanlış. Lütfen bilgilerinizi kontrol ediniz.");
         res.status(401).json({ error: 'Kullanıcı bulunamadı veya şifre yanlış. Lütfen bilgilerinizi kontrol ediniz.' });
       } else {
-        const user = {
-          id: result[0].empID,
-          name: result[0].empName,
-          surname: result[0].empSurname,
-          position: result[0].empPosition,
+        const tokenUser  = {
+          id: user.empID,
           email: email
         };
 
-        const token = jwt.sign({ userId: user.id, email }, process.env.JWT_SECRET, {
+        const token = jwt.sign({ id: tokenUser.id, email }, process.env.JWT_SECRET, {
           expiresIn: '1h'
         });
-        res.status(200).json({ message: 'Giriş Başarılı', token, user });
+        res.status(200).json({ message: 'Giriş Başarılı', token, user: tokenUser });
       }
     });
   } catch (error) {
@@ -245,6 +249,39 @@ app.get('/api/projects', (req, res) => {
   });
 });
 
+function verifyToken(req, res, next) {
+  const bearerHeader = req.headers['authorization'];
+  if (typeof bearerHeader !== 'undefined') {
+    const bearer = bearerHeader.split(' ');
+    const bearerToken = bearer[1];
+    req.token = bearerToken;
+
+    jwt.verify(req.token, process.env.JWT_SECRET, (err, authData) => {
+      if (err) {
+        res.sendStatus(403); // Forbidden
+      } else {
+        req.user = authData;
+        next();
+      }
+    });
+  } else {
+    res.sendStatus(401); // Unauthorized
+  }
+}
+app.get('/employee-info', verifyToken, async (req, res) => {
+  const userId = req.user.id; // Kullanıcının ID'si
+
+  // Veritabanı sorgusu
+  const query = 'SELECT empName, empSurname, empEmail, empPosition, empAbout FROM Employees WHERE empId = ?';
+  connection.query(query, [userId], (err, results) => {
+    if (err) {
+      console.error('Sorgu sırasında hata oluştu:', err);
+      res.status(500).send('Server Error');
+      return;
+    }
+    res.json(results[0]);
+  });
+});
 
 
 // Handle graceful shutdown
