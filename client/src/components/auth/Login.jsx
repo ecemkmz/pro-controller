@@ -34,7 +34,7 @@ const Login = () => {
           alert("Giriş başarılı.");
         }
         // İsteğe bağlı olarak başka bir işlem yapabilirsiniz, örneğin kullanıcıyı başka bir sayfaya yönlendirebilirsiniz.
-        navigate('/sidebar');
+        navigate('/Home');
       } else {
         if (
           data.error ===

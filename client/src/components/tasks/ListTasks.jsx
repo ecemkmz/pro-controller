@@ -74,7 +74,7 @@ export default function ListTasks() {
         </h2>
 
         <div className="border-b border-gray-200 bg-white pb-4">
-          <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+          <div className=" flex  items-center justify-between px-4 sm:px-6 lg:px-8">
             <Menu as="div" className="relative inline-block text-left">
               <div>
                 <Menu.Button className="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
@@ -186,7 +186,7 @@ export default function ListTasks() {
 
         {/* Active filters */}
         <div className="bg-gray-100">
-          <div className="mx-auto max-w-7xl px-4 py-3 sm:flex sm:items-center sm:px-6 lg:px-8">
+          <div className="  px-4 py-3 sm:flex sm:items-center sm:px-6 lg:px-8">
             <h3 className="text-sm font-medium text-gray-500">
               Filtreler
               <span className="sr-only">, active</span>

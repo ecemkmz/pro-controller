@@ -153,7 +153,7 @@ app.post('/api/login', async (req, res) => {
 });
 // Employee list endpoint
 app.get('/api/employees', (req, res) => {
-  const getEmployeesQuery = `SELECT empID, empName, empSurname, empEmail, empPosition FROM Employees`;
+  const getEmployeesQuery = `SELECT empID, empName, empSurname, empEmail, empPosition, empImageUrl FROM Employees`;
 
   connection.query(getEmployeesQuery, (err, result) => {
     currentDate = new Date();
@@ -199,6 +199,22 @@ app.put('/api/edit/:id', (req, res) => {
     res.status(200).json(result);
   });
 });
+// Delete Employee endpoint
+app.delete('/api/delete/:id', (req, res) => {
+  console.log(`Employee delete request received. ID: ${req.params.id}`);
+  const deleteEmployeeQuery = `DELETE FROM Employees WHERE empID = ?`;
+
+  connection.query(deleteEmployeeQuery, [req.params.id], (err, result) => {
+    if (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Internal Server Error' });
+      return;
+    }
+    console.log(`Çalışan silindi. ${result.affectedRows} satır silindi.ID: ${req.params.id}`);
+    res.status(200).json(result);
+  });
+});
+
 app.get('/api/projects', (req, res) => {
   const { sortKey, sortOrder, projectStatus } = req.query;
 

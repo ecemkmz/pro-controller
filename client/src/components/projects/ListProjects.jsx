@@ -93,10 +93,10 @@ const ListProjects = () => {
         </h2>
 
         <div className="border-b border-gray-200 bg-white pb-4">
-          <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+          <div className=" flex max-w-full items-center justify-between px-4 sm:px-6 lg:px-8 ">
             <Menu as="div" className="relative inline-block text-left">
               <div>
-                <Menu.Button className="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
+                <Menu.Button className="group inline-flex  text-sm font-medium text-gray-700 hover:text-gray-900">
                   Sıralama
                   <ChevronDownIcon
                     className="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
@@ -142,7 +142,7 @@ const ListProjects = () => {
 
             <button
               type="button"
-              className="inline-block text-sm font-medium text-gray-700 hover:text-gray-900 sm:hidden"
+              className="text-sm font-medium text-gray-700 hover:text-gray-900 sm:hidden"
               onClick={() => setAddProjectOpen(true)}
             >
               Filtreler
@@ -221,7 +221,7 @@ const ListProjects = () => {
 
         {/* Aktif filtreler */}
         <div className="bg-gray-100">
-          <div className="mx-auto max-w-7xl px-4 py-3 sm:flex sm:items-center sm:px-6 lg:px-8">
+          <div className=" max-w-full px-4 py-3 sm:flex sm:items-center sm:px-6 lg:px-8">
             <h3 className="text-sm font-medium text-gray-500">
               Filtreler
               <span className="sr-only">, active</span>
