@@ -7,6 +7,7 @@ import EmpInfo from '../../components/employees/EmpInfo';
 import ListTasks from '../../components/tasks/ListTasks';
 import ListProjects from '../../components/projects/ListProjects';
 import Profile from '../../components/profile/Profile';
+import UserEdit from '../../components/employees/UserEdit';
 
 export default function Home() {
   const navigate = useNavigate();
@@ -26,6 +27,10 @@ export default function Home() {
     navigate(`Employees/Employee/${empId}`);
   };
 
+  const handleEmployeeClickEdit = (empId) => {
+    setSelectedEmpId(empId);
+    navigate(`Employees/UserEdit/${empId}`);
+  }
   return (
     <div className="flex">
       <Sidebar onMenuClick={handleMenuClick} activeMenu={activeMenu} activeSubMenu={activeSubMenu} navigate={navigate}/>
@@ -36,8 +41,9 @@ export default function Home() {
           <Route path="/Projects" element={<ListProjects />} />
           <Route path="/Tasks" element={<ListTasks />} />
           <Route path="/Settings" element={<Profile />} />
-            <Route path="/Employees" element={<Employees onEmployeeClick={handleEmployeeClick} />} />
+            <Route path="/Employees" element={<Employees onEmployeeClick={handleEmployeeClick} onEmployeeClickEdit={handleEmployeeClickEdit} />} />
             <Route path="/Employees/Employee/:empID" element={<EmpInfo empId={selectedEmpId} />} />
+            <Route path="/Employees/UserEdit/:empID" element={<UserEdit empId={selectedEmpId} />} />
             {/* Diğer rotalarınız */}
           </Routes>
         </div>
