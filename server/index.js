@@ -199,6 +199,37 @@ app.put('/api/edit/:id', (req, res) => {
     res.status(200).json(result);
   });
 });
+app.get('/api/projects', (req, res) => {
+  const { sortKey, sortOrder, projectStatus } = req.query;
+
+  let getProjectsQuery = `
+    SELECT projID,  projName, projStatus, projStartDate, projEndDate, projDesc
+    FROM Projects
+  `;
+
+  // Apply sorting
+  if (sortKey && sortOrder) {
+    getProjectsQuery += ` ORDER BY ${sortKey} ${sortOrder}`;
+  }
+
+  connection.query(getProjectsQuery, (err, result) => {
+    if (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Internal Server Error' });
+      return;
+    }
+
+    // Apply filtering
+    if (projectStatus) {
+      const filteredProjects = result.filter((project) => project.projStatus === projectStatus);
+      res.status(200).json(filteredProjects);
+    } else {
+      res.status(200).json(result);
+    }
+  });
+});
+
+
 
 // Handle graceful shutdown
 process.on('SIGINT', () => {

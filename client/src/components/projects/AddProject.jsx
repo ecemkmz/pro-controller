@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react";
+import React, { Fragment, useState, useEffect } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { LinkIcon, QuestionMarkCircleIcon } from "@heroicons/react/20/solid";
@@ -6,14 +6,14 @@ import "react-datepicker/dist/react-datepicker.css";
 
 export default function AddProject({ setAddProjectOpen }) {
   const [open, setOpen] = useState(true);
-
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
-
+  
   const handleClose = () => {
     setOpen(false);
-    setAddProjectOpen(false); // ListProjects bileşenindeki durumu da güncelle
+    setAddProjectOpen(false);
   };
+
   const handleStartDateChange = (date) => {
     setStartDate(date);
   };
@@ -23,11 +23,12 @@ export default function AddProject({ setAddProjectOpen }) {
     setEndDate(date);
   };
 
+  
+
   return (
     <Transition.Root show={open} as={Fragment}>
       <Dialog as="div" className="relative z-10" onClose={handleClose}>
         <div className="fixed inset-0" />
-
         <div className="fixed inset-0 overflow-hidden">
           <div className="absolute inset-0 overflow-hidden">
             <div className="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10 sm:pl-16">
@@ -43,7 +44,6 @@ export default function AddProject({ setAddProjectOpen }) {
                 <Dialog.Panel className="pointer-events-auto w-screen max-w-2xl">
                   <form className="flex h-full flex-col overflow-y-scroll bg-white shadow-xl">
                     <div className="flex-1">
-                      {/* Header */}
                       <div className="bg-gray-50 px-4 py-6 sm:px-6">
                         <div className="flex items-start justify-between space-x-3">
                           <div className="space-y-1">
@@ -51,7 +51,8 @@ export default function AddProject({ setAddProjectOpen }) {
                               Yeni Proje
                             </Dialog.Title>
                             <p className="text-sm text-gray-500">
-                            Yeni projenizi oluşturmak için aşağıdaki bilgileri doldurarak başlayın.
+                              Yeni projenizi oluşturmak için aşağıdaki bilgileri
+                              doldurarak başlayın.
                             </p>
                           </div>
                           <div className="flex h-7 items-center">
@@ -71,9 +72,7 @@ export default function AddProject({ setAddProjectOpen }) {
                         </div>
                       </div>
 
-                      {/* Divider container */}
                       <div className="space-y-6 py-6 sm:space-y-0 sm:divide-y sm:divide-gray-200 sm:py-0">
-                        {/* Project name */}
                         <div className="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
                           <div>
                             <label
@@ -92,7 +91,8 @@ export default function AddProject({ setAddProjectOpen }) {
                             />
                           </div>
                         </div>
-                        {/* Project start date - end date */}
+
+
                         <div className="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
                           <div>
                             <label
@@ -112,11 +112,9 @@ export default function AddProject({ setAddProjectOpen }) {
                                 handleStartDateChange(e.target.value)
                               }
                             />
-                            
                           </div>
                         </div>
 
-                        {/* Project end date */}
                         <div className="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
                           <div>
                             <label
@@ -136,11 +134,9 @@ export default function AddProject({ setAddProjectOpen }) {
                                 handleEndDateChange(e.target.value)
                               }
                             />
-                           
                           </div>
                         </div>
-                       
-                        {/* Project description */}
+
                         <div className="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
                           <div>
                             <label
@@ -161,7 +157,6 @@ export default function AddProject({ setAddProjectOpen }) {
                           </div>
                         </div>
 
-                        {/* Privacy */}
                         <fieldset className="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
                           <legend className="sr-only">Privacy</legend>
                           <div
@@ -190,7 +185,6 @@ export default function AddProject({ setAddProjectOpen }) {
                                   >
                                     Tamamlanmış
                                   </label>
-                                 
                                 </div>
                               </div>
                               <div className="relative flex items-start">
@@ -210,7 +204,6 @@ export default function AddProject({ setAddProjectOpen }) {
                                   >
                                     Devam Ediyor
                                   </label>
-                                  
                                 </div>
                               </div>
                               <div className="relative flex items-start">
@@ -230,43 +223,15 @@ export default function AddProject({ setAddProjectOpen }) {
                                   >
                                     Gecikmiş
                                   </label>
-                                  
                                 </div>
                               </div>
                             </div>
                             <hr className="border-gray-200" />
-                            <div className="flex flex-col items-start space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
-                              <div>
-                                <a
-                                  href="#"
-                                  className="group flex items-center space-x-2.5 text-sm font-medium text-indigo-600 hover:text-indigo-900"
-                                >
-                                  <LinkIcon
-                                    className="h-5 w-5 text-indigo-500 group-hover:text-indigo-900"
-                                    aria-hidden="true"
-                                  />
-                                  <span>Copy link</span>
-                                </a>
-                              </div>
-                              <div>
-                                <a
-                                  href="#"
-                                  className="group flex items-center space-x-2.5 text-sm text-gray-500 hover:text-gray-900"
-                                >
-                                  <QuestionMarkCircleIcon
-                                    className="h-5 w-5 text-gray-400 group-hover:text-gray-500"
-                                    aria-hidden="true"
-                                  />
-                                  <span>Learn more about sharing</span>
-                                </a>
-                              </div>
-                            </div>
                           </div>
                         </fieldset>
                       </div>
                     </div>
 
-                    {/* Action buttons */}
                     <div className="flex-shrink-0 border-t border-gray-200 px-4 py-5 sm:px-6">
                       <div className="flex justify-end space-x-3">
                         <button
@@ -277,7 +242,7 @@ export default function AddProject({ setAddProjectOpen }) {
                           Kapat
                         </button>
                         <button
-                          type="submit"
+                          type="button"
                           className="inline-flex justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                         >
                           Oluştur
