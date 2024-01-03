@@ -127,7 +127,7 @@ app.post('/api/login', async (req, res) => {
 
   try {
     const user = await connection.query(checkUserQuery, [email], (err, result) => {
-      
+
       if (err || result[0].empPassword.length === 0 || !bcrypt.compareSync(password, result[0].empPassword)) {
         console.error("Kullanıcı bulunamadı veya şifre yanlış. Lütfen bilgilerinizi kontrol ediniz.");
         res.status(401).json({ error: 'Kullanıcı bulunamadı veya şifre yanlış. Lütfen bilgilerinizi kontrol ediniz.' });
@@ -169,7 +169,8 @@ app.get('/api/employees', (req, res) => {
 
 // Get Employee Info endpoint
 app.get('/api/employees/:id', (req, res) => {
-  const getEmployeeQuery = `SELECT empName, empSurname, empEmail, empPosition FROM Employees WHERE empID = ?`;
+  console.log("Employee info request received.");
+  const getEmployeeQuery = `SELECT empName, empSurname, empEmail, empPosition, empAbout FROM Employees WHERE empID = ?`;
 
   connection.query(getEmployeeQuery, [req.params.id], (err, result) => {
     if (err) {
@@ -178,6 +179,23 @@ app.get('/api/employees/:id', (req, res) => {
       return;
     }
     console.log(result);
+    res.status(200).json(result);
+  });
+});
+
+// Update Employee Info endpoint
+app.put('/api/edit/:id', (req, res) => {
+  console.log("Employee info update request received.");
+  const { empName, empSurname, empEmail, empPosition, empAbout } = req.body;
+  const updateEmployeeQuery = `UPDATE Employees SET empName = ?, empSurname = ?, empEmail = ?, empPosition = ?, empAbout = ? WHERE empID = ?`;
+
+  connection.query(updateEmployeeQuery, [empName, empSurname, empEmail, empPosition, empAbout, req.params.id], (err, result) => {
+    if (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Internal Server Error' });
+      return;
+    }
+    console.log(`Değişiklikler kaydedildi. ${result.affectedRows} satır güncellendi.ID: ${req.params.id}`);
     res.status(200).json(result);
   });
 });

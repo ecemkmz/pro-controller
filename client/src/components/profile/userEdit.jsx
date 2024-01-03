@@ -1,174 +1,350 @@
-import React, { Fragment, useState } from "react";
-import { Menu, Transition } from "@headlessui/react";
-import { ChevronDownIcon } from "@heroicons/react/20/solid";
+import {
+  CalendarDaysIcon,
+  UserCircleIcon,
+  PencilIcon,
+  FolderIcon,
+} from "@heroicons/react/20/solid";
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+const projectsArray = [
+  {
+    projName: "Proj1",
+    projStatus: "Devam Ediyor",
+    projLeader: "Alex Curren",
+    projStartDate: "01/01/2021",
+    projEndDate: "01/01/2022",
+  },
+  {
+    projName: "Proj2",
+    projStatus: "Tamamlandı",
+    projLeader: "Alex Curren",
+    projStartDate: "01/01/2021",
+    projEndDate: "01/01/2022",
+  },
+  {
+    projName: "Proj3",
+    projStatus: "Gecikmiş",
+    projLeader: "Alex Curren",
+    projStartDate: "01/01/2021",
+    projEndDate: "01/01/2022",
+  },
+  {
+    projName: "Proj4",
+    projStatus: "Tamamlandı",
+    projLeader: "Alex Curren",
+    projStartDate: "01/01/2021",
+    projEndDate: "01/01/2022",
+  },
+  {
+    projName: "Proj5",
+    projStatus: "Tamamlandı",
+    projLeader: "Alex Curren",
+    projStartDate: "01/01/2021",
+    projEndDate: "01/01/2022",
+  },
+  {
+    projName: "Proj6",
+    projStatus: "Tamamlandı",
+    projLeader: "Alex Curren",
+    projStartDate: "01/01/2021",
+    projEndDate: "01/01/2022",
+  },
+  {
+    projName: "Proj7",
+    projStatus: "Devam Ediyor",
+    projLeader: "Alex Curren",
+    projStartDate: "01/01/2021",
+    projEndDate: "01/01/2022",
+  },
+  {
+    projName: "Proj8",
+    projStatus: "Gecikmiş",
+    projLeader: "Alex Curren",
+    projStartDate: "01/01/2021",
+    projEndDate: "01/01/2022",
+  },
+];
 
-function classNames(...classes) {
-  return classes.filter(Boolean).join(" ");
-}
+function EmpInfo() {
+  const id = useParams().empID;
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingField, setEditingField] = useState(null);
 
-const UserEdit = () => {
+  const [PersonInfo, setPersonInfo] = useState({
+    empName: "",
+    empSurname: "",
+    empPosition: "",
+    empEmail: "",
+    numOfProjects: "",
+    empAbout: "",
+  });
 
-  function handleSubmit(e) {
-    e.preventDefault();
-    console.log(userInfo);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:5000/api/employees/${id}`
+        );
+        const data = await response.json();
+        if (data && data.length > 0) {
+          setPersonInfo(data[0]);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, [id]);
+
+  const handleEditClick = (fieldName) => {
+    setIsEditing(true);
+    setEditingField(fieldName);
+  };
+
+  const handleSaveClick = () => {
+    setIsEditing(false);
+    setEditingField(null);
+    try {
+      const response = fetch(`http://localhost:5000/api/edit/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(PersonInfo),
+      });
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  const renderProjects = () => {
+    const groupedProjects = [];
+    for (let i = 0; i < projectsArray.length; i += 3) {
+      groupedProjects.push(projectsArray.slice(i, i + 3));
+    }
+
+    return groupedProjects.map((group, groupIndex) => (
+      <div
+        key={groupIndex}
+        className="lg:flex lg:gap-5 lg:mb-5 sm:flex-wrap sm:mb-10"
+      >
+        {group.map((project, index) => (
+          <div key={index} className={` sm:w-1/2 md:w-80 `}>
+            <div className="rounded-lg bg-gray-50 shadow-sm ring-1 ring-gray-900/5 p-5">
+              <dl className="flex flex-wrap">
+                <div className="flex-auto pl-6 pt-6">
+                  <dt className="text-sm font-semibold leading-6 text-gray-900">
+                    {project.projName}
+                  </dt>
+                  <dd className="mt-1 text-base font-semibold leading-6 text-gray-900"></dd>
+                </div>
+                <div className="flex-none self-end px-6 pt-4">
+                  <dt className="sr-only">Status</dt>
+                  <dd
+                    className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset 
+  ${
+    project.projStatus === "Gecikmiş"
+      ? "text-red-700 bg-red-50 ring-red-600/10"
+      : ""
   }
-  function handleChange(e) {
-    const { name, value } = e.target;
-    userInfo[name] = value;
+  ${
+    project.projStatus === "Devam Ediyor"
+      ? "text-yellow-600 bg-yellow-50 ring-yellow-500/10"
+      : ""
   }
-  
-  const userInfo = {
-    name: "",
-    surname: "",
-    email: "",
-    password: "",
-    passwordConfirm: "",
-    position: "",
-  }
-  const [selectedOption, setSelectedOption] = useState("Seçenekler");
-  const [selectedPosition, setSelectedPosition] = useState(null);
+  ${
+    project.projStatus === "Tamamlandı"
+      ? "text-green-700 bg-green-50 ring-green-600/20"
+      : ""
+  }`}
+                  >
+                    {project.projStatus}
+                  </dd>
+                </div>
+                <div className="mt-6 flex w-full flex-none gap-x-4 border-t border-gray-900/5 px-6 pt-6">
+                  <dt className="flex-none">
+                    <span className="sr-only">Leader</span>
+                    <UserCircleIcon
+                      className="h-6 w-5 text-gray-400"
+                      aria-hidden="true"
+                    />
+                  </dt>
+                  <dd className="text-sm font-medium leading-6 text-gray-900">
+                    {project.projLeader}
+                  </dd>
+                </div>
+                <div className="mt-4 flex w-full flex-none gap-x-4 px-6">
+                  <dt className="flex-none">
+                    <span className="sr-only">Due date</span>
+                    <CalendarDaysIcon
+                      className="h-6 w-5 text-gray-400"
+                      aria-hidden="true"
+                    />
+                  </dt>
+                  <dd className="text-sm leading-6 text-gray-500">
+                    <time dateTime="2023-01-31">{project.projStartDate}</time>
+                  </dd>
+                </div>
+                <div className="mt-4 flex w-full flex-none gap-x-4 px-6">
+                  <dt className="flex-none">
+                    <span className="sr-only">Status</span>
+                    <CalendarDaysIcon
+                      className="h-6 w-5 text-gray-400"
+                      aria-hidden="true"
+                    />
+                  </dt>
+                  <dd className="text-sm leading-6 text-gray-500">
+                    {project.projEndDate}
+                  </dd>
+                </div>
+              </dl>
+            </div>
+          </div>
+        ))}
+      </div>
+    ));
+  };
+
+  const renderEditableField = (label, value, fieldName, isEditingField) => (
+    <div className="bg-gray-50 px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-3">
+      <dt className="text-sm font-medium leading-6 text-gray-900">{label}</dt>
+      <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
+        {isEditingField ? (
+          <div className="flex items-center justify-between">
+            <input
+              type="text"
+              value={value}
+              onChange={(e) =>
+                setPersonInfo((prevInfo) => ({
+                  ...prevInfo,
+                  [fieldName]: e.target.value,
+                }))
+              }
+              className="border h-8 border-gray-500 focus:outline-none focus:border-blue-500 w-3/4"
+            />
+            <div>
+              <span
+                className="text-end cursor-pointer hover:text-gray-700 hover:font-semibold"
+                onClick={handleSaveClick}
+              >
+                Kaydet
+              </span>
+            </div>
+          </div>
+        ) : (
+          <div className="flex items-center justify-between">
+            <span>{value}</span>
+            <span
+              className="text-end cursor-pointer hover:text-gray-700 hover:font-semibold"
+              onClick={() => handleEditClick(fieldName)}
+            >
+              Düzenle
+            </span>
+          </div>
+        )}
+      </dd>
+    </div>
+  );
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-indigo-50">
-      <div className="w-full max-w-md bg-white p-6 rounded-lg shadow-md">
-        <img
-          className="mx-auto h-16 w-16"
-          src="https://i.ibb.co/d7Pk7v9/Procontroller-logo.png"
-          alt="Your Company"
-        />
-
-
-        <form className="mt-4 space-y-4" action="#" method="POST">
-          {["Ad", "Soyad", "Email adresi"].map((label) => (
-            <div key={label}>
-              <label
-                htmlFor={label.toLowerCase()}
-                className="block text-sm font-medium leading-5 text-gray-700"
-              >
-                {label}
-              </label>
-              <div className="mt-1">
-                <input
-                  id={label.toLowerCase()}
-                  name={label.toLowerCase()}
-                  type="text"
-                  autoComplete="email"
-                  required
-                  className="block w-full rounded-md border-gray-300 py-2 text-gray-700 shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                />
-              </div>
-            </div>
-          ))}
-
-          {["password", "passwordConfirm"].map((passwordType) => (
-            <div key={passwordType} className="mt-2">
-              <label
-                htmlFor={passwordType}
-                className="block text-sm font-medium leading-5 text-gray-700"
-              >
-                {passwordType === "password" ? "Şifre" : "Şifreyi Onayla"}
-              </label>
-              <div className="mt-1">
-                <input
-                  id={passwordType}
-                  name={passwordType}
-                  type="password"
-                  autoComplete="new-password"
-                  required
-                  className="block w-full rounded-md border-gray-300 py-2 text-gray-700 shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                />
-              </div>
-            </div>
-          ))}
-
-          <div className="mt-2">
-            <div className="flex items-center justify-between">
-              <label
-                htmlFor="position"
-                className="block text-sm font-medium leading-5 text-gray-700"
-              >
-                Pozisyon
-              </label>
-              <div className="text-sm">
-                <Menu as="div" className="relative inline-block text-left">
-                  <div>
-                    <Menu.Button className="inline-flex w-full justify-center gap-x-2 rounded-md bg-white px-3 py-1.5 text-sm font-semibold text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
-                      {selectedOption}
-                      <ChevronDownIcon
-                        className="-mr-1 h-5 w-5 text-gray-400"
-                        aria-hidden="true"
-                      />
-                    </Menu.Button>
-                  </div>
-
-                  <Transition
-                    as={Fragment}
-                    enter="transition ease-out duration-100"
-                    enterFrom="transform opacity-0 scale-95"
-                    enterTo="transform opacity-100 scale-100"
-                    leave="transition ease-in duration-75"
-                    leaveFrom="transform opacity-100 scale-100"
-                    leaveTo="transform opacity-0 scale-95"
-                  >
-                    <Menu.Items className="absolute z-10 mt-2 w-40 origin-top-left rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none left-0">
-                      <div className="py-1">
-                        {["CEO", "Backend Dev.", "Frontend Dev."].map(
-                          (menuItem, index) => (
-                            <Menu.Item key={menuItem}>
-                              {({ active }) => (
-                                <a
-                                  href="#"
-                                  onClick={() => {
-                                    setSelectedOption(menuItem);
-                                    setSelectedPosition(index); // Seçilen pozisyonu güncelle
-                                  }}
-                                  className={classNames(
-                                    active
-                                      ? "bg-gray-100 text-gray-900"
-                                      : "text-gray-700",
-                                    "block px-4 py-2 text-sm",
-                                    selectedPosition === index
-                                      ? "bg-gray-200"
-                                      : "" // Bu satırı ekle
-                                  )}
-                                >
-                                  {menuItem}
-                                </a>
-                              )}
-                            </Menu.Item>
-                          )
-                        )}
-                       
-                      </div>
-                    </Menu.Items>
-                  </Transition>
-                </Menu>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-4">
-            <button
-              type="submit"
-              className="flex w-full justify-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold leading-5 text-white shadow-sm hover:bg-indigo-500 focus:outline-none focus:ring focus:border-indigo-700"
-            >
-              Üye Ol
-            </button>
-          </div>
-        </form>
-
-        <p className="mt-4 text-center text-sm text-gray-500">
-          Üye misiniz?{" "}
-          <a
-            href="/login"
-            className="font-semibold leading-5 text-indigo-600 hover:text-indigo-500"
-          >
-            Giriş Yap
-          </a>
+    <div>
+      <div className="px-4 sm:px-0">
+        <p className="mt-1 max-w-2xl text-sm leading-6 text-gray-500">
+          Çalışan bilgileri ve projeleri.
         </p>
+      </div>
+      <div className="mt-6 border-t border-gray-100">
+        <dl className="divide-y divide-gray-100">
+          {renderEditableField(
+            "Ad",
+            `${PersonInfo.empName}`,
+            "empName",
+            editingField === "empName"
+          )}
+          {renderEditableField(
+            "Soyad",
+            PersonInfo.empSurname,
+            "empSurname",
+            editingField === "empSurname"
+          )}
+          {renderEditableField(
+            "Rolü",
+            PersonInfo.empPosition,
+            "empPosition",
+            editingField === "empPosition"
+          )}
+          {renderEditableField(
+            "E-Mail Adresi",
+            PersonInfo.empEmail,
+            "empEmail",
+            editingField === "empEmail"
+          )}
+          {renderEditableField(
+            "Dahil Olduğu Proje Sayısı",
+            projectsArray.length,
+            "numOfProjects",
+            editingField === "numOfProjects"
+          )}
+          {renderEditableField(
+            "Hakkında",
+            PersonInfo.empAbout,
+            "empAbout",
+            editingField === "empAbout"
+          )}
+          {/* <div className="bg-gray-50 px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-3">
+            <dt className="text-sm font-medium leading-6 text-gray-900">
+              Ad - Soyad
+            </dt>
+
+            <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
+              {PersonInfo.empName} {PersonInfo.empSurname}
+            </dd>
+          </div>
+          <div className="bg-white px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-3">
+            <dt className="text-sm font-medium leading-6 text-gray-900">
+              Rolü
+            </dt>
+            <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
+              {PersonInfo.empPosition}
+            </dd>
+          </div>
+          <div className="bg-gray-50 px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-3">
+            <dt className="text-sm font-medium leading-6 text-gray-900">
+              E-Mail Adresi
+            </dt>
+            <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
+              {PersonInfo.empEmail}
+            </dd>
+          </div>
+          <div className="bg-white px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-3">
+            <dt className="text-sm font-medium leading-6 text-gray-900">
+              Dahil Olduğu Proje Sayısı
+            </dt>
+            <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
+              {projectsArray.length}
+            </dd>
+          </div>
+          <div className="bg-gray-50 px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-3">
+            <dt className="text-sm font-medium leading-6 text-gray-900">
+              Hakkında
+            </dt>
+            <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
+              {PersonInfo.empAbout}
+            </dd>
+          </div> */}
+          <div className="bg-white px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-3">
+            <dt className="text-sm font-medium leading-6 text-gray-900">
+              Projeler
+            </dt>
+            <dd className="mt-2 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
+              {renderProjects()}
+            </dd>
+          </div>
+        </dl>
       </div>
     </div>
   );
-};
+}
 
-export default UserEdit;
+export default EmpInfo;
