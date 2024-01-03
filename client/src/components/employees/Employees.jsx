@@ -2,7 +2,7 @@ import React, {useState, useEffect} from "react";
 import { SettingOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
   
-function Employees() {
+function Employees({ onEmployeeClick }) {
 
   const [employees, setEmployees] = useState([]);
 
@@ -21,7 +21,9 @@ function Employees() {
     >
       <ul role="list" className="divide-y divide-gray-100">
         {employees.map((person) => (
-          <a href="#" className="block hover:bg-gray-100" onClick={()=> {console.log(person.empID)}}>
+          <div onClick={() => onEmployeeClick(person.id)}>
+          {person.name}
+        
           <li key={person.email} className="flex justify-between gap-x-6 py-5">
             <div className="flex min-w-0 gap-x-4">
               <img
@@ -45,7 +47,7 @@ function Employees() {
               </Link>
             </div>
           </li>
-          </a>
+          </div>
         ))}
       </ul>
     </div>

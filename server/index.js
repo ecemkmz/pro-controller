@@ -3,7 +3,7 @@ const dotenv = require("dotenv");
 const mysql = require('mysql');
 const bcrypt = require('bcrypt');
 const cors = require('cors');
-
+const jwt = require('jsonwebtoken');
 dotenv.config();
 
 const app = express();
@@ -123,7 +123,7 @@ app.post('/api/login', async (req, res) => {
 
   console.log(`------------------------------------\n${email} login request received.`);
 
-  const checkUserQuery = `SELECT empPassword FROM Employees WHERE empEmail = ?`;
+  const checkUserQuery = `SELECT empID, empName, empSurname, empPosition, empPassword FROM Employees WHERE empEmail = ?`;
 
   try {
     const user = await connection.query(checkUserQuery, [email], (err, result) => {
@@ -132,7 +132,18 @@ app.post('/api/login', async (req, res) => {
         console.error("Kullanıcı bulunamadı veya şifre yanlış. Lütfen bilgilerinizi kontrol ediniz.");
         res.status(401).json({ error: 'Kullanıcı bulunamadı veya şifre yanlış. Lütfen bilgilerinizi kontrol ediniz.' });
       } else {
-        res.status(200).json({ message: 'Giriş Başarılı' });
+        const user = {
+          id: result[0].empID,
+          name: result[0].empName,
+          surname: result[0].empSurname,
+          position: result[0].empPosition,
+          email: email
+        };
+
+        const token = jwt.sign({ userId: user.id, email }, process.env.JWT_SECRET, {
+          expiresIn: '1h'
+        });
+        res.status(200).json({ message: 'Giriş Başarılı', token, user });
       }
     });
   } catch (error) {

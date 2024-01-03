@@ -1,11 +1,23 @@
-import { useState } from 'react'
+import React, { useState, useEffect } from 'react';
 import { Dialog, Switch } from '@headlessui/react'
+
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 function Profile() {
-  const [automaticTimezoneEnabled, setAutomaticTimezoneEnabled] = useState(true)
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      setUser(JSON.parse(userData));
+    }
+  }, []);
+
+  if (!user) {
+    return <div>Yükleniyor...</div>;
+  }
   return (
     <div className="p-16 max-w-2xl space-y-16 sm:space-y-20 lg:mx-0 lg:max-w-none">
       <div>
@@ -18,7 +30,7 @@ function Profile() {
           <div className="pt-6 sm:flex">
             <dt className="font-medium text-gray-900 sm:w-64 sm:flex-none sm:pr-6">Ad Soyad</dt>
             <dd className="mt-1 flex justify-between gap-x-6 sm:mt-0 sm:flex-auto">
-              <div className="text-gray-900">Tom Cook</div>
+              <div className="text-gray-900">{user.name} {user.surname}</div>
               <button type="button" className="font-semibold text-indigo-600 hover:text-indigo-500">
                 Düzenle
               </button>
@@ -27,7 +39,7 @@ function Profile() {
           <div className="pt-6 sm:flex">
             <dt className="font-medium text-gray-900 sm:w-64 sm:flex-none sm:pr-6">Email Adresi</dt>
             <dd className="mt-1 flex justify-between gap-x-6 sm:mt-0 sm:flex-auto">
-              <div className="text-gray-900">tom.cook@example.com</div>
+              <div className="text-gray-900">{user.email}</div>
               <button type="button" className="font-semibold text-indigo-600 hover:text-indigo-500">
                 Düzenle
               </button>
@@ -36,7 +48,7 @@ function Profile() {
           <div className="pt-6 sm:flex">
             <dt className="font-medium text-gray-900 sm:w-64 sm:flex-none sm:pr-6">Pozisyon</dt>
             <dd className="mt-1 flex justify-between gap-x-6 sm:mt-0 sm:flex-auto">
-              <div className="text-gray-900">Human Resources Manager</div>
+              <div className="text-gray-900">{user.position}</div>
               <button type="button" className="font-semibold text-indigo-600 hover:text-indigo-500">
                 Düzenle
               </button>
