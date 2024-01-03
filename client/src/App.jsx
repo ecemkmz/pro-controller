@@ -2,13 +2,13 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./components/auth/Login";
 import SignUp from "./components/auth/SignUp";
 import Employees from "./components/employees/Employees";
-import Auth from "./pages/Auth/Auth";
+import Auth from "./pages/auth/Auth";
 import ListProjects from "./components/projects/ListProjects";
 import EmpInfo from "./components/employees/EmpInfo";
 import Home from "./pages/home/Home";
 import ListTasks from "./components/tasks/ListTasks";
 import Profile from "./components/profile/Profile";
-import UserEdit from "./components/profile/UserEdit";
+import UserEdit from "./components/profile/userEdit";
 
 function App() {
   return (
