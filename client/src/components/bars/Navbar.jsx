@@ -22,8 +22,9 @@ function Navbar({ activeMenu, activeSubMenu }) {
 
   const logout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('user');
     navigate('/');
-  };
+  };
   return (
     <div className="flex justify-between items-center p-4 shadow">
           <nav className="flex" aria-label="Breadcrumb">

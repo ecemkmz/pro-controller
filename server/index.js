@@ -248,6 +248,53 @@ app.get('/api/projects', (req, res) => {
     }
   });
 });
+app.post('/api/create-project', async (req, res) => {
+  const {  projName ,  startDate, endDate, description, projectStatus, creatorID  } = req.body;
+  
+
+  try {
+
+    const checkNameQuery = `SELECT projName FROM Projects WHERE projName = ?`;
+
+    connection.query(checkNameQuery, [projName], (err, result) => {
+      if (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal Server Error' });
+        return;
+      }
+
+      if (result.length > 0) {
+        console.log("Bu proje adı zaten kayıtlı.");
+        res.status(400).json({ error: 'Bu proje adı zaten kayıtlı.' });
+      } else {
+        const insertQuery = `
+          INSERT INTO Projects (projName, projStartDate, projEndDate, projDesc, projStatus, projCreatorID)
+          VALUES (?, ?, ?, ?, ?, ?)
+        `;
+
+        connection.query(insertQuery, [projName, startDate, endDate, description, projectStatus, creatorID], (err, result) => {
+          if (err) {
+            console.error(`Error occurred: ${err.sqlMessage}`);
+            res.status(500).json({ error: 'Internal Server Error' });
+            return;
+          }
+
+          console.log('Proje Eklendi.');
+         
+  
+          // Token'ı yanıt olarak döndür
+          res.status(201).json({ message: 'Proje başarıyla eklendi.'});
+        
+        });
+      }
+    });
+  } catch (error) {
+    console.error('Error during registration:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+
 
 function verifyToken(req, res, next) {
   const bearerHeader = req.headers['authorization'];

@@ -8,7 +8,57 @@ export default function AddProject({ setAddProjectOpen }) {
   const [open, setOpen] = useState(true);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
+  const [formData, setFormData] = useState({
+    projName: "",
+    startDate: "",
+    endDate: "",
+    description: "",
+    projectStatus: "",
+  });
   
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    console.log(formData);
+    try {
+      const response = await fetch("http://localhost:5000/api/create-project", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          projName: formData.projName,
+          startDate: formData.startDate,
+          endDate: formData.endDate,
+          description: formData.description,
+          projectStatus: formData.projectStatus,
+          creatorID: localStorage.user
+        }),
+      });
+
+      if (response.ok) {
+        console.log("Proje kaydı alındı!");
+        const data = await response.json();
+        data.message && alert(data.message);
+        handleClose();
+      } else {
+        const data = await response.json();
+        console.error("Kayıt sırasında bir hata oluştu:", data.error);
+
+        if (data.error === "Bu proje adı zaten kayıtlı.") {
+          alert(
+            "Bu proje adı zaten kayıtlı. Lütfen farklı bir proje adı kullanın."
+          );
+        } else {
+          // Diğer hatalar için genel bir hata mesajı göster
+          alert("Proje Kaydı sırasında bir hata oluştu.");
+        }
+      }
+    } catch (error) {
+      console.error("İstek gönderilirken bir hata oluştu:", error);
+    }
+  };
+
   const handleClose = () => {
     setOpen(false);
     setAddProjectOpen(false);
@@ -22,8 +72,6 @@ export default function AddProject({ setAddProjectOpen }) {
     const date = new Date(dateString);
     setEndDate(date);
   };
-
-  
 
   return (
     <Transition.Root show={open} as={Fragment}>
@@ -85,13 +133,19 @@ export default function AddProject({ setAddProjectOpen }) {
                           <div className="sm:col-span-2">
                             <input
                               type="text"
-                              name="project-name"
+                              name="Proje Adı"
                               id="project-name"
                               className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                              value={formData.projName}
+                              onChange={(e) =>
+                                setFormData({
+                                  ...formData,
+                                  projName: e.target.value,
+                                })
+                              }
                             />
                           </div>
                         </div>
-
 
                         <div className="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
                           <div>
@@ -106,10 +160,14 @@ export default function AddProject({ setAddProjectOpen }) {
                             <input
                               type="date"
                               id="project-start-date"
-                              name="project-start-date"
+                              name="Başlama Tarihi"
                               className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                              value={formData.startDate}
                               onChange={(e) =>
-                                handleStartDateChange(e.target.value)
+                                setFormData({
+                                  ...formData,
+                                  startDate: e.target.value,
+                                })
                               }
                             />
                           </div>
@@ -128,10 +186,14 @@ export default function AddProject({ setAddProjectOpen }) {
                             <input
                               type="date"
                               id="project-end-date"
-                              name="project-end-date"
+                              name="Bitiş Tarihi"
                               className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                              value={formData.endDate}
                               onChange={(e) =>
-                                handleEndDateChange(e.target.value)
+                                setFormData({
+                                  ...formData,
+                                  endDate: e.target.value,
+                                })
                               }
                             />
                           </div>
@@ -149,10 +211,16 @@ export default function AddProject({ setAddProjectOpen }) {
                           <div className="sm:col-span-2">
                             <textarea
                               id="project-description"
-                              name="project-description"
+                              name="Açıklama"
                               rows={3}
                               className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                              defaultValue={""}
+                              value={formData.description}
+                              onChange={(e) =>
+                                setFormData({
+                                  ...formData,
+                                  description: e.target.value,
+                                })
+                              }
                             />
                           </div>
                         </div>
@@ -171,11 +239,19 @@ export default function AddProject({ setAddProjectOpen }) {
                                 <div className="absolute flex h-6 items-center">
                                   <input
                                     id="public-access"
-                                    name="privacy"
-                                    aria-describedby="public-access-description"
+                                    name="Projenin Durumu"
                                     type="radio"
                                     className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600"
-                                    defaultChecked
+                                    defaultChecked={
+                                      formData.projectStatus ===
+                                      "Tamamlanmış"
+                                    }
+                                    onChange={() =>
+                                      setFormData({
+                                        ...formData,
+                                        projectStatus: "Tamamlanmış",
+                                      })
+                                    }
                                   />
                                 </div>
                                 <div className="pl-7 text-sm leading-6">
@@ -191,10 +267,19 @@ export default function AddProject({ setAddProjectOpen }) {
                                 <div className="absolute flex h-6 items-center">
                                   <input
                                     id="restricted-access"
-                                    name="privacy"
-                                    aria-describedby="restricted-access-description"
+                                    name="Projenin Durumu"
                                     type="radio"
                                     className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                                    defaultChecked={
+                                      formData.projectStatus ===
+                                      "Devam Ediyor"
+                                    }
+                                    onChange={() =>
+                                      setFormData({
+                                        ...formData,
+                                        projectStatus: "Devam Ediyor",
+                                      })
+                                    }
                                   />
                                 </div>
                                 <div className="pl-7 text-sm leading-6">
@@ -210,10 +295,18 @@ export default function AddProject({ setAddProjectOpen }) {
                                 <div className="absolute flex h-6 items-center">
                                   <input
                                     id="private-access"
-                                    name="privacy"
-                                    aria-describedby="private-access-description"
+                                    name="Projenin Durumu"
                                     type="radio"
                                     className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                                    defaultChecked={
+                                      formData.projectStatus=== "Gecikmiş"
+                                    }
+                                    onChange={() =>
+                                      setFormData({
+                                        ...formData,
+                                        projectStatus: "Gecikmiş",
+                                      })
+                                    }
                                   />
                                 </div>
                                 <div className="pl-7 text-sm leading-6">
@@ -244,6 +337,8 @@ export default function AddProject({ setAddProjectOpen }) {
                         <button
                           type="button"
                           className="inline-flex justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                          onClick={handleSubmit}
+                          
                         >
                           Oluştur
                         </button>
