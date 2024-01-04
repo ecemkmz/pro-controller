@@ -248,7 +248,7 @@ app.get('/api/projects', (req, res) => {
     }
   });
 });
-//Create Projects
+//Create Project
 app.post('/api/create-project', async (req, res) => {
   const {  projName ,  startDate, endDate, description, projectStatus, creatorID  } = req.body;
   
@@ -293,6 +293,21 @@ app.post('/api/create-project', async (req, res) => {
     console.error('Error during registration:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
+});
+//Delete Project
+app.delete('/api/delete-project/:id', (req, res) => {
+  console.log(`Project delete request received. ID: ${req.params.id}`);
+  const deleteProjectQuery = `DELETE FROM Projects WHERE projID = ?`;
+
+  connection.query(deleteProjectQuery, [req.params.id], (err, result) => {
+    if (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Internal Server Error' });
+      return;
+    }
+    console.log(`Proje silindi. ${result.affectedRows} satır silindi.ID: ${req.params.id}`);
+    res.status(200).json(result);
+  });
 });
 //Create Task
 app.post('/api/create-task', async (req, res) => {
@@ -370,7 +385,21 @@ app.get('/api/tasks', (req, res) => {
     }
   });
 });
+//Delete Task
+app.delete('/api/delete-task/:id', (req, res) => {
+  console.log(`Task delete request received. ID: ${req.params.id}`);
+  const deleteProjectQuery = `DELETE FROM Tasks WHERE taskID = ?`;
 
+  connection.query(deleteProjectQuery, [req.params.id], (err, result) => {
+    if (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Internal Server Error' });
+      return;
+    }
+    console.log(`Proje silindi. ${result.affectedRows} satır silindi.ID: ${req.params.id}`);
+    res.status(200).json(result);
+  });
+});
 
 function verifyToken(req, res, next) {
   const bearerHeader = req.headers['authorization'];

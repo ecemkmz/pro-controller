@@ -24,7 +24,6 @@ const filters = [
   },
 ];
 
-
 const statuses = {
   Tamamlanmış: "text-green-700 bg-green-50 ring-green-600/20",
   "Devam Ediyor": "text-yellow-600 bg-yellow-50 ring-yellow-500/10",
@@ -45,37 +44,48 @@ const ListProjects = () => {
   const [selectedSortOption, setSelectedSortOption] = useState(null);
   const [selectedProjectStatus, setSelectedProjectStatus] = useState(null);
 
-  
+  const fetchData = async () => {
+    try {
+      const response = await axios.get("http://localhost:5000/api/projects", {
+        params: {
+          sortKey: selectedSortOption?.key,
+          sortOrder: selectedSortOption?.order,
+          projectStatus: selectedProjectStatus?.value,
+        },
+      });
+
+      const filteredProjects = response.data.filter((proje) => {
+        return (
+          !selectedProjectStatus ||
+          !selectedProjectStatus.value ||
+          proje.projStatus === selectedProjectStatus.value
+        );
+      });
+
+      setProjects(filteredProjects);
+    } catch (error) {
+      console.error("Veri çekme hatası:", error);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get("http://localhost:5000/api/projects", {
-          params: {
-            sortKey: selectedSortOption?.key,
-            sortOrder: selectedSortOption?.order,
-            projectStatus: selectedProjectStatus?.value,
-          },
-        });
- 
-        const filteredProjects = response.data.filter((proje) => {
-          return (
-            !selectedProjectStatus ||
-            !selectedProjectStatus.value ||
-            proje.projStatus === selectedProjectStatus.value
-          );
-        });
-  
-        setProjects(filteredProjects);
-      } catch (error) {
-        console.error("Veri çekme hatası:", error);
-      }
-    };
-  
     fetchData();
   }, [selectedSortOption, selectedProjectStatus]);
-  
 
+  const handleDeleteProject = (projID) => {
+    if (window.confirm("Bu Projeyi Silmek İstediğinize Emin Misiniz?")) {
+      axios
+        .delete(`http://localhost:5000/api/delete-project/${projID}`)
+        .then((response) => {
+          console.log("Success:", response.data);
+          fetchData(); // Silme işleminden sonra projeleri yeniden getir
+          window.location.reload(); // Sayfayı yenileme işlemini buradan kaldır
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+    }
+  };
 
   const handleSortOptionChange = (option) => {
     setSelectedSortOption(option);
@@ -158,7 +168,7 @@ const ListProjects = () => {
                     >
                       <Popover.Button className="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
                         <span>{section.name}</span>
-                        
+
                         <ChevronDownIcon
                           className="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
                           aria-hidden="true"
@@ -300,7 +310,7 @@ const ListProjects = () => {
         >
           {projects.map((project) => (
             <li
-              key={project.projID}
+              key={project.id}
               className="overflow-hidden rounded-xl border border-gray-200"
             >
               <div className="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
@@ -334,26 +344,26 @@ const ListProjects = () => {
                               "block px-3 py-1 text-sm leading-6 text-gray-900"
                             )}
                           >
-                            View
+                            Düzenle
                             <span className="sr-only">
                               , {project.projName}
                             </span>
                           </a>
                         )}
                       </Menu.Item>
+
                       <Menu.Item>
                         {({ active }) => (
                           <a
                             href="#"
+                            onClick={() => handleDeleteProject(project.projID)}
                             className={classNames(
                               active ? "bg-gray-50" : "",
                               "block px-3 py-1 text-sm leading-6 text-gray-900"
                             )}
                           >
-                            Edit
-                            <span className="sr-only">
-                              , {project.projName}
-                            </span>
+                            Sil
+                            <span className="sr-only">{`, ${project.projName}`}</span>
                           </a>
                         )}
                       </Menu.Item>

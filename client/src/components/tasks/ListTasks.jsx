@@ -42,35 +42,49 @@ export default function ListTasks() {
   const [addTaskOpen, setAddTaskOpen] = useState(false);
   const [selectedSortOption, setSelectedSortOption] = useState(null);
   const [selectedTaskStatus, setSelectedTaskStatus] = useState(null);
-  
+  const fetchData = async () => {
+    try {
+      const response = await axios.get("http://localhost:5000/api/tasks", {
+        params: {
+          sortKey: selectedSortOption?.key,
+          sortOrder: selectedSortOption?.order,
+          taskStatus: selectedTaskStatus?.value,
+        },
+      });
+
+      const filteredTasks = response.data.filter((task) => {
+        return (
+          !selectedTaskStatus ||
+          !selectedTaskStatus.value ||
+          task.taskStatus === selectedTaskStatus.value
+        );
+      });
+
+      setTasks(filteredTasks);
+      console.log(tasks)
+    } catch (error) {
+      console.error("Veri çekme hatası:", error);
+    }
+  };
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get("http://localhost:5000/api/tasks", {
-          params: {
-            sortKey: selectedSortOption?.key,
-            sortOrder: selectedSortOption?.order,
-            taskStatus: selectedTaskStatus?.value,
-          },
-        });
- 
-        const filteredTasks = response.data.filter((task) => {
-          return (
-            !selectedTaskStatus ||
-            !selectedTaskStatus.value ||
-            task.taskStatus === selectedTaskStatus.value
-          );
-        });
-  
-        setTasks(filteredTasks);
-        console.log(tasks)
-      } catch (error) {
-        console.error("Veri çekme hatası:", error);
-      }
-    };
-  
+    
     fetchData();
   }, [selectedSortOption, selectedTaskStatus]);
+
+  const handleDeleteTask = (taskID) => {
+    if (window.confirm("Bu Görevleri Silmek İstediğinize Emin Misiniz?")) {
+      axios
+        .delete(`http://localhost:5000/api/delete-task/${taskID}`)
+        .then((response) => {
+          console.log("Success:", response.data);
+          fetchData(); // Silme işleminden sonra projeleri yeniden getir
+          window.location.reload(); // Sayfayı yenileme işlemini buradan kaldır
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+    }
+  };
   
 
 
@@ -291,32 +305,38 @@ export default function ListTasks() {
                 leaveTo="transform opacity-0 scale-95"
               >
                 <Menu.Items className="absolute right-0 z-10 mt-0.5 w-32 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
-                  <Menu.Item>
-                    {({ active }) => (
-                      <a
-                        href="#"
-                        className={classNames(
-                          active ? 'bg-gray-50' : '',
-                          'block px-3 py-1 text-sm leading-6 text-gray-900'
+                <Menu.Item>
+                        {({ active }) => (
+                          <a
+                            href="#"
+                            className={classNames(
+                              active ? "bg-gray-50" : "",
+                              "block px-3 py-1 text-sm leading-6 text-gray-900"
+                            )}
+                          >
+                            Düzenle
+                            <span className="sr-only">
+                              , {task.taskName}
+                            </span>
+                          </a>
                         )}
-                      >
-                        View<span className="sr-only">, {task.taskName}</span>
-                      </a>
-                    )}
-                  </Menu.Item>
-                  <Menu.Item>
-                    {({ active }) => (
-                      <a
-                        href="#"
-                        className={classNames(
-                          active ? 'bg-gray-50' : '',
-                          'block px-3 py-1 text-sm leading-6 text-gray-900'
+                      </Menu.Item>
+
+                      <Menu.Item>
+                        {({ active }) => (
+                          <a
+                            href="#"
+                            onClick={() => handleDeleteTask(task.taskID)}
+                            className={classNames(
+                              active ? "bg-gray-50" : "",
+                              "block px-3 py-1 text-sm leading-6 text-gray-900"
+                            )}
+                          >
+                            Sil
+                            <span className="sr-only">{`, ${task.taskName}`}</span>
+                          </a>
                         )}
-                      >
-                        Edit<span className="sr-only">, {task.taskName}</span>
-                      </a>
-                    )}
-                  </Menu.Item>
+                      </Menu.Item>
                 </Menu.Items>
               </Transition>
             </Menu>
