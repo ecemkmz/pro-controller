@@ -218,7 +218,7 @@ app.delete('/api/delete/:id', (req, res) => {
     res.status(200).json(result);
   });
 });
-
+//List Projects
 app.get('/api/projects', (req, res) => {
   const { sortKey, sortOrder, projectStatus } = req.query;
 
@@ -248,6 +248,7 @@ app.get('/api/projects', (req, res) => {
     }
   });
 });
+//Create Projects
 app.post('/api/create-project', async (req, res) => {
   const {  projName ,  startDate, endDate, description, projectStatus, creatorID  } = req.body;
   
@@ -293,7 +294,82 @@ app.post('/api/create-project', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+//Create Task
+app.post('/api/create-task', async (req, res) => {
+  const {  taskName ,projectID, taskAttendedId,taskAttenderID, taskStartDate, taskEndDate, taskDesc, taskStatus} = req.body;
+  
 
+  try {
+
+    const checkNameQuery = `SELECT taskName FROM Tasks WHERE taskName = ?`;
+
+    connection.query(checkNameQuery, [taskName], (err, result) => {
+      if (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal Server Error' });
+        return;
+      }
+
+      if (result.length > 0) {
+        console.log("Bu görev adı zaten kayıtlı.");
+        res.status(400).json({ error: 'Bu görev adı zaten kayıtlı.' });
+      } else {
+        const insertQuery = `
+          INSERT INTO Tasks (taskName ,projectID, taskAttendedId,taskAttenderID, taskStartDate, taskEndDate, taskDesc, taskStatus)
+          VALUES (?, ?, ?, ?, ?, ?,?,?)
+        `;
+
+        connection.query(insertQuery, [taskName ,projectID, taskAttendedId,taskAttenderID, taskStartDate, taskEndDate, taskDesc, taskStatus], (err, result) => {
+          if (err) {
+            console.error(`Error occurred: ${err.sqlMessage}`);
+            res.status(500).json({ error: 'Internal Server Error' });
+            return;
+          }
+
+          console.log('Görev Eklendi.');
+         
+  
+          // Token'ı yanıt olarak döndür
+          res.status(201).json({ message: 'Görev başarıyla eklendi.'});
+        
+        });
+      }
+    });
+  } catch (error) {
+    console.error('Error during registration:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+//List Task
+app.get('/api/tasks', (req, res) => {
+  const { sortKey, sortOrder, taskStatus } = req.query;
+
+  let getTasksQuery = `
+    SELECT taskID,taskName, projectID, taskStatus, taskStartDate, taskEndDate, taskDesc
+    FROM Tasks
+  `;
+
+  // Apply sorting
+  if (sortKey && sortOrder) {
+    getTasksQuery += ` ORDER BY ${sortKey} ${sortOrder}`;
+  }
+
+  connection.query(getTasksQuery, (err, result) => {
+    if (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Internal Server Error' });
+      return;
+    }
+
+    // Apply filtering
+    if (taskStatus) {
+      const filteredTasks = result.filter((task) => task.taskStatus === taskStatus);
+      res.status(200).json(filteredTasks);
+    } else {
+      res.status(200).json(result);
+    }
+  });
+});
 
 
 function verifyToken(req, res, next) {

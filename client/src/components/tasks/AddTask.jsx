@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react";
+import { Fragment, useState,useEffect } from "react";
 import { Dialog, Transition,Listbox } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { LinkIcon, QuestionMarkCircleIcon } from "@heroicons/react/20/solid";
@@ -8,49 +8,93 @@ import React from 'react'
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
-const Projects = [
-  { id: 1, name: 'Wade Cooper' },
-  { id: 2, name: 'Arlene Mccoy' },
-  { id: 3, name: 'Devon Webb' },
-  { id: 4, name: 'Tom Cook' },
-  { id: 5, name: 'Tanya Fox' },
-  { id: 6, name: 'Hellen Schmidt' },
-  { id: 7, name: 'Caroline Schultz' },
-  { id: 8, name: 'Mason Heaney' },
-  { id: 9, name: 'Claudie Smitham' },
-  { id: 10, name: 'Emil Schaefer' },
-]
 
-const people = [
-  { id: 1, name: 'Wade Cooper' },
-  { id: 2, name: 'Arlene Mccoy' },
-  { id: 3, name: 'Devon Webb' },
-  { id: 4, name: 'Tom Cook' },
-  { id: 5, name: 'Tanya Fox' },
-  { id: 6, name: 'Hellen Schmidt' },
-  { id: 7, name: 'Caroline Schultz' },
-  { id: 8, name: 'Mason Heaney' },
-  { id: 9, name: 'Claudie Smitham' },
-  { id: 10, name: 'Emil Schaefer' },
-]
 function AddTask({setAddTaskOpen}) {
+  const [employees, setEmployees] = useState([]);
+  const [projects, setProjects] = useState([]);
   const [open, setOpen] = useState(true);
-  const [selected, setSelected] = useState(Projects[3])
-  const [selectedEmployee, setSelectedEmployee] = useState(people[4])
+  const [selected, setSelected] = useState([])
+  const [selectedEmployee, setSelectedEmployee] = useState([])
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
 
+  useEffect(() => {
+    fetch("http://localhost:5000/api/employees")
+      .then((response) => response.json())
+      .then((data) => setEmployees(data))
+      .catch((error) => console.error("Error fetching data:", error));
+      
+  }, []);
+  useEffect(() => {
+    fetch("http://localhost:5000/api/projects")
+      .then((response) => response.json())
+      .then((data) => setProjects(data))
+      .catch((error) => console.error("Error fetching data:", error));
+      
+  }, []);
+
+  const [formData, setFormData] = useState({
+    taskName: "",
+    startDate: "",
+    projectID: "",
+    taskAttendedId: "",
+    taskAttenderID: "",
+    taskStartDate: "",
+    taskEndDate: "",
+    taskDesc: "",
+    taskStatus:""
+  });
+  
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    console.log(formData);
+    try {
+      const response = await fetch("http://localhost:5000/api/create-task", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          taskName: formData.taskName,
+          startDate: formData.startDate,
+          projectID: formData.projectID,
+          taskAttendedId: formData.taskAttendedId,
+          taskAttenderID: localStorage.user,
+          taskStartDate: formData.taskStartDate,
+          taskEndDate: formData.taskEndDate,
+          taskDesc: formData.taskDesc,
+          taskStatus:formData.taskStatus
+        }),
+      });
+
+      if (response.ok) {
+        console.log("Görev kaydı alındı!");
+        const data = await response.json();
+        data.message && alert(data.message);
+        handleClose();
+      } else {
+        const data = await response.json();
+        console.error("Kayıt sırasında bir hata oluştu:", data.error);
+
+        if (data.error === "Bu görev adı zaten kayıtlı.") {
+          alert(
+            "Bu görev adı zaten kayıtlı. Lütfen farklı bir proje adı kullanın."
+          );
+        } else {
+          // Diğer hatalar için genel bir hata mesajı göster
+          alert("Görev Kaydı sırasında bir hata oluştu.");
+        }
+      }
+    } catch (error) {
+      console.error("İstek gönderilirken bir hata oluştu:", error);
+    }
+  };
   const handleClose = () => {
     setOpen(false);
-    setAddTaskOpen(false); // ListProjects bileşenindeki durumu da güncelle
-  };
-  const handleStartDateChange = (date) => {
-    setStartDate(date);
-  };
-
-  const handleEndDateChange = (dateString) => {
-    const date = new Date(dateString);
-    setEndDate(date);
+    setAddTaskOpen(false); 
+    // ListProjects bileşenindeki durumu da güncelle
+    console.log(selectedEmployee)
   };
 
   return (
@@ -115,6 +159,13 @@ function AddTask({setAddTaskOpen}) {
                               name="task-name"
                               id="task-name"
                               className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                              value={formData.taskName}
+                              onChange={(e) =>
+                                setFormData({
+                                  ...formData,
+                                  taskName: e.target.value,
+                                })
+                              }
                             />
                           </div>
                         </div>
@@ -131,12 +182,20 @@ function AddTask({setAddTaskOpen}) {
                             </label>
                           </div>
                           <div className="sm:col-span-2">
-                          <Listbox value={selected} onChange={setSelected}>
+                          <Listbox value={selected} 
+  onChange={(project) => {
+    setSelected(project);
+    setFormData({
+      ...formData,
+      projectID: project.projID // Assuming the project object has an 'id' property
+    });
+  }}
+>
       {({ open }) => (
         <>
           <div className="relative mt-2">
             <Listbox.Button className="relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
-              <span className="block truncate">{selected.name}</span>
+              <span className="block truncate">{selected.projName+""}</span>
               <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                 <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
               </span>
@@ -150,7 +209,7 @@ function AddTask({setAddTaskOpen}) {
               leaveTo="opacity-0"
             >
               <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                {Projects.map((project) => (
+                {projects.map((project) => (
                   <Listbox.Option
                     key={project.id}
                     className={({ active }) =>
@@ -164,7 +223,7 @@ function AddTask({setAddTaskOpen}) {
                     {({ selected, active }) => (
                       <>
                         <span className={classNames(selected ? 'font-semibold' : 'font-normal', 'block truncate')}>
-                          {project.name}
+                          {project.projName}
                         </span>
 
                         {selected ? (
@@ -200,12 +259,19 @@ function AddTask({setAddTaskOpen}) {
                             </label>
                           </div>
                           <div className="sm:col-span-2">
-                          <Listbox value={selectedEmployee} onChange={setSelectedEmployee}>
+                          <Listbox value={selectedEmployee} 
+  onChange={(employee) => {
+    setSelectedEmployee(employee);
+    setFormData({
+      ...formData,
+      taskAttendedId: employee.empID // Assuming the project object has an 'id' property
+    });
+  }}>
       {({ open }) => (
         <>
           <div className="relative mt-2">
             <Listbox.Button className="relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
-              <span className="block truncate">{selectedEmployee.name}</span>
+              <span className="block truncate">{ selectedEmployee.empName +" "+ selectedEmployee.empSurname}</span>
               <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                 <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
               </span>
@@ -219,7 +285,7 @@ function AddTask({setAddTaskOpen}) {
               leaveTo="opacity-0"
             >
               <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                {people.map((person) => (
+                {employees.map((person) => (
                   <Listbox.Option
                     key={person.id}
                     className={({ active }) =>
@@ -233,7 +299,7 @@ function AddTask({setAddTaskOpen}) {
                     {({ selectedEmployee, active }) => (
                       <>
                         <span className={classNames(selectedEmployee ? 'font-semibold' : 'font-normal', 'block truncate')}>
-                          {person.name}
+                          {person.empName + " "+person.empSurname}
                         </span>
 
                         {selectedEmployee ? (
@@ -274,8 +340,12 @@ function AddTask({setAddTaskOpen}) {
                               id="project-start-date"
                               name="project-start-date"
                               className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                              value={formData.taskStartDate}
                               onChange={(e) =>
-                                handleStartDateChange(e.target.value)
+                                setFormData({
+                                  ...formData,
+                                  taskStartDate: e.target.value,
+                                })
                               }
                             />
                             
@@ -298,8 +368,12 @@ function AddTask({setAddTaskOpen}) {
                               id="project-end-date"
                               name="project-end-date"
                               className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                              value={formData.taskEndDate}
                               onChange={(e) =>
-                                handleEndDateChange(e.target.value)
+                                setFormData({
+                                  ...formData,
+                                  taskEndDate: e.target.value,
+                                })
                               }
                             />
                            
@@ -323,6 +397,13 @@ function AddTask({setAddTaskOpen}) {
                               rows={3}
                               className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                               defaultValue={""}
+                              value={formData.taskDesc}
+                              onChange={(e) =>
+                                setFormData({
+                                  ...formData,
+                                  taskDesc: e.target.value,
+                                })
+                              }
                             />
                           </div>
                         </div>
@@ -346,7 +427,16 @@ function AddTask({setAddTaskOpen}) {
                                     aria-describedby="public-access-description"
                                     type="radio"
                                     className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600"
-                                    defaultChecked
+                                    defaultChecked={
+                                      formData.taskStatus ===
+                                      "Tamamlanmış"
+                                    }
+                                    onChange={() =>
+                                      setFormData({
+                                        ...formData,
+                                        taskStatus: "Tamamlanmış",
+                                      })
+                                    }
                                   />
                                 </div>
                                 <div className="pl-7 text-sm leading-6">
@@ -367,6 +457,16 @@ function AddTask({setAddTaskOpen}) {
                                     aria-describedby="restricted-access-description"
                                     type="radio"
                                     className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                                    defaultChecked={
+                                      formData.projectStatus ===
+                                      "Devam Ediyor"
+                                    }
+                                    onChange={() =>
+                                      setFormData({
+                                        ...formData,
+                                        projectStatus: "Devam Ediyor",
+                                      })
+                                    }
                                   />
                                 </div>
                                 <div className="pl-7 text-sm leading-6">
@@ -387,6 +487,15 @@ function AddTask({setAddTaskOpen}) {
                                     aria-describedby="private-access-description"
                                     type="radio"
                                     className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                                    defaultChecked={
+                                      formData.projectStatus=== "Gecikmiş"
+                                    }
+                                    onChange={() =>
+                                      setFormData({
+                                        ...formData,
+                                        projectStatus: "Gecikmiş",
+                                      })
+                                    }
                                   />
                                 </div>
                                 <div className="pl-7 text-sm leading-6">
@@ -418,6 +527,7 @@ function AddTask({setAddTaskOpen}) {
                         <button
                           type="submit"
                           className="inline-flex justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                          onClick={handleSubmit}
                         >
                           Oluştur
                         </button>
