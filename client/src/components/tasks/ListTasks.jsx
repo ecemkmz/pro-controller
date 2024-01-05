@@ -61,7 +61,6 @@ export default function ListTasks() {
       });
 
       setTasks(filteredTasks);
-      console.log(tasks)
     } catch (error) {
       console.error("Veri çekme hatası:", error);
     }
@@ -70,7 +69,6 @@ export default function ListTasks() {
     
     fetchData();
   }, [selectedSortOption, selectedTaskStatus]);
-
   const handleDeleteTask = (taskID) => {
     if (window.confirm("Bu Görevleri Silmek İstediğinize Emin Misiniz?")) {
       axios
@@ -86,7 +84,7 @@ export default function ListTasks() {
     }
   };
   
-
+console.log(tasks)
 
   const handleSortOptionChange = (option) => {
     setSelectedSortOption(option);
@@ -289,7 +287,7 @@ export default function ListTasks() {
         <li key={task.taskID} className="overflow-hidden rounded-xl border border-gray-200">
           <div className="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
             
-            <div className="text-sm font-medium leading-6 text-gray-900"><span className="font-thin text-gray-500 font-serif">{task.projectID}</span><br/>{task.taskName}</div>
+            <div className="text-sm font-medium leading-6 text-gray-900"><span className="font-thin text-gray-500 font-serif">{task.projName}</span><br/>{task.taskName}</div>
             <Menu as="div" className="relative ml-auto">
               <Menu.Button className="-m-2.5 block p-2.5 text-gray-400 hover:text-gray-500">
                 <span className="sr-only">Open options</span>
@@ -370,7 +368,7 @@ export default function ListTasks() {
               <dt className="text-gray-500">Görevlendirilen Kişi</dt>
               
               <dd className="text-gray-700">
-              
+              {task.empName+" "+task.empSurname}
               </dd>
             </div>
             <div className="flex justify-between gap-x-4 py-3">
