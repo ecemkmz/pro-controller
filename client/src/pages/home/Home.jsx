@@ -32,7 +32,7 @@ export default function Home() {
     navigate(`Employees/UserEdit/${empId}`);
   }
   return (
-    <div className="flex">
+    <div className="flex max-h-screen">
       <Sidebar onMenuClick={handleMenuClick} activeMenu={activeMenu} activeSubMenu={activeSubMenu} navigate={navigate}/>
       <div className="flex-1 flex flex-col">
         <Navbar activeMenu={activeMenu} activeSubMenu={activeSubMenu}/>

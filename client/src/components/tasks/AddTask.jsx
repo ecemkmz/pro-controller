@@ -73,6 +73,8 @@ function AddTask({setAddTaskOpen}) {
         const data = await response.json();
         data.message && alert(data.message);
         handleClose();
+        window.location.reload(); 
+
       } else {
         const data = await response.json();
         console.error("Kayıt sırasında bir hata oluştu:", data.error);
@@ -458,13 +460,13 @@ function AddTask({setAddTaskOpen}) {
                                     type="radio"
                                     className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600"
                                     defaultChecked={
-                                      formData.projectStatus ===
+                                      formData.taskStatus ===
                                       "Devam Ediyor"
                                     }
                                     onChange={() =>
                                       setFormData({
                                         ...formData,
-                                        projectStatus: "Devam Ediyor",
+                                        taskStatus: "Devam Ediyor",
                                       })
                                     }
                                   />
@@ -488,12 +490,12 @@ function AddTask({setAddTaskOpen}) {
                                     type="radio"
                                     className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600"
                                     defaultChecked={
-                                      formData.projectStatus=== "Gecikmiş"
+                                      formData.taskStatus=== "Gecikmiş"
                                     }
                                     onChange={() =>
                                       setFormData({
                                         ...formData,
-                                        projectStatus: "Gecikmiş",
+                                        taskStatus: "Gecikmiş",
                                       })
                                     }
                                   />

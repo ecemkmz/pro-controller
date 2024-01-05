@@ -41,6 +41,7 @@ export default function AddProject({ setAddProjectOpen }) {
         const data = await response.json();
         data.message && alert(data.message);
         handleClose();
+        window.location.reload();
       } else {
         const data = await response.json();
         console.error("Kayıt sırasında bir hata oluştu:", data.error);
