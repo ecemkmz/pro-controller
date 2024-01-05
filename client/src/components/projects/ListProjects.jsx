@@ -335,6 +335,21 @@ const ListProjects = () => {
                     leaveTo="transform opacity-0 scale-95"
                   >
                     <Menu.Items className="absolute right-0 z-10 mt-0.5 w-32 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
+                    <Menu.Item>
+                        {({ active }) => (
+                          <a
+                            href="#"
+                            onClick={() => handleDeleteProject(project.projID)}
+                            className={classNames(
+                              active ? "bg-gray-50" : "",
+                              "block px-3 py-1 text-sm leading-6 text-gray-900"
+                            )}
+                          >
+                            Görüntüle
+                            <span className="sr-only">{`, ${project.projName}`}</span>
+                          </a>
+                        )}
+                      </Menu.Item>
                       <Menu.Item>
                         {({ active }) => (
                           <a
@@ -367,11 +382,23 @@ const ListProjects = () => {
                           </a>
                         )}
                       </Menu.Item>
+                     
                     </Menu.Items>
                   </Transition>
                 </Menu>
               </div>
               <dl className="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
+              <div className="flex justify-between gap-x-4 py-3">
+                  <dt className="text-gray-500">Projeyi Oluşturan</dt>
+                  <dd className="flex items-start gap-x-2">
+                    <div
+                      className=
+                        "text-gray-700"
+                    >
+                      {project.projCreatorName} {project.projCreatorSurname}
+                    </div>
+                  </dd>
+                </div>
                 <div className="flex justify-between gap-x-4 py-3">
                   <dt className="text-gray-500">Başlama Tarihi</dt>
                   <dd className="text-gray-700">
