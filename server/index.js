@@ -447,8 +447,8 @@ app.get("/api/tasks", (req, res) => {
   const { sortKey, sortOrder, taskStatus } = req.query;
 
   let getTasksQuery = `
-    SELECT taskID,taskName, projectID, taskStatus, taskStartDate, taskEndDate, taskDesc
-    FROM Tasks
+    SELECT a.taskID,a.taskName, a.taskAttendedId, a.projectID, a.taskStatus, a.taskStartDate, a.taskEndDate, a.taskDesc, p.projName, e.empName, e.empSurname
+    FROM Tasks a JOIN Projects p ON a.projectID = p.projID JOIN Employees e ON a.taskAttendedId = e.empId
   `;
 
   // Apply sorting
