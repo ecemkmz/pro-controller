@@ -25,6 +25,7 @@ function App() {
           <Route path="Settings" element={<Profile />} />
           <Route path="Employees/Employee/:empID" element={<EmpInfo />} />
           <Route path="Employees/UserEdit/:empID" element={<UserEdit />} />
+          <Route path="Project/:projectID" element={<DetailProject />} />
         </Route>
         
         {/* <Route path="/userEdit" element={<UserEdit />} />

@@ -8,10 +8,12 @@ import ListTasks from '../../components/tasks/ListTasks';
 import ListProjects from '../../components/projects/ListProjects';
 import Profile from '../../components/profile/Profile';
 import UserEdit from '../../components/employees/UserEdit';
+import DetailProject from '../../components/projects/DetailProject';
 
 export default function Home() {
   const navigate = useNavigate();
   const [selectedEmpId, setSelectedEmpId] = useState(null);
+  const [selectedProjectId, setSelectedProjectId] = useState(null);
 
   // Bu durum ve fonksiyonlar Sidebar ve Navbar arasında paylaşılacak
   const [activeMenu, setActiveMenu] = useState(null);
@@ -31,6 +33,12 @@ export default function Home() {
     setSelectedEmpId(empId);
     navigate(`Employees/UserEdit/${empId}`);
   }
+
+  const handleProjectClick = (projectID) => {
+    setSelectedProjectId(projectID);
+    navigate(`Project/${projectID}`);
+  }
+
   return (
     <div className="flex max-h-screen">
       <Sidebar onMenuClick={handleMenuClick} activeMenu={activeMenu} activeSubMenu={activeSubMenu} navigate={navigate}/>
@@ -38,12 +46,13 @@ export default function Home() {
         <Navbar activeMenu={activeMenu} activeSubMenu={activeSubMenu}/>
         <div className="p-7 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 68px)' }}>
           <Routes>
-          <Route path="/Projects" element={<ListProjects />} />
+          <Route path="/Projects" element={<ListProjects onProjectClick={handleProjectClick} />} />
           <Route path="/Tasks" element={<ListTasks />} />
           <Route path="/Settings" element={<Profile />} />
             <Route path="/Employees" element={<Employees onEmployeeClick={handleEmployeeClick} onEmployeeClickEdit={handleEmployeeClickEdit} />} />
             <Route path="/Employees/Employee/:empID" element={<EmpInfo empId={selectedEmpId} />} />
             <Route path="/Employees/UserEdit/:empID" element={<UserEdit empId={selectedEmpId} />} />
+            <Route path="Project/:projectID" element={<DetailProject />} />
             {/* Diğer rotalarınız */}
           </Routes>
         </div>
