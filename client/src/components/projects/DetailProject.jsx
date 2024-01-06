@@ -125,14 +125,6 @@ function DetailProject({ OnProjectClick }) {
   const projStartDate = new Date(ProjectInfo[0].projStartDate);
   const projEndDate = new Date(ProjectInfo[0].projEndDate);
 
-  // Zaman dilimini düzeltin
-  const adjustedStartDate = new Date(
-    projStartDate.getTime() + projStartDate.getTimezoneOffset() * 60000
-  );
-  const adjustedEndDate = new Date(
-    projEndDate.getTime() + projEndDate.getTimezoneOffset() * 60000
-  );
-
   const renderTaskStatus = (status) => {
     let color = "";
     if (status === "Tamamlanmış")
@@ -156,35 +148,37 @@ function DetailProject({ OnProjectClick }) {
 
   const [formData, setFormData] = useState({
     projName: ProjectInfo[0].projName,
-    projStartDate: `${ProjectInfo[0].projStartDate}T21:00:00.000Z`,
-    projEndDate: `${ProjectInfo[0].projEndDate}T21:00:00.000Z`,
+    projStartDate: ProjectInfo[0].projStartDate,
+    projEndDate: ProjectInfo[0].projEndDate,     
     projStatus: ProjectInfo[0].projStatus,
   });
 
-  const handleEditClick = (e) => {
+  const handleEditClick = async (e) => {
     if (editingMode) {
       // Kaydet butonuna tıklandığında yapılacak işlemler
       try {
-        const response = fetch(
+        const response = await fetch(
           `http://localhost:5000/api/project/${projectID}`,
           {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(formData),
+            body: JSON.stringify({ ...formData,
+              projStartDate: new Date(formData.projStartDate + 'T00:00:00Z').toISOString(),
+              projEndDate: new Date(formData.projEndDate + 'T00:00:00Z').toISOString(),}),
           }
         );
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
       } catch (error) {
         console.error("Error fetching data:", error);
       }
       setEditingMode(false);
       window.location.reload();
     } else {
+
       setFormData({
-        ...formData,
-        projStartDate: adjustedStartDate.toISOString(),
-        projEndDate: adjustedEndDate.toISOString(),
-        projStatus: ProjectInfo[0].projStatus,
-        projName: ProjectInfo[0].projName,
+        ...ProjectInfo[0],
       });
       // Düzenle butonuna tıklandığında yapılacak işlemler
       setEditingMode(true);
