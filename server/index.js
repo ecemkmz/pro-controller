@@ -608,6 +608,54 @@ app.get("/employee-info", verifyToken, async (req, res) => {
   });
 });
 
+// Get Tasklist of Projects by Project ID
+app.get('/api/tasks/:projectID', (req, res) => {
+  console.log("Task list request received.");
+  const getTaskQuery = `SELECT empName, empSurname, taskID, taskName, taskStatus, taskEndDate  FROM Tasks JOIN Projects ON Tasks.projectID = Projects.projID JOIN Employees ON Tasks.taskAttendedId = Employees.empID WHERE projectID = ?`;
+
+  connection.query(getTaskQuery, [req.params.projectID], (err, result) => {
+    if (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Internal Server Error' });
+      return;
+    }
+    res.status(200).json(result);
+  });
+});
+
+// Get Project Info by Project ID
+app.get('/api/project/:projectID', (req, res) =>{
+  console.log("Project info request received.");
+  const getProjectQuery = `SELECT projName, projStatus, projStartDate, projEndDate, empName, empSurname FROM Projects JOIN Employees ON Projects.projCreatorID = Employees.empID WHERE projID = ?`;
+
+  connection.query(getProjectQuery, [req.params.projectID], (err, result) => {
+    if (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Internal Server Error' });
+      return;
+    }
+    console.log(result);
+    res.status(200).json(result);
+  });
+})
+
+//Update project details by Project ID
+app.put('/api/project/:projectID', (req, res) => {
+  console.log("Project info update request received.");
+  const { projName, projStatus, projStartDate, projEndDate } = req.body;
+  const updateProjectQuery = `UPDATE Projects SET projName = ?, projStatus = ?, projStartDate = ?, projEndDate = ? WHERE projID = ?`;
+
+  connection.query(updateProjectQuery, [projName, projStatus, projStartDate, projEndDate, req.params.projectID], (err, result) => {
+    if (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Internal Server Error' });
+      return;
+    }
+    console.log(`Proje bilgileri değişiklikleri kaydedildi. ${result.affectedRows} satır güncellendi.ID: ${req.params.projectID}`);
+    res.status(200).json(result);
+  });
+});
+
 // Handle graceful shutdown
 process.on("SIGINT", () => {
   connection.end();

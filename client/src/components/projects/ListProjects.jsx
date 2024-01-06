@@ -38,7 +38,7 @@ function formatDate(dateString) {
   return new Date(dateString).toLocaleDateString(undefined, options);
 }
 
-const ListProjects = () => {
+const ListProjects = ({onProjectClick}) => {
   const [projects, setProjects] = useState([]);
   const [addProjectOpen, setAddProjectOpen] = useState(false);
   const [selectedSortOption, setSelectedSortOption] = useState(null);
@@ -339,7 +339,7 @@ const ListProjects = () => {
                         {({ active }) => (
                           <a
                             href="#"
-                            onClick={() => handleDeleteProject(project.projID)}
+                            onClick={() => onProjectClick(project.projID)}
                             className={classNames(
                               active ? "bg-gray-50" : "",
                               "block px-3 py-1 text-sm leading-6 text-gray-900"
