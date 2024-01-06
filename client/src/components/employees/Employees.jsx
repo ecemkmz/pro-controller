@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import {
   DeleteFilled,
@@ -73,9 +74,9 @@ function Employees({ onEmployeeClick, onEmployeeClickEdit }) {
                   </p>
                 </div>
               </div>
-              <div className="">
+              <div className="mt-2">
                 <p className=" leading-6 text-gray-900"></p>
-                <div className="flex items-center gap-x-3 text-xl pr-4">
+                <div className="flex items-center gap-x-3 text-lg pr-4">
                   <div>
                     <span
                       className="text-end cursor-pointer  hover:text-blue-700 hover:transition-all"

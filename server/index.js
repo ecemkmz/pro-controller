@@ -474,6 +474,41 @@ app.get("/api/tasks", (req, res) => {
     }
   });
 });
+//List for id
+app.get('/projects/:id', (req, res) => {
+  let getProjectsQueryById = `SELECT 
+  p.projID,
+  p.projName, 
+  p.projStatus,
+  p.projStartDate,
+  p.projEndDate,
+  COUNT(a.taskID) as taskCount, 
+  e.empName, 
+  e.empSurname
+FROM 
+  Tasks a 
+JOIN 
+  Projects p ON a.projectID = p.projID 
+JOIN 
+  Employees e ON p.projCreatorID = e.empId 
+WHERE 
+  a.taskAttendedId = ?
+GROUP BY 
+  p.projID, p.projName, p.projStatus, p.projStartDate, p.projEndDate, e.empName, e.empSurname`;
+
+
+
+  connection.query(getProjectsQueryById, [req.params.id], (err, result) => {
+    if (err) {
+      console.error(err);
+      res.status(500).json({ error: "Internal Server Error" });
+      return;
+    }
+    console.log(result);
+    res.status(200).json(result);
+  });
+});
+
 //Delete Task
 app.delete("/api/delete-task/:id", (req, res) => {
   console.log(`Task delete request received. ID: ${req.params.id}`);
