@@ -308,6 +308,33 @@ LEFT JOIN Employees e ON p.projCreatorID = e.empID
     }
   });
 });
+app.get("/api/projects/:id", (req, res) => {
+
+  let getProjectsQuery = `
+  SELECT 
+  p.projID, 
+  p.projName, 
+  p.projStatus, 
+  p.projStartDate, 
+  p.projEndDate, 
+  p.projDesc, 
+  p.projCreatorID,
+  e.empName AS projCreatorName,
+  e.empSurname AS projCreatorSurname
+FROM Projects p
+JOIN Employees e ON p.projCreatorID = e.empID WHERE p.projCreatorID=?
+  `;
+
+  connection.query(getProjectsQuery, [req.params.id], (err, result) => {
+    if (err) {
+      console.error(err);
+      res.status(500).json({ error: "Internal Server Error" });
+      return;
+    }
+    console.log(result);
+    res.status(200).json(result)
+  });
+});
 //Create Project
 app.post("/api/create-project", async (req, res) => {
   const {
@@ -472,6 +499,25 @@ app.get("/api/tasks", (req, res) => {
     } else {
       res.status(200).json(result);
     }
+  });
+});
+app.get("/api/tasks/:id",  (req, res) => {
+
+  let getTasksQuery = `
+    SELECT a.taskID,a.taskName, a.taskAttendedId, a.projectID, a.taskStatus, a.taskStartDate, a.taskEndDate, a.taskDesc, p.projName, e.empName, e.empSurname
+    FROM Tasks a JOIN Projects p ON a.projectID = p.projID JOIN Employees e ON a.taskAttendedId = e.empId WHERE a.taskAttendedId=?
+  `;
+
+ 
+  connection.query(getTasksQuery,[req.params.id], (err, result) => {
+    if (err) {
+      console.error(err);
+      res.status(500).json({ error: "Internal Server Error" });
+      return;
+    }
+    console.log(result);
+
+    res.status(200).json(result)
   });
 });
 //List for id
