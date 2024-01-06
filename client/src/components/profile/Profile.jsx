@@ -1,36 +1,57 @@
 import React, { useState, useEffect } from 'react';
-import { Dialog, Switch } from '@headlessui/react'
+import NoProject from '../projects/NoProject';
+import NoTask from '../tasks/NoTask';
 
 
-function classNames(...classes) {
-  return classes.filter(Boolean).join(' ')
-}
 function Profile() {
-  const [employee, setEmployee] = useState(null);
 
-    useEffect(() => {
-      const fetchEmployeeInfo = async () => {
-        const token = localStorage.getItem('token');
-        try {
-          const response = await fetch('http://localhost:5000/employee-info', {
-            headers: {
-              'Authorization': `Bearer ${token}`
-            }
-          });
-      
-          if (response.ok) {
-            const data = await response.json();
-            setEmployee(data);
-          } else {
-            console.error('Bilgiler alınamadı.');
+
+  const [employee, setEmployee] = useState(null);
+  const [employeeProjects, setEmployeeProjects] = useState([]);
+  const [employeeTasks, setEmployeeTasks] = useState([]);
+
+
+  const projID =localStorage.user;
+  const taskID =localStorage.user;
+
+
+  useEffect(() => {
+    const fetchEmployeeInfo = async () => {
+      const token = localStorage.getItem('token');
+      try {
+        const response = await fetch('http://localhost:5000/employee-info', {
+          headers: {
+            'Authorization': `Bearer ${token}`
           }
-        } catch (error) {
-          console.error('Sunucu hatası', error);
-        }
-      };
+        });
+    
+        if (response.ok) {
+          const data = await response.json();
+          setEmployee(data);
   
-      fetchEmployeeInfo();
-    }, []);
+          const responseProj = await fetch(`http://localhost:5000/api/projects/${projID}`);
+          const employeeProj = await responseProj.json();
+          if (employeeProj) {
+            setEmployeeProjects(employeeProj);
+          }
+          const responseTask = await fetch(`http://localhost:5000/api/tasks/${taskID}`);
+          const employeeTask = await responseTask.json();
+          if (employeeTask) {
+            setEmployeeTasks(employeeTask);
+          }
+
+        } else {
+          console.error('Bilgiler alınamadı.');
+        }
+      } catch (error) {
+        console.error('Sunucu hatası', error);
+      }
+    };
+  
+    fetchEmployeeInfo();
+  }, [projID,taskID]);
+  
+  
 
     if (!employee) {
       return <div>Yükleniyor...</div>;
@@ -48,7 +69,7 @@ function Profile() {
             <dt className="font-medium text-gray-900 sm:w-64 sm:flex-none sm:pr-6">Ad Soyad</dt>
             <dd className="mt-1 flex justify-between gap-x-6 sm:mt-0 sm:flex-auto">
               <div className="text-gray-900">{employee.empName} {employee.empSurname}</div>
-              <button type="button" className="font-semibold text-indigo-600 hover:text-indigo-500">
+              <button type="button" className="font-semibold text-indigo-600 hover:text-indigo-500 ">
                 Düzenle
               </button>
             </dd>
@@ -76,43 +97,43 @@ function Profile() {
 
       <div>
         <h2 className="text-base font-semibold leading-7 text-gray-900">Projelerim</h2>
-        <p className="mt-1 text-sm leading-6 text-gray-500">
+        <p className="mt-1 mb-5 text-sm leading-6 text-gray-500">
           Projelerini buradan görebilir ve düzenleyebilirsin.</p>
 
-        <ul role="list" className="mt-6 divide-y divide-gray-100 border-t border-gray-200 text-sm leading-6">
-          <li className="flex justify-between gap-x-6 py-6">
-            <div className="font-medium text-gray-900">TD Canada Trust</div>
-            <button type="button" className="font-semibold text-indigo-600 hover:text-indigo-500">
-              Düzenle
-            </button>
-          </li>
-          <li className="flex justify-between gap-x-6 py-6">
-            <div className="font-medium text-gray-900">Royal Bank of Canada</div>
-            <button type="button" className="font-semibold text-indigo-600 hover:text-indigo-500">
-              Düzenle
-            </button>
-          </li>
-        </ul>
-
+          {employeeProjects.length === 0 ? (
+          <NoProject /> 
+        ) : (
+          <ul role="list" className="mt-6 divide-y divide-gray-100 border-t border-gray-200 text-sm leading-6">
+            {employeeProjects.map((employeeProject) => (
+              <li className="flex justify-between gap-x-6 py-6" key={employeeProject.projID}>
+                <div className="font-medium text-gray-900">{employeeProject.projName}</div>
+                <button type="button" className="font-semibold text-indigo-600 hover:text-indigo-500">
+                  Düzenle
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
       <div>
         <h2 className="text-base font-semibold leading-7 text-gray-900">Görevlerim</h2>
-        <p className="mt-1 text-sm leading-6 text-gray-500">Görevlerini buradan görebilir ve düzenleyebilirsin.</p>
+        <p className="mt-1 mb-5 text-sm leading-6 text-gray-500">Görevlerini buradan görebilir ve düzenleyebilirsin.</p>
 
-        <ul role="list" className="mt-6 divide-y divide-gray-100 border-t border-gray-200 text-sm leading-6">
-          <li className="flex justify-between gap-x-6 py-6">
-            <div className="font-medium text-gray-900">TD Canada Trust</div>
-            <button type="button" className="font-semibold text-indigo-600 hover:text-indigo-500">
-              Düzenle
-            </button>
-          </li>
-          <li className="flex justify-between gap-x-6 py-6">
-            <div className="font-medium text-gray-900">Royal Bank of Canada</div>
-            <button type="button" className="font-semibold text-indigo-600 hover:text-indigo-500">
-              Düzenle
-            </button>
-          </li>
-        </ul>
+       {employeeTasks.length === 0 ? (
+          <NoTask /> 
+        ) : (
+          <ul role="list" className="mt-6 divide-y divide-gray-100 border-t border-gray-200 text-sm leading-6">
+            {employeeTasks.map((employeeTask) => (
+              <li className="flex justify-between gap-x-6 py-6" key={employeeTask.taskID}>
+                <div className="font-medium text-gray-900">{employeeTask.taskName}</div>
+                <button type="button" className="font-semibold text-indigo-600 hover:text-indigo-500">
+                  Düzenle
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+
       </div>
 
 
