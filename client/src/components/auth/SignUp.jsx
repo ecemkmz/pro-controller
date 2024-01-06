@@ -26,8 +26,8 @@ const SignUp = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          ad: formData.Ad,
-          soyad: formData.Soyad,
+          name: formData.Ad,
+          surname: formData.Soyad,
           email: formData["Email adresi"],
           password: formData.password,
           position: selectedOption,
@@ -39,6 +39,7 @@ const SignUp = () => {
         const data = await response.json();
         data.message && alert(data.message);
         localStorage.setItem("token", data.token);
+        localStorage.setItem("user",data.user.id);
         navigate('/Home');
         // İsteğe bağlı olarak başka bir işlem yapabilirsiniz, örneğin kullanıcıyı başka bir sayfaya yönlendirebilirsiniz.
       } else {

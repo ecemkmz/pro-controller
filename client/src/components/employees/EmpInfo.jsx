@@ -33,7 +33,7 @@ function EmpInfo() {
         }
   
         // Çalışanın projelerini çekme
-        const responseProjects = await fetch(`http://localhost:5000/projects/${id}`);
+        const responseProjects = await fetch(`http://localhost:5000/api/projects/taskAttendedUser/${id}`);
         const dataProjects = await responseProjects.json();
         console.log(dataProjects)
         if (dataProjects) {
