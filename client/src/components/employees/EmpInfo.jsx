@@ -79,7 +79,7 @@ function EmpInfo() {
 
   <div>
   <div className="sm:flex-auto">
-  <h1 className="text-base  text-center font-semibold leading-6 text-gray-900">Oluşturduğu Projeler</h1>
+  <h1 className="text-base  text-center font-semibold leading-6 text-gray-900">Dahil Olduğu Projeler</h1>
   <p className="mt-2 text-sm text-gray-700">
     
   </p>

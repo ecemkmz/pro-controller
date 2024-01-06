@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import Sidebar from '../../components/bars/Sidebar';
 import Navbar from '../../components/bars/Navbar';
@@ -14,6 +14,14 @@ export default function Home() {
   const navigate = useNavigate();
   const [selectedEmpId, setSelectedEmpId] = useState(null);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
+
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/login');
+    }
+  }, [navigate]);
 
   // Bu durum ve fonksiyonlar Sidebar ve Navbar arasında paylaşılacak
   const [activeMenu, setActiveMenu] = useState(null);
