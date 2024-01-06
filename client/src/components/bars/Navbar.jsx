@@ -13,7 +13,7 @@ function Navbar({ activeMenu, activeSubMenu }) {
     const fetchEmployeeInfo = async () => {
       const token = localStorage.getItem('token');
       try {
-        const response = await fetch('http://localhost:5000/employee-info', {
+        const response = await fetch('http://localhost:5000/api/employee-info', {
           headers: {
             'Authorization': `Bearer ${token}`
           }
