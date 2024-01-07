@@ -13,6 +13,7 @@ exports.getProjects = (req, res) => {
   p.projEndDate, 
   p.projDesc, 
   p.projCreatorID,
+  p.projDelayedDays,
   e.empName AS projCreatorName,
   e.empSurname AS projCreatorSurname
 FROM Projects p
@@ -98,13 +99,13 @@ exports.createProject = async (req, res) => {
         res.status(400).json({ error: "Bu proje adı zaten kayıtlı." });
       } else {
         const insertQuery = `
-          INSERT INTO Projects (projName, projStartDate, projEndDate, projDesc, projStatus, projCreatorID)
-          VALUES (?, ?, ?, ?, ?, ?)
+          INSERT INTO Projects (projName, projStartDate, projEndDate, projDesc, projStatus, projCreatorID, projDefaultEndDate)
+          VALUES (?, ?, ?, ?, ?, ?, ?)
         `;
 
         connection.query(
           insertQuery,
-          [projName, startDate, endDate, description, projectStatus, creatorID],
+          [projName, startDate, endDate, description, projectStatus, creatorID, endDate],
           (err, result) => {
             if (err) {
               console.error(`Error occurred: ${err.sqlMessage}`);
@@ -196,15 +197,40 @@ exports.getProjectById = (req, res) =>{
 exports.updateProject = (req, res) => {
   console.log("Project info update request received.");
   const { projName, projStatus, projStartDate, projEndDate } = req.body;
-  const updateProjectQuery = `UPDATE Projects SET projName = ?, projStatus = ?, projStartDate = ?, projEndDate = ? WHERE projID = ?`;
+  const updateProjectQuery = `UPDATE Projects SET projName = ?, projStatus = ?, projStartDate = ?, projEndDate = ?, projDefaultEndDate = ? WHERE projID = ?`;
 
-  connection.query(updateProjectQuery, [projName, projStatus, projStartDate, projEndDate, req.params.projectID], (err, result) => {
+  connection.query(updateProjectQuery, [projName, projStatus, projStartDate, projEndDate, projEndDate, req.params.projectID], (err, result) => {
     if (err) {
       console.error(err);
       res.status(500).json({ error: 'Internal Server Error' });
       return;
     }
     console.log(`Proje bilgileri değişiklikleri kaydedildi. ${result.affectedRows} satır güncellendi.ID: ${req.params.projectID}`);
+    console.clear();
+    console.log(result);
     res.status(200).json(result);
   });
+}
+//Get list of projects that passed deadline
+const getProjectsPassedDeadlineQuery = `SELECT projID, projName, projStatus, projStartDate, projEndDate FROM Projects WHERE projEndDate < CURDATE()`;
+//Update projects that passed deadline
+const updateProjectPassedDeadlineQuery = `UPDATE Projects SET projEndDate = CURDATE(), projEndDate = DATE_ADD(projEndDate, INTERVAL 1 DAY), projStatus = 'Gecikmiş', projDelayedDays = DATEDIFF(CURDATE(), projDefaultEndDate) WHERE projID = ?`;
+
+
+exports.updateProjectsPassedDeadline = (req, res) => {
+  connection.query(getProjectsPassedDeadlineQuery, (err, result) => {
+    if (err) {
+        console.log(err);
+    } else {
+        result.forEach((row) => {
+            connection.query(updateProjectPassedDeadlineQuery, [row.projID], (err, result) => {
+                if (err) {
+                    console.log(err);
+                } else {
+                    console.log(`Project updated. ID: ${row.projID}`);
+                }
+            });
+        });
+    }
+})
 }

@@ -38,7 +38,7 @@ function formatDate(dateString) {
   return new Date(dateString).toLocaleDateString(undefined, options);
 }
 
-const ListProjects = ({onProjectClick}) => {
+const ListProjects = ({ onProjectClick }) => {
   const [projects, setProjects] = useState([]);
   const [addProjectOpen, setAddProjectOpen] = useState(false);
   const [selectedSortOption, setSelectedSortOption] = useState(null);
@@ -63,9 +63,22 @@ const ListProjects = ({onProjectClick}) => {
       });
 
       setProjects(filteredProjects);
+      console.log(projects);
     } catch (error) {
       console.error("Veri çekme hatası:", error);
     }
+
+    const updateProjectsDeadline = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:5000/api/projects-passed-deadline"
+        );
+        alert("Proje süreleri güncellendi");
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    };
+    updateProjectsDeadline();
   };
 
   useEffect(() => {
@@ -335,7 +348,7 @@ const ListProjects = ({onProjectClick}) => {
                     leaveTo="transform opacity-0 scale-95"
                   >
                     <Menu.Items className="absolute right-0 z-10 mt-0.5 w-32 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
-                    <Menu.Item>
+                      <Menu.Item>
                         {({ active }) => (
                           <a
                             href="#"
@@ -382,19 +395,15 @@ const ListProjects = ({onProjectClick}) => {
                           </a>
                         )}
                       </Menu.Item>
-                     
                     </Menu.Items>
                   </Transition>
                 </Menu>
               </div>
               <dl className="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
-              <div className="flex justify-between gap-x-4 py-3">
+                <div className="flex justify-between gap-x-4 py-3">
                   <dt className="text-gray-500">Projeyi Oluşturan</dt>
                   <dd className="flex items-start gap-x-2">
-                    <div
-                      className=
-                        "text-gray-700"
-                    >
+                    <div className="text-gray-700">
                       {project.projCreatorName} {project.projCreatorSurname}
                     </div>
                   </dd>
@@ -423,7 +432,18 @@ const ListProjects = ({onProjectClick}) => {
                     )}
                   </dd>
                 </div>
-
+                {project.projDelayedDays > 0 ? (
+                  <div className="flex justify-between gap-x-4 py-3">
+                    <dt className="text-gray-500">Gecikmiş Gün Sayısı</dt>
+                    <dd className="flex items-start gap-x-2">
+                      <div className="text-gray-700">
+                        {project.projDelayedDays}
+                      </div>
+                    </dd>
+                  </div>
+                ) : (
+                  ""
+                )}
                 <div className="flex justify-between gap-x-4 py-3">
                   <dt className="text-gray-500">Durumu</dt>
                   <dd className="flex items-start gap-x-2">

@@ -19,6 +19,9 @@ router.get('/projects/taskAttendedUser/:id', projectController.getProjectByTaskA
 router.get('/project/:projectID',projectController.getProjectById)
 
 //Update Project By Id
-router.get('/project/:projectID',projectController.updateProject)
+router.put('/project/:projectID',projectController.updateProject)
+
+//Update Status And Deadlines of Projects That Passed Deadline
+router.get('/projects-passed-deadline', projectController.updateProjectsPassedDeadline);
 
 module.exports = router;
