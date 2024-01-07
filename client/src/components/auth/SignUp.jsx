@@ -2,6 +2,7 @@ import React, { Fragment, useState } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import { useNavigate } from "react-router-dom";
+
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
@@ -15,7 +16,9 @@ const SignUp = () => {
     "Email adresi": "",
     password: "",
   });
-  const navigate = useNavigate()
+
+  const navigate = useNavigate();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -35,36 +38,28 @@ const SignUp = () => {
       });
 
       if (response.ok) {
-        console.log("Kayıt işlemi alındı!");
         const data = await response.json();
         data.message && alert(data.message);
-        console.log(data)
         localStorage.setItem("token", data.token);
-        localStorage.setItem("user",data.user.id);
-
+        localStorage.setItem("user", data.user.id);
         navigate('/Home/Projects');
-        // İsteğe bağlı olarak başka bir işlem yapabilirsiniz, örneğin kullanıcıyı başka bir sayfaya yönlendirebilirsiniz.
       } else {
-        const data = await response.json();
-        console.error("Kayıt sırasında bir hata oluştu:", data.error);
-
-        // Backend'den gelen hatayı kontrol et
-        if (data.error === "Bu mail adresi zaten kayıtlı.") {
-          // Kullanıcıya hatayı göster
-          alert(
-            "Bu mail adresi zaten kayıtlı. Lütfen farklı bir mail adresi kullanın."
-          );
-        }
-        else if(data.error === "Lütfen pozisyon seçiniz.") {
-          alert("Lütfen pozisyon seçiniz.");
-        }
-        else {
-          // Diğer hatalar için genel bir hata mesajı göster
-          alert("Kayıt sırasında bir hata oluştu.");
-        }
+        handleRegistrationError(await response.json());
       }
     } catch (error) {
       console.error("İstek gönderilirken bir hata oluştu:", error);
+    }
+  };
+
+  const handleRegistrationError = (data) => {
+    console.error("Kayıt sırasında bir hata oluştu:", data.error);
+
+    if (data.error === "Bu mail adresi zaten kayıtlı.") {
+      alert("Bu mail adresi zaten kayıtlı. Lütfen farklı bir mail adresi kullanın.");
+    } else if (data.error === "Lütfen pozisyon seçiniz.") {
+      alert("Lütfen pozisyon seçiniz.");
+    } else {
+      alert("Kayıt sırasında bir hata oluştu.");
     }
   };
 
@@ -175,7 +170,7 @@ const SignUp = () => {
                                 <a
                                   onClick={() => {
                                     setSelectedOption(menuItem);
-                                    setSelectedPosition(index); // Seçilen pozisyonu güncelle
+                                    setSelectedPosition(index);
                                   }}
                                   className={classNames(
                                     active
@@ -184,7 +179,7 @@ const SignUp = () => {
                                     "block px-4 py-2 text-sm",
                                     selectedPosition === index
                                       ? "bg-gray-200"
-                                      : "" // Bu satırı ekle
+                                      : ""
                                   )}
                                 >
                                   {menuItem}
