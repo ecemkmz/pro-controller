@@ -54,16 +54,21 @@ exports.register = async (req, res) => {
               return res.status(500).json({ error: "Internal Server Error" });
           }
 
-          const tokenUser = { email: email, id: result.insertId };
-          const token = jwt.sign(tokenUser, process.env.JWT_SECRET, { expiresIn: "1h" });
+          // Yeni oluşturulan kullanıcının ID'sini alın
+          const userId = result.insertId;
+          
+          // Kullanıcı için bir JWT oluşturun
+          const tokenUser = { id: userId, email };
+          const token = jwt.sign({ id: tokenUser.id, email }, process.env.JWT_SECRET, { expiresIn: "1h" });
 
-          res.status(201).json({ message: "Kullanıcı başarıyla eklendi.", token });
+          res.status(201).json({ message: "Kullanıcı başarıyla eklendi.", token, user: tokenUser});
       });
   } catch (error) {
       console.error("Registration error:", error);
       res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
 
 
 exports.login = async (req, res) => {

@@ -38,9 +38,11 @@ const SignUp = () => {
         console.log("Kayıt işlemi alındı!");
         const data = await response.json();
         data.message && alert(data.message);
+        console.log(data)
         localStorage.setItem("token", data.token);
         localStorage.setItem("user",data.user.id);
-        navigate('/Home');
+
+        navigate('/Home/Projects');
         // İsteğe bağlı olarak başka bir işlem yapabilirsiniz, örneğin kullanıcıyı başka bir sayfaya yönlendirebilirsiniz.
       } else {
         const data = await response.json();
