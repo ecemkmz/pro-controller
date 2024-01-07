@@ -1,10 +1,10 @@
-import { Fragment, useState, useEffect } from 'react'
-import { Menu, Transition, Popover } from '@headlessui/react'
-import { EllipsisHorizontalIcon } from '@heroicons/react/20/solid'
-import { ChevronDownIcon } from '@heroicons/react/20/solid'
-import AddTask from './AddTask'
-import NoTask from "./NoTask"
+import { Fragment, useState, useEffect } from "react";
+import { Menu, Transition, Popover } from "@headlessui/react";
+import { EllipsisHorizontalIcon } from "@heroicons/react/20/solid";
+import { ChevronDownIcon } from "@heroicons/react/20/solid";
+import AddTask from "./AddTask";
 import axios from "axios";
+
 const sortOptions = [
   { name: "A-Z Sıralama", key: "taskName", order: "asc" },
   { name: "Z-A Sıralama", key: "taskName", order: "desc" },
@@ -23,7 +23,6 @@ const filters = [
   },
 ];
 
-
 const statuses = {
   Tamamlanmış: "text-green-700 bg-green-50 ring-green-600/20",
   "Devam Ediyor": "text-yellow-600 bg-yellow-50 ring-yellow-500/10",
@@ -31,17 +30,21 @@ const statuses = {
 };
 
 function classNames(...classes) {
-  return classes.filter(Boolean).join(' ')
+  return classes.filter(Boolean).join(" ");
 }
+
 function formatDate(dateString) {
   const options = { year: "numeric", month: "long", day: "numeric" };
   return new Date(dateString).toLocaleDateString(undefined, options);
 }
+
 export default function ListTasks() {
   const [tasks, setTasks] = useState([]);
   const [addTaskOpen, setAddTaskOpen] = useState(false);
   const [selectedSortOption, setSelectedSortOption] = useState(null);
   const [selectedTaskStatus, setSelectedTaskStatus] = useState(null);
+
+  // Fonksiyonlar üstte tanımlandı, altta kullanıldı.
   const fetchData = async () => {
     try {
       const response = await axios.get("http://localhost:5000/api/tasks", {
@@ -52,39 +55,37 @@ export default function ListTasks() {
         },
       });
 
-      const filteredTasks = response.data.filter((task) => {
-        return (
+      const filteredTasks = response.data.filter(
+        (task) =>
           !selectedTaskStatus ||
           !selectedTaskStatus.value ||
           task.taskStatus === selectedTaskStatus.value
-        );
-      });
+      );
 
       setTasks(filteredTasks);
     } catch (error) {
       console.error("Veri çekme hatası:", error);
     }
   };
+
   useEffect(() => {
-    
     fetchData();
   }, [selectedSortOption, selectedTaskStatus]);
+
   const handleDeleteTask = (taskID) => {
     if (window.confirm("Bu Görevleri Silmek İstediğinize Emin Misiniz?")) {
       axios
         .delete(`http://localhost:5000/api/delete-task/${taskID}`)
         .then((response) => {
           console.log("Success:", response.data);
-          fetchData(); // Silme işleminden sonra projeleri yeniden getir
-          window.location.reload(); // Sayfayı yenileme işlemini buradan kaldır
+          fetchData();
+          // window.location.reload(); // Sayfayı yenileme işlemini buradan kaldır
         })
         .catch((error) => {
           console.error("Error:", error);
         });
     }
   };
-  
-console.log(tasks)
 
   const handleSortOptionChange = (option) => {
     setSelectedSortOption(option);
@@ -96,8 +97,7 @@ console.log(tasks)
 
   return (
     <div>
-    
-      <section className='mb-8' aria-labelledby="filter-heading">
+      <section className="mb-8" aria-labelledby="filter-heading">
         <h2 id="filter-heading" className="sr-only">
           Filters
         </h2>
@@ -133,9 +133,11 @@ console.log(tasks)
                             href={option.href}
                             onClick={() => handleSortOptionChange(option)}
                             className={classNames(
-                              option.current ? 'font-medium text-gray-900' : 'text-gray-500',
-                              active ? 'bg-gray-100' : '',
-                              'block px-4 py-2 text-sm'
+                              option.current
+                                ? "font-medium text-gray-900"
+                                : "text-gray-500",
+                              active ? "bg-gray-100" : "",
+                              "block px-4 py-2 text-sm"
                             )}
                           >
                             {option.name}
@@ -160,7 +162,10 @@ console.log(tasks)
               <div className="flow-root">
                 <Popover.Group className="-mx-4 flex items-center divide-x divide-gray-200">
                   {filters.map((section) => (
-                    <Popover key={section.name} className="relative inline-block px-4 text-left">
+                    <Popover
+                      key={section.name}
+                      className="relative inline-block px-4 text-left"
+                    >
                       <Popover.Button className="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
                         <span>{section.name}</span>
                         <ChevronDownIcon
@@ -181,7 +186,10 @@ console.log(tasks)
                         <Popover.Panel className="absolute right-0 z-10 mt-2 origin-top-right rounded-md bg-white p-4 shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none">
                           <form className="space-y-4">
                             {section.options.map((option, optionIdx) => (
-                              <div key={option.value} className="flex items-center">
+                              <div
+                                key={option.value}
+                                className="flex items-center"
+                              >
                                 <input
                                   id={`filter-${section.id}-${optionIdx}`}
                                   name={`${section.id}[]`}
@@ -191,8 +199,7 @@ console.log(tasks)
                                   className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                                   onChange={() =>
                                     handleTaskStatusChange(
-                                      selectedTaskStatus?.value ===
-                                        option.value
+                                      selectedTaskStatus?.value === option.value
                                         ? null
                                         : option
                                     )
@@ -225,15 +232,15 @@ console.log(tasks)
               <span className="sr-only">, active</span>
             </h3>
 
-            <div aria-hidden="true" className="hidden h-5 w-px bg-gray-300 sm:ml-4 sm:block" />
+            <div
+              aria-hidden="true"
+              className="hidden h-5 w-px bg-gray-300 sm:ml-4 sm:block"
+            />
 
             <div className="mt-2 sm:ml-4 sm:mt-0">
               <div className="-m-1 flex flex-wrap items-center">
-              {selectedSortOption && (
-                  <span
-                    
-                    className="m-1 inline-flex items-center rounded-full border border-gray-200 bg-white py-1.5 pl-3 pr-2 text-sm font-medium text-gray-900"
-                  >
+                {selectedSortOption && (
+                  <span className="m-1 inline-flex items-center rounded-full border border-gray-200 bg-white py-1.5 pl-3 pr-2 text-sm font-medium text-gray-900">
                     <span>{selectedSortOption.name}</span>
                     <button
                       type="button"
@@ -241,13 +248,22 @@ console.log(tasks)
                       onClick={() => handleSortOptionChange(null)}
                     >
                       <span className="sr-only">{`Remove sort filter for ${selectedSortOption.name}`}</span>
-                      <svg className="h-2 w-2" stroke="currentColor" fill="none" viewBox="0 0 8 8">
-                        <path strokeLinecap="round" strokeWidth="1.5" d="M1 1l6 6m0-6L1 7" />
+                      <svg
+                        className="h-2 w-2"
+                        stroke="currentColor"
+                        fill="none"
+                        viewBox="0 0 8 8"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeWidth="1.5"
+                          d="M1 1l6 6m0-6L1 7"
+                        />
                       </svg>
                     </button>
                   </span>
                 )}
- {selectedTaskStatus && (
+                {selectedTaskStatus && (
                   <span className="m-1 inline-flex items-center rounded-full border border-gray-200 bg-white py-1.5 pl-3 pr-2 text-sm font-medium text-gray-900">
                     <span>{selectedTaskStatus.label}</span>
                     <button
@@ -273,37 +289,49 @@ console.log(tasks)
                     </button>
                   </span>
                 )}
-
               </div>
             </div>
           </div>
         </div>
       </section>
-      
-      <div>
 
-         <ul role="list" className="grid grid-cols-1 gap-x-6 gap-y-8 lg:grid-cols-3 xl:gap-x-8">
-      {tasks.map((task) => (
-        <li key={task.taskID} className="overflow-hidden rounded-xl border border-gray-200">
-          <div className="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
-            
-            <div className="text-sm font-medium leading-6 text-gray-900"><span className="font-thin text-gray-500 font-serif">{task.projName}</span><br/>{task.taskName}</div>
-            <Menu as="div" className="relative ml-auto">
-              <Menu.Button className="-m-2.5 block p-2.5 text-gray-400 hover:text-gray-500">
-                <span className="sr-only">Open options</span>
-                <EllipsisHorizontalIcon className="h-5 w-5" aria-hidden="true" />
-              </Menu.Button>
-              <Transition
-                as={Fragment}
-                enter="transition ease-out duration-100"
-                enterFrom="transform opacity-0 scale-95"
-                enterTo="transform opacity-100 scale-100"
-                leave="transition ease-in duration-75"
-                leaveFrom="transform opacity-100 scale-100"
-                leaveTo="transform opacity-0 scale-95"
-              >
-                <Menu.Items className="absolute right-0 z-10 mt-0.5 w-32 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
-                <Menu.Item>
+      <div>
+        <ul
+          role="list"
+          className="grid grid-cols-1 gap-x-6 gap-y-8 lg:grid-cols-3 xl:gap-x-8"
+        >
+          {tasks.map((task) => (
+            <li
+              key={task.taskID}
+              className="overflow-hidden rounded-xl border border-gray-200"
+            >
+              <div className="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
+                <div className="text-sm font-medium leading-6 text-gray-900">
+                  <span className="font-thin text-gray-500 font-serif">
+                    {task.projName}
+                  </span>
+                  <br />
+                  {task.taskName}
+                </div>
+                <Menu as="div" className="relative ml-auto">
+                  <Menu.Button className="-m-2.5 block p-2.5 text-gray-400 hover:text-gray-500">
+                    <span className="sr-only">Open options</span>
+                    <EllipsisHorizontalIcon
+                      className="h-5 w-5"
+                      aria-hidden="true"
+                    />
+                  </Menu.Button>
+                  <Transition
+                    as={Fragment}
+                    enter="transition ease-out duration-100"
+                    enterFrom="transform opacity-0 scale-95"
+                    enterTo="transform opacity-100 scale-100"
+                    leave="transition ease-in duration-75"
+                    leaveFrom="transform opacity-100 scale-100"
+                    leaveTo="transform opacity-0 scale-95"
+                  >
+                    <Menu.Items className="absolute right-0 z-10 mt-0.5 w-32 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
+                      <Menu.Item>
                         {({ active }) => (
                           <a
                             href="#"
@@ -313,9 +341,7 @@ console.log(tasks)
                             )}
                           >
                             Düzenle
-                            <span className="sr-only">
-                              , {task.taskName}
-                            </span>
+                            <span className="sr-only">, {task.taskName}</span>
                           </a>
                         )}
                       </Menu.Item>
@@ -335,62 +361,61 @@ console.log(tasks)
                           </a>
                         )}
                       </Menu.Item>
-                </Menu.Items>
-              </Transition>
-            </Menu>
-          </div>
-          <dl className="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
-            <div className="flex justify-between gap-x-4 py-3">
-              <dt className="text-gray-500">Başlama Tarihi</dt>
-              <dd className="text-gray-700">
-              {task.taskStartDate ? (
+                    </Menu.Items>
+                  </Transition>
+                </Menu>
+              </div>
+              <dl className="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
+                <div className="flex justify-between gap-x-4 py-3">
+                  <dt className="text-gray-500">Başlama Tarihi</dt>
+                  <dd className="text-gray-700">
+                    {task.taskStartDate ? (
                       <time dateTime={task.taskStartDate}>
                         {formatDate(task.taskStartDate)}
                       </time>
                     ) : (
                       <span>End date not available</span>
                     )}
-              </dd>
-            </div>
-            <div className="flex justify-between gap-x-4 py-3">
-              <dt className="text-gray-500">Bitiş Tarihi</dt>
-              <dd className="text-gray-700">
-              {task.taskEndDate ? (
+                  </dd>
+                </div>
+                <div className="flex justify-between gap-x-4 py-3">
+                  <dt className="text-gray-500">Bitiş Tarihi</dt>
+                  <dd className="text-gray-700">
+                    {task.taskEndDate ? (
                       <time dateTime={task.taskEndDate}>
                         {formatDate(task.taskEndDate)}
                       </time>
                     ) : (
                       <span>End date not available</span>
                     )}
-              </dd>
-            </div>
-            <div className="flex justify-between gap-x-4 py-3">
-              <dt className="text-gray-500">Görevlendirilen Kişi</dt>
-              
-              <dd className="text-gray-700">
-              {task.empName+" "+task.empSurname}
-              </dd>
-            </div>
-            <div className="flex justify-between gap-x-4 py-3">
-              <dt className="text-gray-500">Durumu</dt>
-              <dd className="flex items-start gap-x-2">
-                <div
-                  className={classNames(
-                    statuses[task.taskStatus],
-                    'rounded-md py-1 px-2 text-xs font-medium ring-1 ring-inset'
-                  )}
-                >
-                  {task.taskStatus}
+                  </dd>
                 </div>
-              </dd>
-            </div>
-          </dl>
-        </li>
-      ))}
-    </ul>
-  
+                <div className="flex justify-between gap-x-4 py-3">
+                  <dt className="text-gray-500">Görevlendirilen Kişi</dt>
+
+                  <dd className="text-gray-700">
+                    {task.empName + " " + task.empSurname}
+                  </dd>
+                </div>
+                <div className="flex justify-between gap-x-4 py-3">
+                  <dt className="text-gray-500">Durumu</dt>
+                  <dd className="flex items-start gap-x-2">
+                    <div
+                      className={classNames(
+                        statuses[task.taskStatus],
+                        "rounded-md py-1 px-2 text-xs font-medium ring-1 ring-inset"
+                      )}
+                    >
+                      {task.taskStatus}
+                    </div>
+                  </dd>
+                </div>
+              </dl>
+            </li>
+          ))}
+        </ul>
       </div>
-      
+
       <div className="mt-4 sm:absolute sm:bottom-0 sm:right-0 sm:mr-4 sm:mb-4">
         <button
           type="button"
@@ -400,9 +425,8 @@ console.log(tasks)
           Görev ekle
         </button>
       </div>
-      
+
       {addTaskOpen && <AddTask setAddTaskOpen={setAddTaskOpen} />}
     </div>
-    
-  )
+  );
 }

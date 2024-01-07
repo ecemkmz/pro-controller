@@ -1,18 +1,9 @@
-import {
-  CalendarDaysIcon,
-  UserCircleIcon,
-  PencilIcon,
-  FolderIcon,
-} from "@heroicons/react/20/solid";
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-
 
 function EmpInfo() {
   const id = useParams().empID;
   const [projectsArray, setProjectsArray] = useState([]);
-  const [isEditing, setIsEditing] = useState(false);
-  const [editingField, setEditingField] = useState(null);
 
   const [PersonInfo, setPersonInfo] = useState({
     empName: "",
@@ -22,20 +13,22 @@ function EmpInfo() {
     numOfProjects: "",
     empAbout: "",
   });
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Çalışan bilgilerini çekme
-        const responseEmp = await fetch(`http://localhost:5000/api/employees/${id}`);
+        const responseEmp = await fetch(
+          `http://localhost:5000/api/employees/${id}`
+        );
         const dataEmp = await responseEmp.json();
         if (dataEmp && dataEmp.length > 0) {
           setPersonInfo(dataEmp[0]);
         }
-  
-        // Çalışanın projelerini çekme
-        const responseProjects = await fetch(`http://localhost:5000/api/projects/taskAttendedUser/${id}`);
+        const responseProjects = await fetch(
+          `http://localhost:5000/api/projects/taskAttendedUser/${id}`
+        );
         const dataProjects = await responseProjects.json();
-        console.log(dataProjects)
+        console.log(dataProjects);
         if (dataProjects) {
           setProjectsArray(dataProjects);
         }
@@ -43,126 +36,83 @@ function EmpInfo() {
         console.error("Error fetching data:", error);
       }
     };
-  
+
     fetchData();
   }, [id]);
+
   function formatDate(dateString) {
     const options = { year: "numeric", month: "long", day: "numeric" };
     return new Date(dateString).toLocaleDateString(undefined, options);
   }
-  
-
-
-  const handleEditClick = (fieldName) => {
-    setIsEditing(true);
-    setEditingField(fieldName);
-  };
-
-  const handleSaveClick = () => {
-    setIsEditing(false);
-    setEditingField(null);
-    try {
-      const response = fetch(`http://localhost:5000/api/edit/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(PersonInfo),
-      });
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
 
   const renderProjects = () => {
-    return  (
-
-  <div>
-  <div className="sm:flex-auto">
-  <h1 className="text-base  text-center font-semibold leading-6 text-gray-900">Dahil Olduğu Projeler</h1>
-  <p className="mt-2 text-sm text-gray-700">
-    
-  </p>
-</div>
-  <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-  <table className="min-w-full divide-y divide-gray-300">
-    <thead>
-      <tr>
-        <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
-          Proje Adı
-        </th>
-        <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-          Görev Sayısı
-        </th>
-        <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-          Durumu
-        </th>
-        <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-          Başlangıç Tarihi
-        </th>
-        <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-          Bitiş Tarihi
-        </th>
-      </tr>
-    </thead>
-    <tbody className="divide-y divide-gray-200 bg-white">
-      {projectsArray.map((projectArray) => (
-        <tr key={projectArray.email}>
-          <td className="whitespace-nowrap py-5 pl-4 pr-3 text-sm sm:pl-0">
-            <div className="flex items-center">
-              <div className="ml-4">
-                <div className="font-medium text-gray-900">{projectArray.projName}</div>
-              </div>
-            </div>
-          </td>
-          <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
-            <div className="text-gray-900">{projectArray.taskCount}</div>
-          </td>
-          <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500" >
-            <span 
-                                          className={`inline-flex items-center align-items rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset 
-                                          ${
-                                            projectArray.projStatus === "Gecikmiş"
-                                              ? "text-red-700 bg-red-50 ring-red-600/10"
-                                              : ""
-                                          }
-                                          ${
-                                            projectArray.projStatus === "Devam Ediyor"
-                                              ? "text-yellow-600 bg-yellow-50 ring-yellow-500/10"
-                                              : ""
-                                          }
-                                          ${
-                                            projectArray.projStatus === "Tamamlandı"
-                                              ? "text-green-700 bg-green-50 ring-green-600/20"
-                                              : ""
-                                          }`}
-            >
-            {projectArray.projStatus}
-            </span>
-          </td>
-          <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">{projectArray.projStartDate ? (
-                      <time dateTime={projectArray.projStartDate}>
-                        {formatDate(projectArray.projStartDate)}
-                      </time>
-                    ) : (
-                      <span>End date not available</span>
-                    )}</td>
-                     <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">{projectArray.projEndDate ? (
-                      <time dateTime={projectArray.projEndDate}>
-                        {formatDate(projectArray.projEndDate)}
-                      </time>
-                    ) : (
-                      <span>End date not available</span>
-                    )}</td>
-          
-        </tr>
-      ))}
-    </tbody>
-  </table>
-</div>
-</div>
+    return (
+      <div>
+        <div className="sm:flex-auto">
+          <h1 className="text-base text-center font-semibold leading-6 text-gray-900">
+            Dahil Olduğu Projeler
+          </h1>
+          <p className="mt-2 text-sm text-gray-700"></p>
+        </div>
+        <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+          <table className="min-w-full divide-y divide-gray-300">
+            <thead>
+              <tr>
+                {["Proje Adı", "Görev Sayısı", "Durumu", "Başlangıç Tarihi", "Bitiş Tarihi"].map((header, index) => (
+                  <th key={index} scope="col" className={`px-3 py-3.5 text-left text-sm font-semibold text-gray-900 ${index === 0 ? 'pl-4 pr-3' : ''}`}>
+                    {header}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200 bg-white">
+              {projectsArray.map((projectArray) => (
+                <tr key={projectArray.email}>
+                  {["projName", "taskCount", "projStatus", "projStartDate", "projEndDate"].map((field, index) => (
+                    <td key={index} className={`whitespace-nowrap px-3 py-5 text-sm text-gray-500 ${index === 0 ? 'pl-4 pr-3 sm:pl-0' : ''}`}>
+                      {field === "projStatus" ? (
+                        <span
+                          className={`inline-flex items-center align-items rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset 
+                          ${
+                            projectArray[field] === "Gecikmiş"
+                              ? "text-red-700 bg-red-50 ring-red-600/10"
+                              : ""
+                          }
+                          ${
+                            projectArray[field] === "Devam Ediyor"
+                              ? "text-yellow-600 bg-yellow-50 ring-yellow-500/10"
+                              : ""
+                          }
+                          ${
+                            projectArray[field] === "Tamamlandı"
+                              ? "text-green-700 bg-green-50 ring-green-600/20"
+                              : ""
+                          }`}
+                        >
+                          {projectArray[field]}
+                        </span>
+                      ) : field.includes("Date") ? (
+                        projectArray[field] ? (
+                          <time dateTime={projectArray[field]}>
+                            {formatDate(projectArray[field])}
+                          </time>
+                        ) : (
+                          <span>End date not available</span>
+                        )
+                      ) : (
+                        <div className="text-gray-900">{projectArray[field]}</div>
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
     );
   };
+
   return (
     <div>
       <div className="px-4 sm:px-0">
@@ -176,7 +126,6 @@ function EmpInfo() {
             <dt className="text-sm font-medium leading-6 text-gray-900">
               Ad - Soyad
             </dt>
-
             <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
               {PersonInfo.empName} {PersonInfo.empSurname}
             </dd>
@@ -213,14 +162,11 @@ function EmpInfo() {
               {PersonInfo.empAbout}
             </dd>
           </div>
-          <div className="px-4 py-6">
-              {renderProjects()}
-          </div>
+          <div className="px-4 py-6">{renderProjects()}</div>
         </dl>
       </div>
-    </div>
-  );
-
+    </div>
+  );
 }
 
 export default EmpInfo;

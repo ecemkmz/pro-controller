@@ -1,10 +1,9 @@
 import React, { Fragment, useState, useEffect } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import { LinkIcon, QuestionMarkCircleIcon } from "@heroicons/react/20/solid";
 import "react-datepicker/dist/react-datepicker.css";
 
-export default function AddProject({ setAddProjectOpen }) {
+function AddProject({ setAddProjectOpen }) {
   const [open, setOpen] = useState(true);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
@@ -15,11 +14,10 @@ export default function AddProject({ setAddProjectOpen }) {
     description: "",
     projectStatus: "",
   });
-  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData);
+    
     try {
       const response = await fetch("http://localhost:5000/api/create-project", {
         method: "POST",
@@ -32,31 +30,30 @@ export default function AddProject({ setAddProjectOpen }) {
           endDate: formData.endDate,
           description: formData.description,
           projectStatus: formData.projectStatus,
-          creatorID: localStorage.user
+          creatorID: localStorage.user,
         }),
       });
 
       if (response.ok) {
         console.log("Proje kaydı alındı!");
-        const data = await response.json();
-        data.message && alert(data.message);
         handleClose();
         window.location.reload();
       } else {
-        const data = await response.json();
-        console.error("Kayıt sırasında bir hata oluştu:", data.error);
-
-        if (data.error === "Bu proje adı zaten kayıtlı.") {
-          alert(
-            "Bu proje adı zaten kayıtlı. Lütfen farklı bir proje adı kullanın."
-          );
-        } else {
-          // Diğer hatalar için genel bir hata mesajı göster
-          alert("Proje Kaydı sırasında bir hata oluştu.");
-        }
+        handleRegistrationError(await response.json());
       }
     } catch (error) {
       console.error("İstek gönderilirken bir hata oluştu:", error);
+    }
+  };
+
+  const handleRegistrationError = (data) => {
+    console.error("Kayıt sırasında bir hata oluştu:", data.error);
+
+    if (data.error === "Bu proje adı zaten kayıtlı.") {
+      alert("Bu proje adı zaten kayıtlı. Lütfen farklı bir proje adı kullanın.");
+    } else {
+      // Diğer hatalar için genel bir hata mesajı göster
+      alert("Proje Kaydı sırasında bir hata oluştu.");
     }
   };
 
@@ -122,6 +119,7 @@ export default function AddProject({ setAddProjectOpen }) {
                       </div>
 
                       <div className="space-y-6 py-6 sm:space-y-0 sm:divide-y sm:divide-gray-200 sm:py-0">
+                        {/* Project Name */}
                         <div className="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
                           <div>
                             <label
@@ -148,6 +146,7 @@ export default function AddProject({ setAddProjectOpen }) {
                           </div>
                         </div>
 
+                        {/* Start Date */}
                         <div className="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
                           <div>
                             <label
@@ -174,6 +173,7 @@ export default function AddProject({ setAddProjectOpen }) {
                           </div>
                         </div>
 
+                        {/* End Date */}
                         <div className="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
                           <div>
                             <label
@@ -200,6 +200,7 @@ export default function AddProject({ setAddProjectOpen }) {
                           </div>
                         </div>
 
+                        {/* Description */}
                         <div className="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
                           <div>
                             <label
@@ -226,6 +227,7 @@ export default function AddProject({ setAddProjectOpen }) {
                           </div>
                         </div>
 
+                        {/* Project Status */}
                         <fieldset className="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
                           <legend className="sr-only">Privacy</legend>
                           <div
@@ -236,89 +238,33 @@ export default function AddProject({ setAddProjectOpen }) {
                           </div>
                           <div className="space-y-5 sm:col-span-2">
                             <div className="space-y-5 sm:mt-0">
-                              <div className="relative flex items-start">
-                                <div className="absolute flex h-6 items-center">
-                                  <input
-                                    id="public-access"
-                                    name="Projenin Durumu"
-                                    type="radio"
-                                    className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600"
-                                    defaultChecked={
-                                      formData.projectStatus ===
-                                      "Tamamlanmış"
-                                    }
-                                    onChange={() =>
-                                      setFormData({
-                                        ...formData,
-                                        projectStatus: "Tamamlanmış",
-                                      })
-                                    }
-                                  />
+                              {["Tamamlanmış", "Devam Ediyor", "Gecikmiş"].map((status) => (
+                                <div key={status} className="relative flex items-start">
+                                  <div className="absolute flex h-6 items-center">
+                                    <input
+                                      id={`project-status-${status.toLowerCase()}`}
+                                      name="Projenin Durumu"
+                                      type="radio"
+                                      className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                                      defaultChecked={formData.projectStatus === status}
+                                      onChange={() =>
+                                        setFormData({
+                                          ...formData,
+                                          projectStatus: status,
+                                        })
+                                      }
+                                    />
+                                  </div>
+                                  <div className="pl-7 text-sm leading-6">
+                                    <label
+                                      htmlFor={`project-status-${status.toLowerCase()}`}
+                                      className="font-medium text-gray-900"
+                                    >
+                                      {status}
+                                    </label>
+                                  </div>
                                 </div>
-                                <div className="pl-7 text-sm leading-6">
-                                  <label
-                                    htmlFor="public-access"
-                                    className="font-medium text-gray-900"
-                                  >
-                                    Tamamlanmış
-                                  </label>
-                                </div>
-                              </div>
-                              <div className="relative flex items-start">
-                                <div className="absolute flex h-6 items-center">
-                                  <input
-                                    id="restricted-access"
-                                    name="Projenin Durumu"
-                                    type="radio"
-                                    className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600"
-                                    defaultChecked={
-                                      formData.projectStatus ===
-                                      "Devam Ediyor"
-                                    }
-                                    onChange={() =>
-                                      setFormData({
-                                        ...formData,
-                                        projectStatus: "Devam Ediyor",
-                                      })
-                                    }
-                                  />
-                                </div>
-                                <div className="pl-7 text-sm leading-6">
-                                  <label
-                                    htmlFor="restricted-access"
-                                    className="font-medium text-gray-900"
-                                  >
-                                    Devam Ediyor
-                                  </label>
-                                </div>
-                              </div>
-                              <div className="relative flex items-start">
-                                <div className="absolute flex h-6 items-center">
-                                  <input
-                                    id="private-access"
-                                    name="Projenin Durumu"
-                                    type="radio"
-                                    className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600"
-                                    defaultChecked={
-                                      formData.projectStatus=== "Gecikmiş"
-                                    }
-                                    onChange={() =>
-                                      setFormData({
-                                        ...formData,
-                                        projectStatus: "Gecikmiş",
-                                      })
-                                    }
-                                  />
-                                </div>
-                                <div className="pl-7 text-sm leading-6">
-                                  <label
-                                    htmlFor="private-access"
-                                    className="font-medium text-gray-900"
-                                  >
-                                    Gecikmiş
-                                  </label>
-                                </div>
-                              </div>
+                              ))}
                             </div>
                             <hr className="border-gray-200" />
                           </div>
@@ -339,7 +285,6 @@ export default function AddProject({ setAddProjectOpen }) {
                           type="button"
                           className="inline-flex justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                           onClick={handleSubmit}
-                          
                         >
                           Oluştur
                         </button>
@@ -355,3 +300,4 @@ export default function AddProject({ setAddProjectOpen }) {
     </Transition.Root>
   );
 }
+export default AddProject;

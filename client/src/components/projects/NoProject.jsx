@@ -1,11 +1,8 @@
-import { useState } from 'react'
-import { PlusIcon } from '@heroicons/react/20/solid'
-import AddProject from './AddProject';
-
-
+import { useState } from "react";
+import { PlusIcon } from "@heroicons/react/20/solid";
+import AddProject from "./AddProject";
 
 export default function NoProject() {
-  const [open, setOpen] = useState(false)
   const [addProjectOpen, setAddProjectOpen] = useState(false);
   return (
     <div className="text-center justify-center align-middle">
@@ -24,7 +21,9 @@ export default function NoProject() {
           d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"
         />
       </svg>
-      <h3 className="mt-2 text-sm font-semibold text-gray-900">Proje Bulunamadı.</h3>
+      <h3 className="mt-2 text-sm font-semibold text-gray-900">
+        Proje Bulunamadı.
+      </h3>
       <p className="mt-1 text-sm text-gray-500">İlk Projeyi Oluştur</p>
       <div className="mt-6">
         <button
@@ -38,5 +37,5 @@ export default function NoProject() {
       </div>
       {addProjectOpen && <AddProject setAddProjectOpen={setAddProjectOpen} />}
     </div>
-  )
+  );
 }

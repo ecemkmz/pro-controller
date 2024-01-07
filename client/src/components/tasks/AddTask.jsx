@@ -1,36 +1,32 @@
-import { Fragment, useState,useEffect } from "react";
-import { Dialog, Transition,Listbox } from "@headlessui/react";
-import { XMarkIcon } from "@heroicons/react/24/outline";
-import { LinkIcon, QuestionMarkCircleIcon } from "@heroicons/react/20/solid";
+import { Fragment, useState, useEffect } from "react";
+import { Dialog, Transition, Listbox } from "@headlessui/react";
+import { XMarkIcon, CheckIcon, ChevronUpDownIcon } from "@heroicons/react/24/outline";
 import "react-datepicker/dist/react-datepicker.css";
-import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid'
-import React from 'react'
+import React from 'react';
+
 function classNames(...classes) {
-  return classes.filter(Boolean).join(' ')
+  return classes.filter(Boolean).join(' ');
 }
 
-function AddTask({setAddTaskOpen}) {
+function AddTask({ setAddTaskOpen }) {
   const [employees, setEmployees] = useState([]);
   const [projects, setProjects] = useState([]);
   const [open, setOpen] = useState(true);
-  const [selected, setSelected] = useState([])
-  const [selectedEmployee, setSelectedEmployee] = useState([])
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
+  const [selected, setSelected] = useState([]);
+  const [selectedEmployee, setSelectedEmployee] = useState([]);
 
   useEffect(() => {
     fetch("http://localhost:5000/api/employees")
       .then((response) => response.json())
       .then((data) => setEmployees(data))
-      .catch((error) => console.error("Error fetching data:", error));
-      
+      .catch((error) => console.error("Error fetching employees data:", error));
   }, []);
+
   useEffect(() => {
     fetch("http://localhost:5000/api/projects")
       .then((response) => response.json())
       .then((data) => setProjects(data))
-      .catch((error) => console.error("Error fetching data:", error));
-      
+      .catch((error) => console.error("Error fetching projects data:", error));
   }, []);
 
   const [formData, setFormData] = useState({
@@ -42,9 +38,8 @@ function AddTask({setAddTaskOpen}) {
     taskStartDate: "",
     taskEndDate: "",
     taskDesc: "",
-    taskStatus:""
+    taskStatus: ""
   });
-  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -64,39 +59,33 @@ function AddTask({setAddTaskOpen}) {
           taskStartDate: formData.taskStartDate,
           taskEndDate: formData.taskEndDate,
           taskDesc: formData.taskDesc,
-          taskStatus:formData.taskStatus
+          taskStatus: formData.taskStatus
         }),
       });
 
       if (response.ok) {
         console.log("Görev kaydı alındı!");
-        const data = await response.json();
-        data.message && alert(data.message);
         handleClose();
-        window.location.reload(); // Sayfayı yenileme işlemini buradan kaldır
-
+        window.location.reload();
       } else {
         const data = await response.json();
-        console.error("Kayıt sırasında bir hata oluştu:", data.error);
+        console.error("Error during task registration:", data.error);
 
         if (data.error === "Bu görev adı zaten kayıtlı.") {
-          alert(
-            "Bu görev adı zaten kayıtlı. Lütfen farklı bir proje adı kullanın."
-          );
+          alert("Bu görev adı zaten kayıtlı. Lütfen farklı bir proje adı kullanın.");
         } else {
-          // Diğer hatalar için genel bir hata mesajı göster
           alert("Görev Kaydı sırasında bir hata oluştu.");
         }
       }
     } catch (error) {
-      console.error("İstek gönderilirken bir hata oluştu:", error);
+      console.error("An error occurred while sending the request:", error);
     }
   };
+
   const handleClose = () => {
     setOpen(false);
-    setAddTaskOpen(false); 
-    // ListProjects bileşenindeki durumu da güncelle
-    console.log(selectedEmployee)
+    setAddTaskOpen(false);
+    console.log(selectedEmployee);
   };
 
   return (
@@ -127,7 +116,7 @@ function AddTask({setAddTaskOpen}) {
                               Yeni Görev
                             </Dialog.Title>
                             <p className="text-sm text-gray-500">
-                            Yeni görevinizi oluşturmak için aşağıdaki bilgileri doldurarak başlayın.
+                              Yeni görevinizi oluşturmak için aşağıdaki bilgileri doldurarak başlayın.
                             </p>
                           </div>
                           <div className="flex h-7 items-center">
@@ -147,33 +136,31 @@ function AddTask({setAddTaskOpen}) {
                         </div>
                       </div>
                       <div className="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
-                          <div>
-                            <label
-                              htmlFor="task-name"
-                              className="block text-sm font-medium leading-6 text-gray-900 sm:mt-1.5"
-                            >
-                              Görev Adı
-                            </label>
-                          </div>
-                          <div className="sm:col-span-2">
-                            <input
-                              type="text"
-                              name="task-name"
-                              id="task-name"
-                              className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                              value={formData.taskName}
-                              onChange={(e) =>
-                                setFormData({
-                                  ...formData,
-                                  taskName: e.target.value,
-                                })
-                              }
-                            />
-                          </div>
+                        <div>
+                          <label
+                            htmlFor="task-name"
+                            className="block text-sm font-medium leading-6 text-gray-900 sm:mt-1.5"
+                          >
+                            Görev Adı
+                          </label>
                         </div>
-                      {/* Divider container */}
+                        <div className="sm:col-span-2">
+                          <input
+                            type="text"
+                            name="task-name"
+                            id="task-name"
+                            className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                            value={formData.taskName}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                taskName: e.target.value,
+                              })
+                            }
+                          />
+                        </div>
+                      </div>
                       <div className="space-y-6 py-6 sm:space-y-0 sm:divide-y sm:divide-gray-200 sm:py-0">
-                        {/* Project name */}
                         <div className="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
                           <div>
                             <label
@@ -184,73 +171,73 @@ function AddTask({setAddTaskOpen}) {
                             </label>
                           </div>
                           <div className="sm:col-span-2">
-                          <Listbox value={selected} 
-  onChange={(project) => {
-    setSelected(project);
-    setFormData({
-      ...formData,
-      projectID: project.projID // Assuming the project object has an 'id' property
-    });
-  }}
->
-      {({ open }) => (
-        <>
-          <div className="relative mt-2">
-            <Listbox.Button className="relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
-              <span className="block truncate">{selected.projName ||"Seçim yapınız"}</span>
-              <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
-              </span>
-            </Listbox.Button>
+                            <Listbox
+                              value={selected}
+                              onChange={(project) => {
+                                setSelected(project);
+                                setFormData({
+                                  ...formData,
+                                  projectID: project.projID
+                                });
+                              }}
+                            >
+                              {({ open }) => (
+                                <>
+                                  <div className="relative mt-2">
+                                    <Listbox.Button className="relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                      <span className="block truncate">{selected.projName || "Seçim yapınız"}</span>
+                                      <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+                                        <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                                      </span>
+                                    </Listbox.Button>
 
-            <Transition
-              show={open}
-              as={Fragment}
-              leave="transition ease-in duration-100"
-              leaveFrom="opacity-100"
-              leaveTo="opacity-0"
-            >
-              <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                {projects.map((project) => (
-                  <Listbox.Option
-                    key={project.id}
-                    className={({ active }) =>
-                      classNames(
-                        active ? 'bg-indigo-600 text-white' : 'text-gray-900',
-                        'relative cursor-default select-none py-2 pl-3 pr-9'
-                      )
-                    }
-                    value={project}
-                  >
-                    {({ selected, active }) => (
-                      <>
-                        <span className={classNames(selected ? 'font-semibold' : 'font-normal', 'block truncate')}>
-                          {project.projName}
-                        </span>
+                                    <Transition
+                                      show={open}
+                                      as={Fragment}
+                                      leave="transition ease-in duration-100"
+                                      leaveFrom="opacity-100"
+                                      leaveTo="opacity-0"
+                                    >
+                                      <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                                        {projects.map((project) => (
+                                          <Listbox.Option
+                                            key={project.id}
+                                            className={({ active }) =>
+                                              classNames(
+                                                active ? 'bg-indigo-600 text-white' : 'text-gray-900',
+                                                'relative cursor-default select-none py-2 pl-3 pr-9'
+                                              )
+                                            }
+                                            value={project}
+                                          >
+                                            {({ selectedEmployee, active }) => (
+                                              <>
+                                                <span className={classNames(selectedEmployee ? 'font-semibold' : 'font-normal', 'block truncate')}>
+                                                  {project.projName}
+                                                </span>
 
-                        {selected ? (
-                          <span
-                            className={classNames(
-                              active ? 'text-white' : 'text-indigo-600',
-                              'absolute inset-y-0 right-0 flex items-center pr-4'
-                            )}
-                          >
-                            <CheckIcon className="h-5 w-5" aria-hidden="true" />
-                          </span>
-                        ) : null}
-                      </>
-                    )}
-                  </Listbox.Option>
-                ))}
-              </Listbox.Options>
-            </Transition>
-          </div>
-        </>
-      )}
-    </Listbox>
+                                                {selectedEmployee ? (
+                                                  <span
+                                                    className={classNames(
+                                                      active ? 'text-white' : 'text-indigo-600',
+                                                      'absolute inset-y-0 right-0 flex items-center pr-4'
+                                                    )}
+                                                  >
+                                                    <CheckIcon className="h-5 w-5" aria-hidden="true" />
+                                                  </span>
+                                                ) : null}
+                                              </>
+                                            )}
+                                          </Listbox.Option>
+                                        ))}
+                                      </Listbox.Options>
+                                    </Transition>
+                                  </div>
+                                </>
+                              )}
+                            </Listbox>
                           </div>
                         </div>
-                        {/* Employee name */}
                         <div className="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
                           <div>
                             <label
@@ -261,72 +248,72 @@ function AddTask({setAddTaskOpen}) {
                             </label>
                           </div>
                           <div className="sm:col-span-2">
-                          <Listbox value={selectedEmployee} 
-  onChange={(employee) => {
-    setSelectedEmployee(employee);
-    setFormData({
-      ...formData,
-      taskAttendedId: employee.empID // Assuming the project object has an 'id' property
-    });
-  }}>
-      {({ open }) => (
-        <>
-          <div className="relative mt-2">
-            <Listbox.Button className="relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
-              <span className="block truncate">{ selectedEmployee.empName? (selectedEmployee.empName +" "+ selectedEmployee.empSurname) : "Seçim Yapınız"}</span>
-              <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
-              </span>
-            </Listbox.Button>
+                            <Listbox
+                              value={selectedEmployee}
+                              onChange={(employee) => {
+                                setSelectedEmployee(employee);
+                                setFormData({
+                                  ...formData,
+                                  taskAttendedId: employee.empID
+                                });
+                              }}>
+                              {({ open }) => (
+                                <>
+                                  <div className="relative mt-2">
+                                    <Listbox.Button className="relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                      <span className="block truncate">{selectedEmployee.empName ? (selectedEmployee.empName + " " + selectedEmployee.empSurname) : "Seçim Yapınız"}</span>
+                                      <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+                                        <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                                      </span>
+                                    </Listbox.Button>
 
-            <Transition
-              show={open}
-              as={Fragment}
-              leave="transition ease-in duration-100"
-              leaveFrom="opacity-100"
-              leaveTo="opacity-0"
-            >
-              <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                {employees.map((person) => (
-                  <Listbox.Option
-                    key={person.id}
-                    className={({ active }) =>
-                      classNames(
-                        active ? 'bg-indigo-600 text-white'  : 'text-gray-900',
-                        'relative cursor-default select-none py-2 pl-3 pr-9'
-                      )
-                    }
-                    value={person}
-                  >
-                    {({ selectedEmployee, active }) => (
-                      <>
-                        <span className={classNames(selectedEmployee ? 'font-semibold' : 'font-normal', 'block truncate')}>
-                          {person.empName + " "+person.empSurname}
-                        </span>
+                                    <Transition
+                                      show={open}
+                                      as={Fragment}
+                                      leave="transition ease-in duration-100"
+                                      leaveFrom="opacity-100"
+                                      leaveTo="opacity-0"
+                                    >
+                                      <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                                        {employees.map((person) => (
+                                          <Listbox.Option
+                                            key={person.id}
+                                            className={({ active }) =>
+                                              classNames(
+                                                active ? 'bg-indigo-600 text-white' : 'text-gray-900',
+                                                'relative cursor-default select-none py-2 pl-3 pr-9'
+                                              )
+                                            }
+                                            value={person}
+                                          >
+                                            {({ selectedEmployee, active }) => (
+                                              <>
+                                                <span className={classNames(selectedEmployee ? 'font-semibold' : 'font-normal', 'block truncate')}>
+                                                  {person.empName + " " + person.empSurname}
+                                                </span>
 
-                        {selectedEmployee ? (
-                          <span
-                            className={classNames(
-                              active ? 'text-white' : 'text-indigo-600',
-                              'absolute inset-y-0 right-0 flex items-center pr-4'
-                            )}
-                          >
-                            <CheckIcon className="h-5 w-5" aria-hidden="true" />
-                          </span>
-                        ) : null}
-                      </>
-                    )}
-                  </Listbox.Option>
-                ))}
-              </Listbox.Options>
-            </Transition>
-          </div>
-        </>
-      )}
-    </Listbox>
+                                                {selectedEmployee ? (
+                                                  <span
+                                                    className={classNames(
+                                                      active ? 'text-white' : 'text-indigo-600',
+                                                      'absolute inset-y-0 right-0 flex items-center pr-4'
+                                                    )}
+                                                  >
+                                                    <CheckIcon className="h-5 w-5" aria-hidden="true" />
+                                                  </span>
+                                                ) : null}
+                                              </>
+                                            )}
+                                          </Listbox.Option>
+                                        ))}
+                                      </Listbox.Options>
+                                    </Transition>
+                                  </div>
+                                </>
+                              )}
+                            </Listbox>
                           </div>
                         </div>
-                        {/* Project start date - end date */}
                         <div className="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
                           <div>
                             <label
@@ -350,7 +337,6 @@ function AddTask({setAddTaskOpen}) {
                                 })
                               }
                             />
-                            
                           </div>
                         </div>
 

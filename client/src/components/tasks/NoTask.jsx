@@ -3,7 +3,6 @@ import { PlusIcon } from '@heroicons/react/20/solid'
 import AddTask from './AddTask';
 
 export default function NoTask() {
-  const [open, setOpen] = useState(false)
   const [addTaskOpen, setAddTaskOpen] = useState(false);
   return (
     <div className="text-center justify-center align-middle">
