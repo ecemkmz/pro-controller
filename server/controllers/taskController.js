@@ -132,7 +132,7 @@ exports.deleteTask = (req, res) => {
   });
 }
 exports.getTaskByProjectId = (req, res) => {
-  console.log("Task list request received.");
+  console.log("Task list request received.", req.params.projectID);
   const getTaskQuery = `SELECT empName, empSurname, taskID, taskName, taskStatus, taskEndDate  FROM Tasks JOIN Projects ON Tasks.projectID = Projects.projID JOIN Employees ON Tasks.taskAttendedId = Employees.empID WHERE projectID = ?`;
 
   connection.query(getTaskQuery, [req.params.projectID], (err, result) => {
@@ -141,6 +141,7 @@ exports.getTaskByProjectId = (req, res) => {
       res.status(500).json({ error: 'Internal Server Error' });
       return;
     }
+    console.log(`Tasks: ${result}`)
     res.status(200).json(result);
   });
 }

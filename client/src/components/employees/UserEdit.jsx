@@ -19,13 +19,17 @@ function EmpInfo() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const responseEmp = await fetch(`http://localhost:5000/api/employees/${id}`);
+        const responseEmp = await fetch(
+          `http://localhost:5000/api/employees/${id}`
+        );
         const dataEmp = await responseEmp.json();
         if (dataEmp && dataEmp.length > 0) {
           setPersonInfo(dataEmp[0]);
         }
 
-        const responseProjects = await fetch(`http://localhost:5000/api/projects/taskAttendedUser/${id}`);
+        const responseProjects = await fetch(
+          `http://localhost:5000/api/projects/taskAttendedUser/${id}`
+        );
         const dataProjects = await responseProjects.json();
         if (dataProjects) {
           setProjectsArray(dataProjects);
@@ -70,7 +74,25 @@ function EmpInfo() {
       <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
         {isEditingField ? (
           <div className="flex items-center justify-between">
-            <input
+            {fieldName === "empPosition" ? (
+              
+              <select
+
+                value={value}
+                onChange={(e) =>
+                  setPersonInfo((prevInfo) => ({
+                    ...prevInfo,
+                    [fieldName]: e.target.value,
+                  }))
+                }
+                className="border h-10 border-gray-500 focus:outline-none focus:border-blue-500 w-3/4"
+              >
+                <option value="CEO">CEO</option>
+                <option value="Frontend Dev.">Frontend Dev.</option>
+                <option value="Backend Dev.">Backend Dev.</option>
+              </select>
+            ) : (
+              <input
               type="text"
               value={value}
               onChange={(e) =>
@@ -81,6 +103,8 @@ function EmpInfo() {
               }
               className="border h-8 border-gray-500 focus:outline-none focus:border-blue-500 w-3/4"
             />
+            )}
+
             <div>
               <span
                 className="text-end cursor-pointer hover:text-gray-700 hover:font-semibold"
@@ -108,26 +132,43 @@ function EmpInfo() {
   const renderProjects = () => (
     <div>
       <div className="sm:flex-auto">
-        <h1 className="text-base text-center font-semibold leading-6 text-gray-900">Dahil Olduğu Projeler</h1>
+        <h1 className="text-base text-center font-semibold leading-6 text-gray-900">
+          Dahil Olduğu Projeler
+        </h1>
         <p className="mt-2 text-sm text-gray-700"></p>
       </div>
       <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
         <table className="min-w-full divide-y divide-gray-300">
           <thead>
             <tr>
-              <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+              <th
+                scope="col"
+                className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
+              >
                 Proje Adı
               </th>
-              <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+              <th
+                scope="col"
+                className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+              >
                 Görev Sayısı
               </th>
-              <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+              <th
+                scope="col"
+                className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+              >
                 Durumu
               </th>
-              <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+              <th
+                scope="col"
+                className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+              >
                 Başlangıç Tarihi
               </th>
-              <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+              <th
+                scope="col"
+                className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+              >
                 Bitiş Tarihi
               </th>
             </tr>
@@ -138,7 +179,9 @@ function EmpInfo() {
                 <td className="whitespace-nowrap py-5 pl-4 pr-3 text-sm sm:pl-0">
                   <div className="flex items-center">
                     <div className="ml-4">
-                      <div className="font-medium text-gray-900">{projectArray.projName}</div>
+                      <div className="font-medium text-gray-900">
+                        {projectArray.projName}
+                      </div>
                     </div>
                   </div>
                 </td>
@@ -167,20 +210,24 @@ function EmpInfo() {
                     {projectArray.projStatus}
                   </span>
                 </td>
-                <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">{projectArray.projStartDate ? (
-                  <time dateTime={projectArray.projStartDate}>
-                    {formatDate(projectArray.projStartDate)}
-                  </time>
-                ) : (
-                  <span>End date not available</span>
-                )}</td>
-                <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">{projectArray.projEndDate ? (
-                  <time dateTime={projectArray.projEndDate}>
-                    {formatDate(projectArray.projEndDate)}
-                  </time>
-                ) : (
-                  <span>End date not available</span>
-                )}</td>
+                <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
+                  {projectArray.projStartDate ? (
+                    <time dateTime={projectArray.projStartDate}>
+                      {formatDate(projectArray.projStartDate)}
+                    </time>
+                  ) : (
+                    <span>End date not available</span>
+                  )}
+                </td>
+                <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
+                  {projectArray.projEndDate ? (
+                    <time dateTime={projectArray.projEndDate}>
+                      {formatDate(projectArray.projEndDate)}
+                    </time>
+                  ) : (
+                    <span>End date not available</span>
+                  )}
+                </td>
               </tr>
             ))}
           </tbody>
@@ -234,9 +281,7 @@ function EmpInfo() {
             "empAbout",
             editingField === "empAbout"
           )}
-          <div className="px-4 py-6">
-            {renderProjects()}
-          </div>
+          <div className="px-4 py-6">{renderProjects()}</div>
         </dl>
       </div>
     </div>

@@ -189,7 +189,7 @@ exports.getProjectById = (req, res) =>{
       res.status(500).json({ error: 'Internal Server Error' });
       return;
     }
-    console.log(result);
+    console.log("Project:",result);
     res.status(200).json(result);
   });
 }
@@ -215,7 +215,6 @@ exports.updateProject = (req, res) => {
 const getProjectsPassedDeadlineQuery = `SELECT projID, projName, projStatus, projStartDate, projEndDate FROM Projects WHERE projEndDate < CURDATE()`;
 //Update projects that passed deadline
 const updateProjectPassedDeadlineQuery = `UPDATE Projects SET projEndDate = CURDATE(), projEndDate = DATE_ADD(projEndDate, INTERVAL 1 DAY), projStatus = 'Gecikmiş', projDelayedDays = DATEDIFF(CURDATE(), projDefaultEndDate) WHERE projID = ?`;
-
 
 exports.updateProjectsPassedDeadline = (req, res) => {
   connection.query(getProjectsPassedDeadlineQuery, (err, result) => {

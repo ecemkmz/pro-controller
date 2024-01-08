@@ -84,7 +84,7 @@ function EmpInfo() {
                               : ""
                           }
                           ${
-                            projectArray[field] === "Tamamlandı"
+                            projectArray[field] === "Tamamlandı" || "Tamamlanmış"
                               ? "text-green-700 bg-green-50 ring-green-600/20"
                               : ""
                           }`}
