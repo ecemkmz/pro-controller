@@ -15,11 +15,12 @@ router.post('/create-project', projectController.createProject);
 router.delete('/delete-project/:id', projectController.deleteProject);
 // Get Project by taskAttendedUserId
 router.get('/projects/taskAttendedUser/:id', projectController.getProjectByTaskAttendedId)
+
 //Get Project by Id
-router.get('/project/:projectID',projectController.getProjectById)
+router.get('/projectDetail/:projectID',projectController.getProjectById)
 
 //Update Project By Id
-router.put('/project/:projectID',projectController.updateProject)
+router.put('/EditProject/:projectID',projectController.updateProject)
 
 //Update Status And Deadlines of Projects That Passed Deadline
 router.get('/projects-passed-deadline', projectController.updateProjectsPassedDeadline);

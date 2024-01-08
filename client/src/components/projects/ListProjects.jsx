@@ -68,17 +68,18 @@ const ListProjects = ({ onProjectClick }) => {
       console.error("Veri çekme hatası:", error);
     }
 
-    const updateProjectsDeadline = async () => {
-      try {
-        const response = await axios.get(
-          "http://localhost:5000/api/projects-passed-deadline"
-        );
-        alert("Proje süreleri güncellendi");
-      } catch (error) {
-        console.error("Error:", error);
-      }
-    };
     updateProjectsDeadline();
+  };
+
+  const updateProjectsDeadline = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:5000/api/projects-passed-deadline"
+      );
+      alert("Proje süreleri güncellendi");
+    } catch (error) {
+      console.error("Error:", error);
+    }
   };
 
   useEffect(() => {

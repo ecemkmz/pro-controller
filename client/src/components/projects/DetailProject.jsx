@@ -1,8 +1,5 @@
-import { Fragment, useEffect, useState } from "react";
-import { Listbox, Menu, Transition } from "@headlessui/react";
-import { EllipsisVerticalIcon } from "@heroicons/react/20/solid";
-import { CheckCircleIcon } from "@heroicons/react/24/solid";
-import { CheckIcon, ChevronDownIcon } from "@heroicons/react/20/solid";
+import { useEffect, useState } from "react";
+
 import { useParams } from "react-router-dom";
 
 const publishingOptions = [
@@ -10,60 +7,6 @@ const publishingOptions = [
   { title: "Devam Ediyor", current: false },
   { title: "Gecikmiş", current: false },
 ];
-const activity = [
-  {
-    id: 1,
-    type: "created",
-    person: { name: "Chelsea Hagon" },
-    date: "7d ago",
-    dateTime: "2023-01-23T10:32",
-  },
-  {
-    id: 2,
-    type: "edited",
-    person: { name: "Chelsea Hagon" },
-    date: "6d ago",
-    dateTime: "2023-01-23T11:03",
-  },
-  {
-    id: 3,
-    type: "sent",
-    person: { name: "Chelsea Hagon" },
-    date: "6d ago",
-    dateTime: "2023-01-23T11:24",
-  },
-  {
-    id: 4,
-    type: "commented",
-    person: {
-      name: "Chelsea Hagon",
-      imageUrl:
-        "https://images.unsplash.com/photo-1550525811-e5869dd03032?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-    },
-    comment:
-      "Called client, they reassured me the invoice would be paid by the 25th.",
-    date: "3d ago",
-    dateTime: "2023-01-23T15:56",
-  },
-  {
-    id: 5,
-    type: "viewed",
-    person: { name: "Alex Curren" },
-    date: "2d ago",
-    dateTime: "2023-01-24T09:12",
-  },
-  {
-    id: 6,
-    type: "paid",
-    person: { name: "Alex Curren" },
-    date: "1d ago",
-    dateTime: "2023-01-24T09:20",
-  },
-];
-
-function classNames(...classes) {
-  return classes.filter(Boolean).join(" ");
-}
 
 function formatDate(dateString) {
   const options = { year: "numeric", month: "long", day: "numeric" };
@@ -92,7 +35,8 @@ function DetailProject({ OnProjectClick }) {
   ]);
 
   useEffect(() => {
-    fetch(`http://localhost:5000/api/tasks/${projectID}`)
+
+    fetch(`http://localhost:5000/api/projectDetail/${projectID}`)
       .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
@@ -100,28 +44,28 @@ function DetailProject({ OnProjectClick }) {
         return response.json();
       })
       .then((data) => {
-        setTaskList(data);
-        console.log(TaskList); // State güncellendikten sonra logla
+        setProjectInfo(data);
+        console.log("ProjInfo:",data)
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
         // Hata durumunda kullanıcıya bildirim gösterme veya başka bir işlem yapma
       });
-    fetch(`http://localhost:5000/api/project/${projectID}`)
+
+      fetch(`http://localhost:5000/api/task-list-by-projID/${projectID}}`)
       .then((response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        return response.json();
+        return response.json()
       })
-      .then((data1) => {
-        setProjectInfo(data1);
+      .then((data) => {
+        setTaskList(data);
+        console.log("Tasks:" + TaskList);
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
         // Hata durumunda kullanıcıya bildirim gösterme veya başka bir işlem yapma
       });
-  }, []);
+  }, [DetailProject]);
+
   const projStartDate = new Date(ProjectInfo[0].projStartDate);
   const projEndDate = new Date(ProjectInfo[0].projEndDate);
 
@@ -142,7 +86,6 @@ function DetailProject({ OnProjectClick }) {
     );
   };
 
-  const [selected, setSelected] = useState(publishingOptions[0]);
 
   const [editingMode, setEditingMode] = useState(false);
 
@@ -155,22 +98,14 @@ function DetailProject({ OnProjectClick }) {
 
   const handleEditClick = async (e) => {
     if (editingMode) {
-      // Kaydet butonuna tıklandığında yapılacak işlemler
       try {
+        console.log("form",formData)
         const response = await fetch(
-          `http://localhost:5000/api/project/${projectID}`,
+          `http://localhost:5000/api/EditProject/${projectID}`,
           {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              ...formData,
-              projStartDate: new Date(
-                formData.projStartDate + "T00:00:00Z"
-              ).toISOString(),
-              projEndDate: new Date(
-                formData.projEndDate + "T00:00:00Z"
-              ).toISOString(),
-            }),
+            body: JSON.stringify({ ...formData }),
           }
         );
         if (!response.ok) {
@@ -206,7 +141,6 @@ function DetailProject({ OnProjectClick }) {
               }}
             />
           </div>
-          {console.log("Gelen:" + ProjectInfo)}
 
           <div className="absolute inset-x-0 bottom-0 h-px bg-gray-900/5" />
         </div>
@@ -222,16 +156,18 @@ function DetailProject({ OnProjectClick }) {
               <h1>
                 <div className="text-sm leading-6 text-gray-500">Proje Adı</div>
                 {editingMode ? (
-                  <input
-                    type="text"
-                    value={formData.projName}
-                    onChange={(e) =>
-                      setFormData((prevData) => ({
-                        ...prevData,
-                        projName: e.target.value,
-                      }))
-                    }
-                  />
+                  <div className="mt-1 text-base font-semibold leading-6 text-gray-900">
+                    <input
+                      type="text"
+                      value={formData.projName}
+                      onChange={(e) =>
+                        setFormData((prevData) => ({
+                          ...prevData,
+                          projName: e.target.value,
+                        }))
+                      }
+                    />
+                  </div>
                 ) : (
                   <div className="mt-1 text-base font-semibold leading-6 text-gray-900">
                     {ProjectInfo[0].projName}
@@ -246,158 +182,13 @@ function DetailProject({ OnProjectClick }) {
               >
                 {editingMode ? "Kaydet" : "Düzenle"}
               </span>
-
-              <Listbox value={selected} onChange={setSelected}>
-                {({ open }) => (
-                  <>
-                    <Listbox.Label className="sr-only">
-                      Proje durumunu değiştir
-                    </Listbox.Label>
-                    <div className="relative">
-                      <div className="inline-flex divide-x divide-indigo-700 rounded-md shadow-sm">
-                        <div className="inline-flex items-center gap-x-1.5 rounded-l-md bg-indigo-600 px-3 py-2 text-white shadow-sm">
-                          <CheckIcon
-                            className="-ml-0.5 h-5 w-5"
-                            aria-hidden="true"
-                          />
-                          <p className="text-sm font-semibold">
-                            {selected.title}
-                          </p>
-                        </div>
-                        <Listbox.Button className="inline-flex items-center rounded-l-none rounded-r-md bg-indigo-600 p-2 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2 focus:ring-offset-gray-50">
-                          <span className="sr-only">
-                            Proje durumunu değiştir
-                          </span>
-                          <ChevronDownIcon
-                            className="h-5 w-5 text-white"
-                            aria-hidden="true"
-                          />
-                        </Listbox.Button>
-                      </div>
-
-                      <Transition
-                        show={open}
-                        as={Fragment}
-                        leave="transition ease-in duration-100"
-                        leaveFrom="opacity-100"
-                        leaveTo="opacity-0"
-                      >
-                        <Listbox.Options className="absolute right-0 z-10 mt-2 w-72 origin-top-right divide-y divide-gray-200 overflow-hidden rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                          {publishingOptions.map((option) => (
-                            <Listbox.Option
-                              key={option.title}
-                              className={({ active }) =>
-                                classNames(
-                                  active
-                                    ? "bg-indigo-600 text-white"
-                                    : "text-gray-900",
-                                  "cursor-default select-none p-4 text-sm"
-                                )
-                              }
-                              value={option}
-                            >
-                              {({ selected, active }) => (
-                                <div className="flex flex-col">
-                                  <div className="flex justify-between">
-                                    <p
-                                      className={
-                                        selected
-                                          ? "font-semibold"
-                                          : "font-normal"
-                                      }
-                                    >
-                                      {option.title}
-                                    </p>
-                                    {selected ? (
-                                      <span
-                                        className={
-                                          active
-                                            ? "text-white"
-                                            : "text-indigo-600"
-                                        }
-                                      >
-                                        <CheckIcon
-                                          className="h-5 w-5"
-                                          aria-hidden="true"
-                                        />
-                                      </span>
-                                    ) : null}
-                                  </div>
-                                  <p
-                                    className={classNames(
-                                      active
-                                        ? "text-indigo-200"
-                                        : "text-gray-500",
-                                      "mt-2"
-                                    )}
-                                  >
-                                    {option.description}
-                                  </p>
-                                </div>
-                              )}
-                            </Listbox.Option>
-                          ))}
-                        </Listbox.Options>
-                      </Transition>
-                    </div>
-                  </>
-                )}
-              </Listbox>
-
-              <Menu as="div" className="relative sm:hidden">
-                <Menu.Button className="-m-3 block p-3">
-                  <span className="sr-only">More</span>
-                  <EllipsisVerticalIcon
-                    className="h-5 w-5 text-gray-500"
-                    aria-hidden="true"
-                  />
-                </Menu.Button>
-
-                <Transition
-                  as={Fragment}
-                  enter="transition ease-out duration-100"
-                  enterFrom="transform opacity-0 scale-95"
-                  enterTo="transform opacity-100 scale-100"
-                  leave="transition ease-in duration-75"
-                  leaveFrom="transform opacity-100 scale-100"
-                  leaveTo="transform opacity-0 scale-95"
-                >
-                  <Menu.Items className="absolute right-0 z-10 mt-0.5 w-32 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
-                    <Menu.Item>
-                      {({ active }) => (
-                        <button
-                          type="button"
-                          className={classNames(
-                            active ? "bg-gray-50" : "",
-                            "block w-full px-3 py-1 text-left text-sm leading-6 text-gray-900"
-                          )}
-                        >
-                          Copy URL
-                        </button>
-                      )}
-                    </Menu.Item>
-                    <Menu.Item>
-                      {({ active }) => (
-                        <a
-                          className={classNames(
-                            active ? "bg-gray-50" : "",
-                            "block px-3 py-1 text-sm leading-6 text-gray-900"
-                          )}
-                        >
-                          Edit
-                        </a>
-                      )}
-                    </Menu.Item>
-                  </Menu.Items>
-                </Transition>
-              </Menu>
             </div>
           </div>
         </div>
       </header>
 
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        <div className="mx-auto grid min-w-3xl grid-cols-1 grid-rows-1 items-start gap-x-8 gap-y-8 lg:mx-0 lg:max-w-none lg:grid-cols-4">
+        <div className="mx-auto">
           {/* Invoice */}
           <div className="w-mx-4 px-4 py-8 shadow-sm ring-1 ring-gray-900/5 sm:mx-0 sm:rounded-lg sm:px-8 sm:pb-14 lg:col-span-3 lg:row-span-2 lg:row-end-3 xl:px-16 xl:pb-20 xl:pt-16">
             <h2 className="text-base font-semibold leading-6 text-gray-900">
@@ -412,11 +203,13 @@ function DetailProject({ OnProjectClick }) {
                   <input
                     type="date"
                     id="startDate"
+                    required
                     value={formData.projStartDate}
                     onChange={(e) =>
                       setFormData((prevData) => ({
                         ...prevData,
                         projStartDate: e.target.value,
+                        check: true,
                       }))
                     }
                   />
@@ -428,7 +221,7 @@ function DetailProject({ OnProjectClick }) {
                   <input
                     type="date"
                     id="endDate"
-                    value={formData.projEndDate}
+                    required = "true"
                     onChange={(e) =>
                       setFormData((prevData) => ({
                         ...prevData,
@@ -489,7 +282,7 @@ function DetailProject({ OnProjectClick }) {
                         {formatDate(ProjectInfo[0].projEndDate)}
                       </time>
                     ) : (
-                      <span>Başlama tarihi mevcut değil.</span>
+                      <span>Bitiş tarihi mevcut değil.</span>
                     )}
                   </dd>
                 </div>
@@ -600,82 +393,6 @@ function DetailProject({ OnProjectClick }) {
                 </div>
               </div>
             </div>
-          </div>
-
-          <div className="lg:col-start-4">
-            {/* Activity feed */}
-            <h2 className="text-sm font-semibold leading-6 text-gray-900">
-              Activity
-            </h2>
-            <ul role="list" className="mt-6 space-y-6">
-              {activity.map((activityItem, activityItemIdx) => (
-                <li key={activityItem.id} className="relative flex gap-x-4">
-                  <div
-                    className={classNames(
-                      activityItemIdx === activity.length - 1
-                        ? "h-6"
-                        : "-bottom-6",
-                      "absolute left-0 top-0 flex w-6 justify-center"
-                    )}
-                  >
-                    <div className="w-px bg-gray-200" />
-                  </div>
-                  {activityItem.type === "commented" ? (
-                    <>
-                      <img
-                        src={activityItem.person.imageUrl}
-                        alt=""
-                        className="relative mt-3 h-6 w-6 flex-none rounded-full bg-gray-50"
-                      />
-                      <div className="flex-auto rounded-md p-3 ring-1 ring-inset ring-gray-200">
-                        <div className="flex justify-between gap-x-4">
-                          <div className="py-0.5 text-xs leading-5 text-gray-500">
-                            <span className="font-medium text-gray-900">
-                              {activityItem.person.name}
-                            </span>{" "}
-                            commented
-                          </div>
-                          <time
-                            dateTime={activityItem.dateTime}
-                            className="flex-none py-0.5 text-xs leading-5 text-gray-500"
-                          >
-                            {activityItem.date}
-                          </time>
-                        </div>
-                        <p className="text-sm leading-6 text-gray-500">
-                          {activityItem.comment}
-                        </p>
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      <div className="relative flex h-6 w-6 flex-none items-center justify-center bg-white">
-                        {activityItem.type === "paid" ? (
-                          <CheckCircleIcon
-                            className="h-6 w-6 text-indigo-600"
-                            aria-hidden="true"
-                          />
-                        ) : (
-                          <div className="h-1.5 w-1.5 rounded-full bg-gray-100 ring-1 ring-gray-300" />
-                        )}
-                      </div>
-                      <p className="flex-auto py-0.5 text-xs leading-5 text-gray-500">
-                        <span className="font-medium text-gray-900">
-                          {activityItem.person.name}
-                        </span>{" "}
-                        {activityItem.type} the invoice.
-                      </p>
-                      <time
-                        dateTime={activityItem.dateTime}
-                        className="flex-none py-0.5 text-xs leading-5 text-gray-500"
-                      >
-                        {activityItem.date}
-                      </time>
-                    </>
-                  )}
-                </li>
-              ))}
-            </ul>
           </div>
         </div>
       </div>

@@ -10,6 +10,6 @@ router.get('/tasks/:id',taskController.getTaskByTaskAttendedId)
 
 router.delete('/delete-task/:id', taskController.deleteTask)
 
-router.get('/tasks/:projectID', taskController.getTaskByProjectId)
+router.get('/task-list-by-projID/:projectID', taskController.getTaskByProjectId)
 
 module.exports = router
