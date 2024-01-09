@@ -127,22 +127,21 @@ exports.createProject = async (req, res) => {
   }
 }
 //Delete Project 
+
 exports.deleteProject = (req, res) => {
-  console.log(`Project delete request received. ID: ${req.params.id}`);
+  const projectId = req.params.id;
+
   const deleteProjectQuery = `DELETE FROM Projects WHERE projID = ?`;
 
-  connection.query(deleteProjectQuery, [req.params.id], (err, result) => {
+  connection.query(deleteProjectQuery, [projectId], (err, deleteResult) => {
     if (err) {
       console.error(err);
-      res.status(500).json({ error: "Internal Server Error" });
-      return;
+      return res.status(500).json({ error: 'Internal Server Error' });
     }
-    console.log(
-      `Proje silindi. ${result.affectedRows} satır silindi.ID: ${req.params.id}`
-    );
-    res.status(200).json(result);
+    console.log(`Proje silindi. ID: ${projectId}`);
+    return res.status(200).json(deleteResult);
   });
-}
+};
 
 //List Project by Task Attended user
 exports.getProjectByTaskAttendedId = (req, res) => {

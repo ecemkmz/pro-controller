@@ -88,9 +88,15 @@ const ListProjects = ({ onProjectClick }) => {
   }, [selectedSortOption, selectedProjectStatus]);
 
   const handleDeleteProject = (projID) => {
+    const userId = localStorage.getItem('user');
+    console.log(userId)
     if (window.confirm("Bu Projeyi Silmek İstediğinize Emin Misiniz?")) {
       axios
-        .delete(`http://localhost:5000/api/delete-project/${projID}`)
+        .delete(`http://localhost:5000/api/delete-project/${projID}`, {
+          headers: {
+            'userId': userId // Kullanıcı ID'sini header olarak gönder
+          }
+        })
         .then((response) => {
           console.log("Success:", response.data);
           fetchData(); // Silme işleminden sonra projeleri yeniden getir
@@ -101,7 +107,6 @@ const ListProjects = ({ onProjectClick }) => {
         });
     }
   };
-
   const handleSortOptionChange = (option) => {
     setSelectedSortOption(option);
   };
