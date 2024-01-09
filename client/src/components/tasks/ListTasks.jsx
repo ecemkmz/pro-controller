@@ -72,10 +72,17 @@ export default function ListTasks() {
     fetchData();
   }, [selectedSortOption, selectedTaskStatus]);
 
-  const handleDeleteTask = (taskID) => {
+  const handleDeleteTask = (taskID,projectId) => {
+    const userId = localStorage.getItem('user');
+    console.log(projectId)
     if (window.confirm("Bu Görevleri Silmek İstediğinize Emin Misiniz?")) {
       axios
-        .delete(`http://localhost:5000/api/delete-task/${taskID}`)
+        .delete(`http://localhost:5000/api/delete-task/${taskID}`, {
+          headers: {
+            'userid': userId,
+            'projectid':projectId // Kullanıcı ID'sini header olarak
+          }
+        })
         .then((response) => {
           console.log("Success:", response.data);
           fetchData();
@@ -350,7 +357,7 @@ export default function ListTasks() {
                         {({ active }) => (
                           <a
                             href="#"
-                            onClick={() => handleDeleteTask(task.taskID)}
+                            onClick={() => handleDeleteTask(task.taskID,task.projectID)}
                             className={classNames(
                               active ? "bg-gray-50" : "",
                               "block px-3 py-1 text-sm leading-6 text-gray-900"

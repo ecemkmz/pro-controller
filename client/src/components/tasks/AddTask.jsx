@@ -44,11 +44,13 @@ function AddTask({ setAddTaskOpen }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log(formData);
+    const userId = localStorage.getItem('user');
     try {
       const response = await fetch("http://localhost:5000/api/create-task", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "userId":userId
         },
         body: JSON.stringify({
           taskName: formData.taskName,

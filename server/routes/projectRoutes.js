@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const projectController = require("../controllers/projectController")
+const verifyAdmin = require("../middleware/verifyAdmin")
 
 // Project list
 router.get('/projects', projectController.getProjects );
@@ -12,7 +13,7 @@ router.get('/projects/:id',projectController.getProjectByCreatorId);
 router.post('/create-project', projectController.createProject);
 
 // Delete Project
-router.delete('/delete-project/:id', projectController.deleteProject);
+router.delete('/delete-project/:id', verifyAdmin, projectController.deleteProject);
 // Get Project by taskAttendedUserId
 router.get('/projects/taskAttendedUser/:id', projectController.getProjectByTaskAttendedId)
 
