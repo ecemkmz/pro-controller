@@ -2,12 +2,6 @@ import { useEffect, useState } from "react";
 
 import { useParams } from "react-router-dom";
 
-const publishingOptions = [
-  { title: "Tamamlanmış", current: true },
-  { title: "Devam Ediyor", current: false },
-  { title: "Gecikmiş", current: false },
-];
-
 function formatDate(dateString) {
   const options = { year: "numeric", month: "long", day: "numeric" };
   return new Date(dateString).toLocaleDateString(undefined, options);
@@ -24,18 +18,15 @@ function DetailProject({ OnProjectClick }) {
       empSurname: "",
     },
   ]);
-  const [ProjectInfo, setProjectInfo] = useState([
-    {
-      projName: "",
-      projStartDate: "",
-      projEndDate: "",
-      empName: "",
-      empSurname: "",
-    },
-  ]);
+  const [ProjectInfo, setProjectInfo] = useState({
+    projName: "",
+    projStartDate: "",
+    projEndDate: "",
+    empName: "",
+    empSurname: "",
+  });
 
   useEffect(() => {
-
     fetch(`http://localhost:5000/api/projectDetail/${projectID}`)
       .then((response) => {
         if (!response.ok) {
@@ -45,16 +36,15 @@ function DetailProject({ OnProjectClick }) {
       })
       .then((data) => {
         setProjectInfo(data);
-        console.log("ProjInfo:",data)
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
         // Hata durumunda kullanıcıya bildirim gösterme veya başka bir işlem yapma
       });
 
-      fetch(`http://localhost:5000/api/task-list-by-projID/${projectID}}`)
+    fetch(`http://localhost:5000/api/task-list-by-projID/${projectID}}`)
       .then((response) => {
-        return response.json()
+        return response.json();
       })
       .then((data) => {
         setTaskList(data);
@@ -65,9 +55,6 @@ function DetailProject({ OnProjectClick }) {
         // Hata durumunda kullanıcıya bildirim gösterme veya başka bir işlem yapma
       });
   }, [DetailProject]);
-
-  const projStartDate = new Date(ProjectInfo[0].projStartDate);
-  const projEndDate = new Date(ProjectInfo[0].projEndDate);
 
   const renderTaskStatus = (status) => {
     let color = "";
@@ -86,20 +73,26 @@ function DetailProject({ OnProjectClick }) {
     );
   };
 
-
   const [editingMode, setEditingMode] = useState(false);
 
   const [formData, setFormData] = useState({
-    projName: ProjectInfo[0].projName,
-    projStartDate: ProjectInfo[0].projStartDate,
-    projEndDate: ProjectInfo[0].projEndDate,
-    projStatus: ProjectInfo[0].projStatus,
+    projName: ProjectInfo.projName,
+    projStartDate: "",
+    projEndDate: "",
+    projStatus: ProjectInfo.projStatus,
   });
 
   const handleEditClick = async (e) => {
     if (editingMode) {
       try {
-        console.log("form",formData)
+        if (formData.projStartDate === "") {
+          alert("Başlama tarihi boş bırakılamaz.");
+          return;
+        }
+        if (formData.projEndDate === "") {
+          alert("Bitiş tarihi boş bırakılamaz.");
+          return;
+        }
         const response = await fetch(
           `http://localhost:5000/api/EditProject/${projectID}`,
           {
@@ -118,7 +111,10 @@ function DetailProject({ OnProjectClick }) {
       window.location.reload();
     } else {
       setFormData({
-        ...ProjectInfo[0],
+        projName: ProjectInfo.projName,
+        projStartDate: "",
+        projEndDate: "",
+        projStatus: ProjectInfo.projStatus
       });
       // Düzenle butonuna tıklandığında yapılacak işlemler
       setEditingMode(true);
@@ -170,7 +166,7 @@ function DetailProject({ OnProjectClick }) {
                   </div>
                 ) : (
                   <div className="mt-1 text-base font-semibold leading-6 text-gray-900">
-                    {ProjectInfo[0].projName}
+                    {ProjectInfo.projName}
                   </div>
                 )}
               </h1>
@@ -204,7 +200,7 @@ function DetailProject({ OnProjectClick }) {
                     type="date"
                     id="startDate"
                     required
-                    value={formData.projStartDate}
+                    value={ProjectInfo.projStartDate.replace("T21:00:00.000Z", "")}
                     onChange={(e) =>
                       setFormData((prevData) => ({
                         ...prevData,
@@ -221,7 +217,8 @@ function DetailProject({ OnProjectClick }) {
                   <input
                     type="date"
                     id="endDate"
-                    required = "true"
+                    required="true"
+                    value={ProjectInfo.projEndDate.replace("T21:00:00.000Z", "")}
                     onChange={(e) =>
                       setFormData((prevData) => ({
                         ...prevData,
@@ -234,7 +231,7 @@ function DetailProject({ OnProjectClick }) {
                   <dt className="inline text-gray-500">
                     Oluşturan Kişi:{" "}
                     <span className="text-gray-700">
-                      {`${ProjectInfo[0].empName}  ${ProjectInfo[0].empSurname}`}{" "}
+                      {`${ProjectInfo.empName}  ${ProjectInfo.empSurname}`}{" "}
                     </span>
                   </dt>
                 </div>
@@ -265,9 +262,9 @@ function DetailProject({ OnProjectClick }) {
                 <div className="sm:pr-4">
                   <dt className="inline text-gray-500">Başlama Tarihi:</dt>{" "}
                   <dd className="inline text-gray-700">
-                    {ProjectInfo[0].projStartDate ? (
-                      <time dateTime={ProjectInfo[0].projStartDate}>
-                        {formatDate(ProjectInfo[0].projStartDate)}
+                    {ProjectInfo.projStartDate ? (
+                      <time dateTime={ProjectInfo.projStartDate}>
+                        {formatDate(ProjectInfo.projStartDate)}
                       </time>
                     ) : (
                       <span>Başlama tarihi mevcut değil.</span>
@@ -277,9 +274,9 @@ function DetailProject({ OnProjectClick }) {
                 <div className="mt-2 sm:mt-0 sm:pl-4">
                   <dt className="inline text-gray-500">Bitiş Tarihi:</dt>{" "}
                   <dd className="inline text-gray-700">
-                    {ProjectInfo[0].projEndDate ? (
-                      <time dateTime={ProjectInfo[0].projEndDate}>
-                        {formatDate(ProjectInfo[0].projEndDate)}
+                    {ProjectInfo.projEndDate ? (
+                      <time dateTime={ProjectInfo.projEndDate}>
+                        {formatDate(ProjectInfo.projEndDate)}
                       </time>
                     ) : (
                       <span>Bitiş tarihi mevcut değil.</span>
@@ -290,7 +287,7 @@ function DetailProject({ OnProjectClick }) {
                   <dt className="inline text-gray-500">
                     Oluşturan Kişi:{" "}
                     <span className="text-gray-700">
-                      {`${ProjectInfo[0].empName}  ${ProjectInfo[0].empSurname}`}{" "}
+                      {`${ProjectInfo.empName}  ${ProjectInfo.empSurname}`}{" "}
                     </span>
                   </dt>
                 </div>
@@ -298,7 +295,7 @@ function DetailProject({ OnProjectClick }) {
                   <dt className="inline text-gray-500">
                     <span className="inline-flex">
                       Proje Durumu: &nbsp;
-                      {renderTaskStatus(ProjectInfo[0].projStatus)}
+                      {renderTaskStatus(ProjectInfo.projStatus)}
                     </span>
                   </dt>
                 </div>

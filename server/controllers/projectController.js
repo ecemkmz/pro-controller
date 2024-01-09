@@ -180,17 +180,15 @@ GROUP BY
 }
 
 exports.getProjectById = (req, res) =>{
-  console.log("Project info request received.");
+  console.log("Project info request received for ID:", req.params.projectID, "...");
   const getProjectQuery = `SELECT projName, projStatus, projStartDate, projEndDate, empName, empSurname FROM Projects JOIN Employees ON Projects.projCreatorID = Employees.empID WHERE projID = ?`;
-
   connection.query(getProjectQuery, [req.params.projectID], (err, result) => {
     if (err) {
       console.error(err);
       res.status(500).json({ error: 'Internal Server Error' });
       return;
     }
-    console.log("Project:",result);
-    res.status(200).json(result);
+    res.status(200).json(result[0]);
   });
 }
 
@@ -221,6 +219,7 @@ exports.updateProjectsPassedDeadline = (req, res) => {
     if (err) {
         console.log(err);
     } else {
+      console.log("Projects passed deadline: ", result);
         result.forEach((row) => {
             connection.query(updateProjectPassedDeadlineQuery, [row.projID], (err, result) => {
                 if (err) {

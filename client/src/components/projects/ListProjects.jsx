@@ -84,6 +84,7 @@ const ListProjects = ({ onProjectClick }) => {
 
   useEffect(() => {
     fetchData();
+    updateProjectsDeadline();
   }, [selectedSortOption, selectedProjectStatus]);
 
   const handleDeleteProject = (projID) => {
