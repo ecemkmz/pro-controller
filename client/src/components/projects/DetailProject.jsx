@@ -48,7 +48,6 @@ function DetailProject({ OnProjectClick }) {
       })
       .then((data) => {
         setTaskList(data);
-        console.log("Tasks:" + TaskList);
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
@@ -76,28 +75,20 @@ function DetailProject({ OnProjectClick }) {
   const [editingMode, setEditingMode] = useState(false);
 
   const [formData, setFormData] = useState({
-    projName: ProjectInfo.projName,
-    projStartDate: "",
-    projEndDate: "",
-    projStatus: ProjectInfo.projStatus,
+    projName: "",
+    projStatus: ""
   });
 
   const handleEditClick = async (e) => {
     if (editingMode) {
       try {
-        if (formData.projStartDate === "") {
-          alert("Başlama tarihi boş bırakılamaz.");
-          return;
-        }
-        if (formData.projEndDate === "") {
-          alert("Bitiş tarihi boş bırakılamaz.");
-          return;
-        }
+        const userid=localStorage.getItem('user');
+        console.log(userid);
         const response = await fetch(
           `http://localhost:5000/api/EditProject/${projectID}`,
           {
             method: "PUT",
-            headers: { "Content-Type": "application/json" },
+            headers: { "Content-Type": "application/json", userid:userid },
             body: JSON.stringify({ ...formData }),
           }
         );
@@ -108,12 +99,10 @@ function DetailProject({ OnProjectClick }) {
         console.error("Error fetching data:", error);
       }
       setEditingMode(false);
-      window.location.reload();
+      // window.location.reload();
     } else {
       setFormData({
         projName: ProjectInfo.projName,
-        projStartDate: "",
-        projEndDate: "",
         projStatus: ProjectInfo.projStatus
       });
       // Düzenle butonuna tıklandığında yapılacak işlemler
@@ -193,39 +182,28 @@ function DetailProject({ OnProjectClick }) {
             {editingMode ? (
               <div className="mt-6 grid grid-cols-1 text-sm leading-6 sm:grid-cols-2">
                 <div className="sm:pr-4">
-                  <label htmlFor="startDate" className="inline text-gray-500">
-                    Başlama Tarihi:
-                  </label>
-                  <input
-                    type="date"
-                    id="startDate"
-                    required
-                    value={ProjectInfo.projStartDate.replace("T21:00:00.000Z", "")}
-                    onChange={(e) =>
-                      setFormData((prevData) => ({
-                        ...prevData,
-                        projStartDate: e.target.value,
-                        check: true,
-                      }))
-                    }
-                  />
+                <dt className="inline text-gray-500">Başlama Tarihi:</dt>{" "}
+                  <dd className="inline text-gray-700">
+                    {ProjectInfo.projStartDate ? (
+                      <time dateTime={ProjectInfo.projStartDate}>
+                        {formatDate(ProjectInfo.projStartDate)}
+                      </time>
+                    ) : (
+                      <span>Başlama tarihi mevcut değil.</span>
+                    )}
+                  </dd>
                 </div>
                 <div className="mt-2 sm:mt-0 sm:pl-4">
-                  <label htmlFor="endDate" className="inline text-gray-500">
-                    Bitiş Tarihi:
-                  </label>
-                  <input
-                    type="date"
-                    id="endDate"
-                    required="true"
-                    value={ProjectInfo.projEndDate.replace("T21:00:00.000Z", "")}
-                    onChange={(e) =>
-                      setFormData((prevData) => ({
-                        ...prevData,
-                        projEndDate: e.target.value,
-                      }))
-                    }
-                  />
+                <dt className="inline text-gray-500">Bitiş Tarihi:</dt>{" "}
+                  <dd className="inline text-gray-700">
+                    {ProjectInfo.projEndDate ? (
+                      <time dateTime={ProjectInfo.projEndDate}>
+                        {formatDate(ProjectInfo.projEndDate)}
+                      </time>
+                    ) : (
+                      <span>Bitiş tarihi mevcut değil.</span>
+                    )}
+                    </dd>
                 </div>
                 <div className="mt-6 border-t border-gray-900/5 pt-6 sm:pr-4">
                   <dt className="inline text-gray-500">

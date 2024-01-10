@@ -2,7 +2,7 @@ const connection = require('../config/dbConfig');
 
 const verifyAdmin = (req, res, next) => {
   const userId = parseInt(req.headers.userid, 10);
-  const projectId =  req.body.projectID || req.params.id || req.headers.projectid;
+  const projectId =  req.body.projectID || req.params.id || req.headers.projectid ||req.params.projectID;
   console.log(projectId,userId)
   const checkCreatorQuery = `SELECT projCreatorID FROM Projects WHERE projID = ?`;
 
@@ -16,7 +16,7 @@ const verifyAdmin = (req, res, next) => {
       next();
     } else {
       // Kullanıcı yetkili değil, yetki hatası ver
-      return res.status(403).json({ error: 'Unauthorized' });
+      return res.status(403).json({ error: 'Bu işlem için yetkiniz bulunmamaktadır.' });
     }
   });
 };

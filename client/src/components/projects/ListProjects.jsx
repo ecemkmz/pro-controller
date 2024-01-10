@@ -84,7 +84,7 @@ const ListProjects = ({ onProjectClick }) => {
 
   useEffect(() => {
     fetchData();
-    updateProjectsDeadline();
+    updateProjectsDeadline()
   }, [selectedSortOption, selectedProjectStatus]);
 
   const handleDeleteProject = (projID) => {
@@ -103,7 +103,7 @@ const ListProjects = ({ onProjectClick }) => {
           window.location.reload(); // Sayfayı yenileme işlemini buradan kaldır
         })
         .catch((error) => {
-          console.error("Error:", error);
+          alert(error.response.data.error);
         });
     }
   };
@@ -367,22 +367,6 @@ const ListProjects = ({ onProjectClick }) => {
                           >
                             Görüntüle
                             <span className="sr-only">{`, ${project.projName}`}</span>
-                          </a>
-                        )}
-                      </Menu.Item>
-                      <Menu.Item>
-                        {({ active }) => (
-                          <a
-                            href="#"
-                            className={classNames(
-                              active ? "bg-gray-50" : "",
-                              "block px-3 py-1 text-sm leading-6 text-gray-900"
-                            )}
-                          >
-                            Düzenle
-                            <span className="sr-only">
-                              , {project.projName}
-                            </span>
                           </a>
                         )}
                       </Menu.Item>

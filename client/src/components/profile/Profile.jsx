@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import NoProject from "../projects/NoProject";
 import NoTask from "../tasks/NoTask";
 
-function Profile() {
+function Profile({ onProjectClick }) {
   const [employee, setEmployee] = useState(null);
   const [employeeProjects, setEmployeeProjects] = useState([]);
   const [employeeTasks, setEmployeeTasks] = useState([]);
@@ -74,12 +74,7 @@ function Profile() {
               <div className="text-gray-900">
                 {employee.empName} {employee.empSurname}
               </div>
-              <button
-                type="button"
-                className="font-semibold text-indigo-600 hover:text-indigo-500 "
-              >
-                Düzenle
-              </button>
+          
             </dd>
           </div>
           <div className="pt-6 sm:flex">
@@ -88,12 +83,7 @@ function Profile() {
             </dt>
             <dd className="mt-1 flex justify-between gap-x-6 sm:mt-0 sm:flex-auto">
               <div className="text-gray-900">{employee.empEmail}</div>
-              <button
-                type="button"
-                className="font-semibold text-indigo-600 hover:text-indigo-500"
-              >
-                Düzenle
-              </button>
+              
             </dd>
           </div>
           <div className="pt-6 sm:flex">
@@ -102,12 +92,7 @@ function Profile() {
             </dt>
             <dd className="mt-1 flex justify-between gap-x-6 sm:mt-0 sm:flex-auto">
               <div className="text-gray-900">{employee.empPosition}</div>
-              <button
-                type="button"
-                className="font-semibold text-indigo-600 hover:text-indigo-500"
-              >
-                Düzenle
-              </button>
+             
             </dd>
           </div>
         </dl>
@@ -139,8 +124,9 @@ function Profile() {
                 <button
                   type="button"
                   className="font-semibold text-indigo-600 hover:text-indigo-500"
+                  onClick={() => onProjectClick(employeeProject.projID)}
                 >
-                  Düzenle
+                  Görüntüle
                 </button>
               </li>
             ))}
