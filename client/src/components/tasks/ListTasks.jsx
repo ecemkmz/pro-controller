@@ -37,7 +37,13 @@ function formatDate(dateString) {
   const options = { year: "numeric", month: "long", day: "numeric" };
   return new Date(dateString).toLocaleDateString(undefined, options);
 }
-
+function calculateDurationInDays(startDate, endDate) {
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+  const timeDifference = end - start;
+  const daysDifference = timeDifference / (1000 * 3600 * 24);
+  return Math.round(daysDifference);
+}
 export default function ListTasks() {
   const [tasks, setTasks] = useState([]);
   const [addTaskOpen, setAddTaskOpen] = useState(false);
@@ -72,16 +78,16 @@ export default function ListTasks() {
     fetchData();
   }, [selectedSortOption, selectedTaskStatus]);
 
-  const handleDeleteTask = (taskID,projectId) => {
-    const userId = localStorage.getItem('user');
-    console.log(projectId)
+  const handleDeleteTask = (taskID, projectId) => {
+    const userId = localStorage.getItem("user");
+    console.log(projectId);
     if (window.confirm("Bu Görevleri Silmek İstediğinize Emin Misiniz?")) {
       axios
         .delete(`http://localhost:5000/api/delete-task/${taskID}`, {
           headers: {
-            'userid': userId,
-            'projectid':projectId // Kullanıcı ID'sini header olarak
-          }
+            userid: userId,
+            projectid: projectId, // Kullanıcı ID'sini header olarak
+          },
         })
         .then((response) => {
           console.log("Success:", response.data);
@@ -357,7 +363,9 @@ export default function ListTasks() {
                         {({ active }) => (
                           <a
                             href="#"
-                            onClick={() => handleDeleteTask(task.taskID,task.projectID)}
+                            onClick={() =>
+                              handleDeleteTask(task.taskID, task.projectID)
+                            }
                             className={classNames(
                               active ? "bg-gray-50" : "",
                               "block px-3 py-1 text-sm leading-6 text-gray-900"
@@ -402,6 +410,19 @@ export default function ListTasks() {
 
                   <dd className="text-gray-700">
                     {task.empName + " " + task.empSurname}
+                  </dd>
+                </div>
+                <div className="flex justify-between gap-x-4 py-3">
+                  <dt className="text-gray-500">Adam Gün Değeri</dt>
+
+                  <dd className="text-gray-700">
+                    <span className="text-gray-500 text-sm">
+                      {calculateDurationInDays(
+                        task.taskStartDate,
+                        task.taskEndDate
+                      )}{" "}
+                      gün
+                    </span>
                   </dd>
                 </div>
                 <div className="flex justify-between gap-x-4 py-3">
