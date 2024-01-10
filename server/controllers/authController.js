@@ -59,7 +59,7 @@ exports.register = async (req, res) => {
           
           // Kullanıcı için bir JWT oluşturun
           const tokenUser = { id: userId, email };
-          const token = jwt.sign({ id: tokenUser.id, email }, process.env.JWT_SECRET, { expiresIn: "1h" });
+          const token = jwt.sign({ id: tokenUser.id, email }, process.env.JWT_SECRET);
 
           res.status(201).json({ message: "Kullanıcı başarıyla eklendi.", token, user: tokenUser});
       });
@@ -88,7 +88,7 @@ exports.login = async (req, res) => {
             }
 
             const tokenUser = { id: user.empID, email };
-            const token = jwt.sign({ id: tokenUser.id, email }, process.env.JWT_SECRET, { expiresIn: "1h" });
+            const token = jwt.sign({ id: tokenUser.id, email }, process.env.JWT_SECRET);
 
             res.status(200).json({ message: "Giriş Başarılı", token, user: tokenUser });
         });

@@ -131,17 +131,28 @@ exports.createProject = async (req, res) => {
 exports.deleteProject = (req, res) => {
   const projectId = req.params.id;
 
-  const deleteProjectQuery = `DELETE FROM Projects WHERE projID = ?`;
+  const deleteTasksQuery = `DELETE FROM Tasks WHERE projectID = ?`; // Assuming projectID is the foreign key in Tasks table
 
-  connection.query(deleteProjectQuery, [projectId], (err, deleteResult) => {
+  connection.query(deleteTasksQuery, [projectId], (err, taskDeleteResult) => {
     if (err) {
       console.error(err);
-      return res.status(500).json({ error: 'Internal Server Error' });
+      return res.status(500).json({ error: 'Error deleting project tasks' });
     }
-    console.log(`Proje silindi. ID: ${projectId}`);
-    return res.status(200).json(deleteResult);
+    console.log(`Tasks of Project ID: ${projectId} are deleted`);
+
+    const deleteProjectQuery = `DELETE FROM Projects WHERE projID = ?`;
+
+    connection.query(deleteProjectQuery, [projectId], (err, projectDeleteResult) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ error: 'Error deleting project' });
+      }
+      console.log(`Project deleted. ID: ${projectId}`);
+      return res.status(200).json({taskDeleteResult, projectDeleteResult});
+    });
   });
 };
+
 
 //List Project by Task Attended user
 exports.getProjectByTaskAttendedId = (req, res) => {
@@ -193,10 +204,10 @@ exports.getProjectById = (req, res) =>{
 
 exports.updateProject = (req, res) => {
   console.log("Project info update request received.");
-  const { projName, projStatus, projStartDate, projEndDate } = req.body;
-  const updateProjectQuery = `UPDATE Projects SET projName = ?, projStatus = ?, projStartDate = ?, projEndDate = ?, projDefaultEndDate = ? WHERE projID = ?`;
+  const { projName, projStatus} = req.body;
+  const updateProjectQuery = `UPDATE Projects SET projName = ?, projStatus = ? WHERE projID = ?`;
 
-  connection.query(updateProjectQuery, [projName, projStatus, projStartDate, projEndDate, projEndDate, req.params.projectID], (err, result) => {
+  connection.query(updateProjectQuery, [projName, projStatus,  req.params.projectID], (err, result) => {
     if (err) {
       console.error(err);
       res.status(500).json({ error: 'Internal Server Error' });
@@ -231,3 +242,46 @@ exports.updateProjectsPassedDeadline = (req, res) => {
     }
 })
 }
+
+exports.getProjectForAddTask = (req, res) => {
+  const userId = req.headers.userid; // Retrieve the userId from request headers
+  const { sortKey, sortOrder, projectStatus } = req.query;
+
+  let getProjectsQuery = `
+  SELECT 
+  p.projID, 
+  p.projName, 
+  p.projStatus, 
+  p.projStartDate, 
+  p.projEndDate, 
+  p.projDesc, 
+  p.projCreatorID,
+  p.projDelayedDays,
+  e.empName AS projCreatorName,
+  e.empSurname AS projCreatorSurname
+FROM Projects p
+LEFT JOIN Employees e ON p.projCreatorID = e.empID
+WHERE p.projCreatorID = ? `;
+
+  // Apply sorting
+  if (sortKey && sortOrder) {
+    getProjectsQuery += ` ORDER BY ${sortKey} ${sortOrder}`;
+  }
+
+  connection.query(getProjectsQuery, [userId], (err, result) => { // Pass the userId to the query
+    if (err) {
+      console.error(err);
+      res.status(500).json({ error: "Internal Server Error" });
+      return;
+    }
+
+    // Apply filtering based on project status
+    let filteredProjects = result;
+    if (projectStatus) {
+      filteredProjects = result.filter(
+        (project) => project.projStatus === projectStatus
+      );
+    }
+    res.status(200).json(filteredProjects);
+  });
+};

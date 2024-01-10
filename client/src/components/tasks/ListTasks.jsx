@@ -89,7 +89,7 @@ export default function ListTasks() {
           // window.location.reload(); // Sayfayı yenileme işlemini buradan kaldır
         })
         .catch((error) => {
-          console.error("Error:", error);
+          alert(error.response.data.error);
         });
     }
   };

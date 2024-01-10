@@ -65,7 +65,7 @@ export default function Home() {
               element={<ListProjects onProjectClick={handleProjectClick} />}
             />
             <Route path="/Tasks" element={<ListTasks />} />
-            <Route path="/Settings" element={<Profile />} />
+            <Route path="/Settings" element={<Profile onProjectClick={handleProjectClick} />} />
             <Route
               path="/Employees"
               element={
