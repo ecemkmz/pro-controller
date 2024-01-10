@@ -16,4 +16,6 @@ router.put('/edit/:id', employeeController.updateEmployeeInfo);
 router.delete('/delete/:id', employeeController.deleteEmployee);
 
 router.get('/employee-info', verifyToken, employeeController.getLoginEmployeeInfo);
+
+
 module.exports = router;

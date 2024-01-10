@@ -1,11 +1,15 @@
 import { Fragment, useState, useEffect } from "react";
 import { Dialog, Transition, Listbox } from "@headlessui/react";
-import { XMarkIcon, CheckIcon, ChevronUpDownIcon } from "@heroicons/react/24/outline";
+import {
+  XMarkIcon,
+  CheckIcon,
+  ChevronUpDownIcon,
+} from "@heroicons/react/24/outline";
 import "react-datepicker/dist/react-datepicker.css";
-import React from 'react';
+import React from "react";
 
 function classNames(...classes) {
-  return classes.filter(Boolean).join(' ');
+  return classes.filter(Boolean).join(" ");
 }
 
 function AddTask({ setAddTaskOpen }) {
@@ -15,6 +19,21 @@ function AddTask({ setAddTaskOpen }) {
   const [selected, setSelected] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState([]);
 
+  const handleStartDateChange = (e) => {
+    const selectedStartDate = new Date(e.target.value);
+    const projectStartDate =
+      new Date();
+
+    if (selectedStartDate < projectStartDate) {
+      alert("Görevin başlama tarihi, proje başlama tarihinden önce olamaz!");
+    }
+
+    setFormData({
+      ...formData,
+      taskStartDate: e.target.value,
+    });
+  };
+
   useEffect(() => {
     fetch("http://localhost:5000/api/employees")
       .then((response) => response.json())
@@ -23,12 +42,7 @@ function AddTask({ setAddTaskOpen }) {
   }, []);
 
   useEffect(() => {
-    const userId=localStorage.getItem('user');
-    fetch("http://localhost:5000/api/AddTask/Projects", {
-      headers: {
-        'userId': userId // Kullanıcı ID'sini header olarak gönder
-      }
-    })
+    fetch("http://localhost:5000/api/projects")
       .then((response) => response.json())
       .then((data) => setProjects(data))
       .catch((error) => console.error("Error fetching projects data:", error));
@@ -43,19 +57,19 @@ function AddTask({ setAddTaskOpen }) {
     taskStartDate: "",
     taskEndDate: "",
     taskDesc: "",
-    taskStatus: ""
+    taskStatus: "",
   });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log(formData);
-    const userId = localStorage.getItem('user');
+    const userId = localStorage.getItem("user");
     try {
       const response = await fetch("http://localhost:5000/api/create-task", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "userId":userId
+          userId: userId,
         },
         body: JSON.stringify({
           taskName: formData.taskName,
@@ -66,7 +80,7 @@ function AddTask({ setAddTaskOpen }) {
           taskStartDate: formData.taskStartDate,
           taskEndDate: formData.taskEndDate,
           taskDesc: formData.taskDesc,
-          taskStatus: formData.taskStatus
+          taskStatus: formData.taskStatus,
         }),
       });
 
@@ -79,13 +93,15 @@ function AddTask({ setAddTaskOpen }) {
         console.error("Error during task registration:", data.error);
 
         if (data.error === "Bu görev adı zaten kayıtlı.") {
-          alert("Bu görev adı zaten kayıtlı. Lütfen farklı bir proje adı kullanın.");
+          alert(
+            "Bu görev adı zaten kayıtlı. Lütfen farklı bir proje adı kullanın."
+          );
         } else {
           alert("Görev Kaydı sırasında bir hata oluştu.");
         }
       }
     } catch (error) {
-      alert(error.response.data.error);;
+      console.error("An error occurred while sending the request:", error);
     }
   };
 
@@ -123,7 +139,8 @@ function AddTask({ setAddTaskOpen }) {
                               Yeni Görev
                             </Dialog.Title>
                             <p className="text-sm text-gray-500">
-                              Yeni görevinizi oluşturmak için aşağıdaki bilgileri doldurarak başlayın.
+                              Yeni görevinizi oluşturmak için aşağıdaki
+                              bilgileri doldurarak başlayın.
                             </p>
                           </div>
                           <div className="flex h-7 items-center">
@@ -184,7 +201,7 @@ function AddTask({ setAddTaskOpen }) {
                                 setSelected(project);
                                 setFormData({
                                   ...formData,
-                                  projectID: project.projID
+                                  projectID: project.projID,
                                 });
                               }}
                             >
@@ -192,9 +209,14 @@ function AddTask({ setAddTaskOpen }) {
                                 <>
                                   <div className="relative mt-2">
                                     <Listbox.Button className="relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                      <span className="block truncate">{selected.projName || "Seçim yapınız"}</span>
+                                      <span className="block truncate">
+                                        {selected.projName || "Seçim yapınız"}
+                                      </span>
                                       <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                                        <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                                        <ChevronUpDownIcon
+                                          className="h-5 w-5 text-gray-400"
+                                          aria-hidden="true"
+                                        />
                                       </span>
                                     </Listbox.Button>
 
@@ -211,26 +233,40 @@ function AddTask({ setAddTaskOpen }) {
                                             key={project.id}
                                             className={({ active }) =>
                                               classNames(
-                                                active ? 'bg-indigo-600 text-white' : 'text-gray-900',
-                                                'relative cursor-default select-none py-2 pl-3 pr-9'
+                                                active
+                                                  ? "bg-indigo-600 text-white"
+                                                  : "text-gray-900",
+                                                "relative cursor-default select-none py-2 pl-3 pr-9"
                                               )
                                             }
                                             value={project}
                                           >
                                             {({ selectedEmployee, active }) => (
                                               <>
-                                                <span className={classNames(selectedEmployee ? 'font-semibold' : 'font-normal', 'block truncate')}>
+                                                <span
+                                                  className={classNames(
+                                                    selectedEmployee
+                                                      ? "font-semibold"
+                                                      : "font-normal",
+                                                    "block truncate"
+                                                  )}
+                                                >
                                                   {project.projName}
                                                 </span>
 
                                                 {selectedEmployee ? (
                                                   <span
                                                     className={classNames(
-                                                      active ? 'text-white' : 'text-indigo-600',
-                                                      'absolute inset-y-0 right-0 flex items-center pr-4'
+                                                      active
+                                                        ? "text-white"
+                                                        : "text-indigo-600",
+                                                      "absolute inset-y-0 right-0 flex items-center pr-4"
                                                     )}
                                                   >
-                                                    <CheckIcon className="h-5 w-5" aria-hidden="true" />
+                                                    <CheckIcon
+                                                      className="h-5 w-5"
+                                                      aria-hidden="true"
+                                                    />
                                                   </span>
                                                 ) : null}
                                               </>
@@ -261,16 +297,26 @@ function AddTask({ setAddTaskOpen }) {
                                 setSelectedEmployee(employee);
                                 setFormData({
                                   ...formData,
-                                  taskAttendedId: employee.empID
+                                  taskAttendedId: employee.empID,
                                 });
-                              }}>
+                              }}
+                            >
                               {({ open }) => (
                                 <>
                                   <div className="relative mt-2">
                                     <Listbox.Button className="relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                      <span className="block truncate">{selectedEmployee.empName ? (selectedEmployee.empName + " " + selectedEmployee.empSurname) : "Seçim Yapınız"}</span>
+                                      <span className="block truncate">
+                                        {selectedEmployee.empName
+                                          ? selectedEmployee.empName +
+                                            " " +
+                                            selectedEmployee.empSurname
+                                          : "Seçim Yapınız"}
+                                      </span>
                                       <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                                        <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                                        <ChevronUpDownIcon
+                                          className="h-5 w-5 text-gray-400"
+                                          aria-hidden="true"
+                                        />
                                       </span>
                                     </Listbox.Button>
 
@@ -287,26 +333,42 @@ function AddTask({ setAddTaskOpen }) {
                                             key={person.id}
                                             className={({ active }) =>
                                               classNames(
-                                                active ? 'bg-indigo-600 text-white' : 'text-gray-900',
-                                                'relative cursor-default select-none py-2 pl-3 pr-9'
+                                                active
+                                                  ? "bg-indigo-600 text-white"
+                                                  : "text-gray-900",
+                                                "relative cursor-default select-none py-2 pl-3 pr-9"
                                               )
                                             }
                                             value={person}
                                           >
                                             {({ selectedEmployee, active }) => (
                                               <>
-                                                <span className={classNames(selectedEmployee ? 'font-semibold' : 'font-normal', 'block truncate')}>
-                                                  {person.empName + " " + person.empSurname}
+                                                <span
+                                                  className={classNames(
+                                                    selectedEmployee
+                                                      ? "font-semibold"
+                                                      : "font-normal",
+                                                    "block truncate"
+                                                  )}
+                                                >
+                                                  {person.empName +
+                                                    " " +
+                                                    person.empSurname}
                                                 </span>
 
                                                 {selectedEmployee ? (
                                                   <span
                                                     className={classNames(
-                                                      active ? 'text-white' : 'text-indigo-600',
-                                                      'absolute inset-y-0 right-0 flex items-center pr-4'
+                                                      active
+                                                        ? "text-white"
+                                                        : "text-indigo-600",
+                                                      "absolute inset-y-0 right-0 flex items-center pr-4"
                                                     )}
                                                   >
-                                                    <CheckIcon className="h-5 w-5" aria-hidden="true" />
+                                                    <CheckIcon
+                                                      className="h-5 w-5"
+                                                      aria-hidden="true"
+                                                    />
                                                   </span>
                                                 ) : null}
                                               </>
@@ -337,12 +399,7 @@ function AddTask({ setAddTaskOpen }) {
                               name="project-start-date"
                               className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                               value={formData.taskStartDate}
-                              onChange={(e) =>
-                                setFormData({
-                                  ...formData,
-                                  taskStartDate: e.target.value,
-                                })
-                              }
+                              onChange={handleStartDateChange}
                             />
                           </div>
                         </div>
@@ -371,10 +428,9 @@ function AddTask({ setAddTaskOpen }) {
                                 })
                               }
                             />
-                           
                           </div>
                         </div>
-                       
+
                         {/* Project description */}
                         <div className="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
                           <div>
@@ -423,8 +479,7 @@ function AddTask({ setAddTaskOpen }) {
                                     type="radio"
                                     className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600"
                                     defaultChecked={
-                                      formData.taskStatus ===
-                                      "Tamamlanmış"
+                                      formData.taskStatus === "Tamamlanmış"
                                     }
                                     onChange={() =>
                                       setFormData({
@@ -441,7 +496,6 @@ function AddTask({ setAddTaskOpen }) {
                                   >
                                     Tamamlanmış
                                   </label>
-                                 
                                 </div>
                               </div>
                               <div className="relative flex items-start">
@@ -453,8 +507,7 @@ function AddTask({ setAddTaskOpen }) {
                                     type="radio"
                                     className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600"
                                     defaultChecked={
-                                      formData.taskStatus ===
-                                      "Devam Ediyor"
+                                      formData.taskStatus === "Devam Ediyor"
                                     }
                                     onChange={() =>
                                       setFormData({
@@ -471,7 +524,6 @@ function AddTask({ setAddTaskOpen }) {
                                   >
                                     Devam Ediyor
                                   </label>
-                                  
                                 </div>
                               </div>
                               <div className="relative flex items-start">
@@ -483,7 +535,7 @@ function AddTask({ setAddTaskOpen }) {
                                     type="radio"
                                     className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600"
                                     defaultChecked={
-                                      formData.taskStatus=== "Gecikmiş"
+                                      formData.taskStatus === "Gecikmiş"
                                     }
                                     onChange={() =>
                                       setFormData({
@@ -500,7 +552,6 @@ function AddTask({ setAddTaskOpen }) {
                                   >
                                     Gecikmiş
                                   </label>
-                                  
                                 </div>
                               </div>
                             </div>
@@ -539,4 +590,4 @@ function AddTask({ setAddTaskOpen }) {
   );
 }
 
-export default AddTask
+export default AddTask;

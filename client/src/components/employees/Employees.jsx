@@ -5,9 +5,23 @@ import {
   EyeOutlined,
 } from "@ant-design/icons";
 
+import AddEmployee from "./AddEmployee"; 
 
 function Employees({ onEmployeeClick, onEmployeeClickEdit }) {
   const [employees, setEmployees] = useState([]);
+  const [isFormVisible, setIsFormVisible] = useState(false);
+
+  const toggleFormVisibility = () => {
+    setIsFormVisible(!isFormVisible);
+  };
+  
+  const handleEmployeeAdded = () => {
+    
+    fetch("http://localhost:5000/api/employees")
+      .then((response) => response.json())
+      .then((data) => setEmployees(data))
+      .catch((error) => console.error("Veri çekme hatası:", error));
+  };
 
   // Delete employee
   const handleDelete = (empId) => {
@@ -90,6 +104,23 @@ function Employees({ onEmployeeClick, onEmployeeClickEdit }) {
           </li>
         ))}
       </ul>
+      {/* "Çalışan Ekle" düğmesi */}
+      <div className="fixed bottom-8 right-8">
+        <button
+          onClick={toggleFormVisibility}
+          className="bg-green-500 text-white py-2 px-4 rounded-md"
+        >
+          Çalışan Ekle
+        </button>
+      </div>
+
+      {/* Form bileşeni */}
+      {isFormVisible && (
+        <AddEmployee
+          onClose={toggleFormVisibility}
+          onEmployeeAdded={handleEmployeeAdded} 
+        />
+      )}
     </div>
   );
 }
