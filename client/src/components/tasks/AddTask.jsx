@@ -42,7 +42,12 @@ function AddTask({ setAddTaskOpen }) {
   }, []);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/projects")
+    const userId=localStorage.getItem('user');
+    fetch("http://localhost:5000/api/AddTask/Projects", {
+      headers: {
+        'userId': userId // Kullanıcı ID'sini header olarak gönder
+      }
+    })
       .then((response) => response.json())
       .then((data) => setProjects(data))
       .catch((error) => console.error("Error fetching projects data:", error));
@@ -101,7 +106,7 @@ function AddTask({ setAddTaskOpen }) {
         }
       }
     } catch (error) {
-      console.error("An error occurred while sending the request:", error);
+      alert(error.response.data.error);
     }
   };
 
