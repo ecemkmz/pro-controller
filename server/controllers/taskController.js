@@ -200,3 +200,25 @@ exports.getTaskById = (req, res) =>{
   });
 
 }
+
+exports.getTaskStatusCount= (req, res) => {
+
+  let getTasksQuery = `
+  SELECT a.taskStatus, COUNT(*) AS statusCount
+  FROM Tasks a 
+  WHERE a.taskAttendedId = ?
+  GROUP BY a.taskStatus
+`;
+
+ console.log(req.params.id)
+  connection.query(getTasksQuery,[req.params.empID], (err, result) => {
+    if (err) {
+      console.error(err);
+      res.status(500).json({ error: "Internal Server Error" });
+      return;
+    }
+    console.log(result);
+
+    res.status(200).json(result)
+  });
+}

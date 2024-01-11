@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 function EmpInfo() {
   const id = useParams().empID;
   const [projectsArray, setProjectsArray] = useState([]);
+  const[taskCounts,setTaskCounts]=useState([])
 
   const [PersonInfo, setPersonInfo] = useState({
     empName: "",
@@ -14,15 +15,11 @@ function EmpInfo() {
     empAbout: "",
   });
 
-  const completedProjects = projectsArray.filter(
-    (project) => project.projStatus === "Tamamlandı" || "Tamamlanmış"
-  );
-  const ongoingProjects = projectsArray.filter(
-    (project) => project.projStatus === "Devam Ediyor"
-  );
-  const delayedProjects = projectsArray.filter(
-    (project) => project.projStatus === "Gecikmiş"
-  );
+  const completedTasksCount =taskCounts.find(task => task.taskStatus === 'Tamamlanmış')?.statusCount || 0;
+  const delayedTasksCount = taskCounts.find(task => task.taskStatus === 'Gecikmiş')?.statusCount || 0;
+const ongoingTasksCount = taskCounts.find(task => task.taskStatus === 'Devam Ediyor')?.statusCount || 0;
+
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -41,6 +38,14 @@ function EmpInfo() {
         console.log(dataProjects);
         if (dataProjects) {
           setProjectsArray(dataProjects);
+        }
+        const taskCountByStatus = await fetch(
+          `http://localhost:5000/api/taskCountByStatus/${id}`
+        );
+        const taskCounts = await taskCountByStatus.json();
+        console.log(taskCounts);
+        if (taskCounts) {
+          setTaskCounts(taskCounts);
         }
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -164,6 +169,14 @@ function EmpInfo() {
               {projectsArray.length}
             </dd>
           </div>
+          <div className="bg-gray-50 px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-3">
+            <dt className="text-sm font-medium leading-6 text-gray-900">
+              Atanan Görev Sayısı
+            </dt>
+            <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
+              {completedTasksCount+ongoingTasksCount+delayedTasksCount}
+            </dd>
+          </div>
           <div className="bg-white px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-3">
             <dt className="text-sm font-medium leading-6 text-gray-900">
               Görev Geçmişi
@@ -175,7 +188,7 @@ function EmpInfo() {
                     Tamamlanan
                   </div>
                   <div className="mt-1 text-sm leading-6 text-gray-700">
-                    {completedProjects.length}
+                    {completedTasksCount}
                   </div>
                 </div>
                 <div className="flex flex-col items-center px-32">
@@ -183,7 +196,7 @@ function EmpInfo() {
                     Devam Eden
                   </div>
                   <div className="mt-1 text-sm leading-6 text-gray-700">
-                    {ongoingProjects.length}
+                    {ongoingTasksCount}
                   </div>
                 </div>
                 <div className="flex flex-col items-center">
@@ -191,7 +204,7 @@ function EmpInfo() {
                     Gecikmiş
                   </div>
                   <div className="mt-1 text-sm leading-6 text-gray-700">
-                    {delayedProjects.length}
+                    {delayedTasksCount}
                   </div>
                 </div>
 
