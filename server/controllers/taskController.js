@@ -164,6 +164,7 @@ exports.updateTask = (req, res) => {
     console.log(`Görev bilgileri değişiklikleri kaydedildi. ${result.affectedRows} satır güncellendi.ID: ${req.params.taskID}`);    console.log(result);
     res.status(200).json(result);
   });
+
 }
 
 exports.getTaskById = (req, res) =>{
@@ -197,4 +198,5 @@ exports.getTaskById = (req, res) =>{
     }
     res.status(200).json(result[0]);
   });
+
 }

@@ -11,6 +11,7 @@ function DetailProject({ OnProjectClick }) {
   const { projectID } = useParams();
   const [TaskList, setTaskList] = useState([
     {
+      taskID:"",
       taskName: "",
       taskStatus: "",
       taskEndDate: "",
@@ -78,6 +79,12 @@ function DetailProject({ OnProjectClick }) {
     projName: "",
     projStatus: ""
   });
+  const [taskEditingID, setTaskEditingID] = useState(null);
+
+  const [taskFormData, setTaskFormData] = useState({
+    taskName: "",
+    taskStatus: ""
+  });
 
   const handleEditClick = async (e) => {
     if (editingMode) {
@@ -109,7 +116,46 @@ function DetailProject({ OnProjectClick }) {
       setEditingMode(true);
     }
   };
-
+  const handleTaskEditClick = async (taskID) => {
+    if (taskEditingID === taskID)  {
+      try {
+        const userid=localStorage.getItem('user');
+        console.log(taskID);
+        const response = await fetch(
+          `http://localhost:5000/api/EditTask/${taskID}`,
+          {
+            method: "PUT",
+            headers: { "Content-Type": "application/json", userid:userid,projectid:projectID},
+            body: JSON.stringify({ ...taskFormData }),
+          }
+        );
+        if (response.status === 403) {
+          // If the response status is 403, display an alert
+          const data = await response.json();
+          alert(data.error || "Yetkisiz erişim.");
+          setTaskEditingID(null);
+          window.location.reload();
+          return;
+        }
+  
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+  
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+      setTaskEditingID(null);
+      window.location.reload();
+    } else {
+      const selectedTask = TaskList.find(task => task.taskID === taskID);
+      setTaskFormData({
+        taskName: selectedTask.taskName,
+        taskStatus: selectedTask.taskStatus
+      });
+      setTaskEditingID(taskID);
+    }
+  };
   return (
     <div>
       <header className="relative isolate pt-16">
@@ -321,16 +367,44 @@ function DetailProject({ OnProjectClick }) {
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-gray-200">
-                        {TaskList.map((task) => (
+                     {TaskList.map((task) => (
                           <tr key={task.taskID}>
+
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                              {task.taskName}
+                            {taskEditingID === task.taskID ? (
+          <input
+            type="text"
+            value={taskFormData.taskName}
+            onChange={(e) => setTaskFormData((prevData)=>({ ...prevData, taskName: e.target.value }))}
+          />
+        ) : (
+          task.taskName
+        )}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                               {task.empName} {task.empSurname}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm">
-                              {renderTaskStatus(task.taskStatus)}
+                            {taskEditingID === task.taskID ? (
+          <select
+            id="status"
+            name="status"
+            value={taskFormData.taskStatus}
+            onChange={(e) =>
+              setTaskFormData((prevData) => ({
+                ...prevData,
+                taskStatus: e.target.value,
+              }))
+            }
+          >
+            {/* Burada durum seçeneklerini ekleyin */}
+            <option value="Tamamlanmış">Tamamlanmış</option>
+                    <option value="Devam Ediyor">Devam Ediyor</option>
+                    <option value="Gecikmiş">Gecikmiş</option>
+                  </select>
+        ) : (
+          renderTaskStatus(task.taskStatus)
+        )}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                               {task.taskEndDate ? (
@@ -342,7 +416,8 @@ function DetailProject({ OnProjectClick }) {
                               )}
                             </td>
                             <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
-                              <a className="text-indigo-600 hover:text-indigo-900">
+                              <a className="text-indigo-600 hover:text-indigo-900"
+                              onClick={() => handleTaskEditClick(task.taskID)}>
                                 <svg
                                   xmlns="http://www.w3.org/2000/svg"
                                   fill="none"
