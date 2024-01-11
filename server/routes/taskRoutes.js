@@ -15,4 +15,6 @@ router.get('/task-list-by-projID/:projectID', taskController.getTaskByProjectId)
 
 router.put('/EditTask/:taskID',verifyAdmin,taskController.updateTask)
 
+router.get('/taskDetail/:taskID',taskController.getTaskById)
+
 module.exports = router
