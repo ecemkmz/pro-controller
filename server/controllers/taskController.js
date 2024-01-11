@@ -63,6 +63,9 @@ exports.createTask = async (req, res) => {
     taskDesc,
     taskStatus,
   } = req.body;
+  if (!taskName || taskName.trim() === '') {
+    return res.status(400).json({ error: "Görev ismi boş bırakılamaz." });
+  }
 
   try {
     const checkNameQuery = `SELECT taskName FROM Tasks WHERE taskName = ?`;
@@ -143,5 +146,55 @@ exports.getTaskByProjectId = (req, res) => {
     }
     console.log(`Tasks: ${result}`)
     res.status(200).json(result);
+  });
+}
+
+exports.updateTask = (req, res) => {
+  console.log("Task Project info update request received.");
+  const { taskName, taskStatus} = req.body;
+  console.log(req.body,req.params)
+  const updateTaskQuery = `UPDATE Tasks SET taskName = ?, taskStatus = ? WHERE taskID = ?`;
+
+  connection.query(updateTaskQuery, [taskName, taskStatus, req.params.taskID], (err, result) => {
+    if (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Internal Server Error' });
+      return;
+    }
+    console.log(`Görev bilgileri değişiklikleri kaydedildi. ${result.affectedRows} satır güncellendi.ID: ${req.params.taskID}`);    console.log(result);
+    res.status(200).json(result);
+  });
+}
+
+exports.getTaskById = (req, res) =>{
+  console.log("Task info request received for ID:", req.params.taskID, "...");
+  const getTaskQuery = `
+  SELECT 
+    Tasks.taskID, 
+    Tasks.taskName, 
+    Tasks.projectID, 
+    Tasks.taskStartDate, 
+    Tasks.taskEndDate,
+    Tasks.taskAttenderID,
+    Attender.empName AS attenderEmpName, 
+    Attender.empSurname AS attenderEmpSurname,
+    Tasks.taskAttendedId,
+    Attended.empName AS attendedEmpName, 
+    Attended.empSurname AS attendedEmpSurname,
+    Tasks.taskDesc,
+    Tasks.taskStatus
+  FROM 
+    Tasks 
+  JOIN Employees AS Attender ON Tasks.taskAttenderID = Attender.empID
+  JOIN Employees AS Attended ON Tasks.taskAttendedId = Attended.empID
+  WHERE 
+    taskID = ?`;
+  connection.query(getTaskQuery, [req.params.taskID], (err, result) => {
+    if (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Internal Server Error' });
+      return;
+    }
+    res.status(200).json(result[0]);
   });
 }

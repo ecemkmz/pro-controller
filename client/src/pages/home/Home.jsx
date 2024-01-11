@@ -9,11 +9,13 @@ import ListProjects from "../../components/projects/ListProjects";
 import Profile from "../../components/profile/Profile";
 import UserEdit from "../../components/employees/UserEdit";
 import DetailProject from "../../components/projects/DetailProject";
+import DetailTask from "../../components/tasks/DetailTask";
 
 export default function Home() {
   const navigate = useNavigate();
   const [selectedEmpId, setSelectedEmpId] = useState(null);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
+  const [selectedTaskId, setSelectedTaskId] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -44,6 +46,10 @@ export default function Home() {
     setSelectedProjectId(projectID);
     navigate(`Project/${projectID}`);
   };
+  const handleTaskClick = (taskID) => {
+    setSelectedTaskId(taskID);
+    navigate(`Task/${taskID}`);
+  };
 
   return (
     <div className="flex max-h-screen">
@@ -64,7 +70,7 @@ export default function Home() {
               path="/Projects"
               element={<ListProjects onProjectClick={handleProjectClick} />}
             />
-            <Route path="/Tasks" element={<ListTasks />} />
+            <Route path="/Tasks" element={<ListTasks onTaskClick={handleTaskClick} />} />
             <Route path="/Settings" element={<Profile onProjectClick={handleProjectClick} />} />
             <Route
               path="/Employees"
@@ -83,6 +89,7 @@ export default function Home() {
               path="/Employees/UserEdit/:empID"
               element={<UserEdit empId={selectedEmpId} />}
             />
+            <Route path="Task/:taskID" element={<DetailTask />} />
             <Route path="Project/:projectID" element={<DetailProject />} />
           </Routes>
         </div>

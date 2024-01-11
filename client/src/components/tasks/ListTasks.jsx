@@ -44,7 +44,7 @@ function calculateDurationInDays(startDate, endDate) {
   const daysDifference = timeDifference / (1000 * 3600 * 24);
   return Math.round(daysDifference);
 }
-export default function ListTasks() {
+export default function ListTasks({ onTaskClick }) {
   const [tasks, setTasks] = useState([]);
   const [addTaskOpen, setAddTaskOpen] = useState(false);
   const [selectedSortOption, setSelectedSortOption] = useState(null);
@@ -321,10 +321,10 @@ export default function ListTasks() {
               <div className="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
                 <div className="text-sm font-medium leading-6 text-gray-900">
                   <span className="font-thin text-gray-500 font-serif">
-                    {task.projName}
+                    Proje | {task.projName}
                   </span>
                   <br />
-                  {task.taskName}
+                    Görev | {task.taskName}
                 </div>
                 <Menu as="div" className="relative ml-auto">
                   <Menu.Button className="-m-2.5 block p-2.5 text-gray-400 hover:text-gray-500">
@@ -348,12 +348,13 @@ export default function ListTasks() {
                         {({ active }) => (
                           <a
                             href="#"
+                            onClick={() => onTaskClick(task.taskID)}
                             className={classNames(
                               active ? "bg-gray-50" : "",
                               "block px-3 py-1 text-sm leading-6 text-gray-900"
                             )}
                           >
-                            Düzenle
+                            Görüntüle
                             <span className="sr-only">, {task.taskName}</span>
                           </a>
                         )}

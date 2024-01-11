@@ -116,7 +116,10 @@ const ListProjects = ({ onProjectClick }) => {
   };
 
   return (
+    
+
     <div>
+
       <section className="mb-8" aria-labelledby="filter-heading">
         <h2 id="filter-heading" className="sr-only">
           Filters
@@ -322,7 +325,9 @@ const ListProjects = ({ onProjectClick }) => {
           </div>
         </div>
       </section>
-
+      {projects.length === 0 ? (
+      <NoProject />
+    ) : (
       <div>
         <ul
           role="list"
@@ -452,7 +457,7 @@ const ListProjects = ({ onProjectClick }) => {
             </li>
           ))}
         </ul>
-      </div>
+      </div>)}
 
       <div className="mt-4 sm:absolute sm:bottom-0 sm:right-0 sm:mr-4 sm:mb-4">
         <button
@@ -466,6 +471,7 @@ const ListProjects = ({ onProjectClick }) => {
 
       {addProjectOpen && <AddProject setAddProjectOpen={setAddProjectOpen} />}
     </div>
+  
   );
 };
 export default ListProjects;

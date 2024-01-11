@@ -83,6 +83,9 @@ exports.createProject = async (req, res) => {
     projectStatus,
     creatorID,
   } = req.body;
+  if (!projName || projName.trim() === '') {
+    return res.status(400).json({ error: "Proje ismi boş bırakılamaz." });
+  }
 
   try {
     const checkNameQuery = `SELECT projName FROM Projects WHERE projName = ?`;

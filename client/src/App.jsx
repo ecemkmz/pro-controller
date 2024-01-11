@@ -10,6 +10,7 @@ import ListTasks from "./components/tasks/ListTasks";
 import Profile from "./components/profile/Profile";
 import UserEdit from "./components/employees/UserEdit";
 import DetailProject from "./components/projects/DetailProject";
+import DetailTask from './components/tasks/DetailTask';
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
           <Route path="Employees/Employee/:empID" element={<EmpInfo />} />
           <Route path="Employees/UserEdit/:empID" element={<UserEdit />} />
           <Route path="Project/:projectID" element={<DetailProject />} />
+          <Route path="Task/:taskID" element={<DetailTask />} />
         </Route>
         
         {/* <Route path="/userEdit" element={<UserEdit />} />
