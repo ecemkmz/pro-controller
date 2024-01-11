@@ -7,8 +7,7 @@ function Profile({ onProjectClick }) {
   const [employeeProjects, setEmployeeProjects] = useState([]);
   const [employeeTasks, setEmployeeTasks] = useState([]);
 
-  const projID = localStorage.user;
-  const taskID = localStorage.user;
+  const userId = localStorage.user;
 
   useEffect(() => {
     const fetchEmployeeInfo = async () => {
@@ -28,14 +27,14 @@ function Profile({ onProjectClick }) {
           setEmployee(data);
 
           const responseProj = await fetch(
-            `http://localhost:5000/api/projects/${projID}`
+            `http://localhost:5000/api/projects/${userId}`
           );
           const employeeProj = await responseProj.json();
           if (employeeProj) {
             setEmployeeProjects(employeeProj);
           }
           const responseTask = await fetch(
-            `http://localhost:5000/api/tasks/${taskID}`
+            `http://localhost:5000/api/tasks/${userId}`
           );
           const employeeTask = await responseTask.json();
           if (employeeTask) {

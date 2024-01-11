@@ -73,7 +73,7 @@ JOIN Employees e ON p.projCreatorID = e.empID WHERE p.projCreatorID=?
   });
 }
 
-//Create Project   
+//Proje Oluşturma   
 exports.createProject = async (req, res) => {
   const {
     projName,
@@ -157,7 +157,7 @@ exports.deleteProject = (req, res) => {
 };
 
 
-//List Project by Task Attended user
+//Atanılan görevlerin proje bilgilerini getirme
 exports.getProjectByTaskAttendedId = (req, res) => {
   let getProjectsQueryById = `SELECT 
   p.projID,
@@ -178,8 +178,6 @@ WHERE
   a.taskAttendedId = ?
 GROUP BY 
   p.projID, p.projName, p.projStatus, p.projStartDate, p.projEndDate, e.empName, e.empSurname`;
-
-
 
   connection.query(getProjectsQueryById, [req.params.id], (err, result) => {
     if (err) {
