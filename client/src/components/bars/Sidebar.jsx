@@ -18,18 +18,11 @@ function Sidebar({ onMenuClick, activeMenu, activeSubMenu, navigate }) {
       title: "Projeler",
       icon: <AppstoreOutlined />,
       route: "/Home/Projects",
-      subMenu: [
-        { title: "Proje Oluştur", route: "/projects/create" },
-      ],
     },
     {
       title: "Görevler",
       icon: <FileTextOutlined />,
       route: "/Home/Tasks",
-      subMenu: [
-        { title: "Görev Oluştur", route: "/tasks/create" },
-        // Diğer sub menüler
-      ],
     },
     { title: "Çalışanlar", icon: <TeamOutlined />, route: "/Home/Employees" },
     {

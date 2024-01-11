@@ -14,6 +14,16 @@ function EmpInfo() {
     empAbout: "",
   });
 
+  const completedProjects = projectsArray.filter(
+    (project) => project.projStatus === "Tamamlandı" || "Tamamlanmış"
+  );
+  const ongoingProjects = projectsArray.filter(
+    (project) => project.projStatus === "Devam Ediyor"
+  );
+  const delayedProjects = projectsArray.filter(
+    (project) => project.projStatus === "Gecikmiş"
+  );
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -152,6 +162,40 @@ function EmpInfo() {
             </dt>
             <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
               {projectsArray.length}
+            </dd>
+          </div>
+          <div className="bg-white px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-3">
+            <dt className="text-sm font-medium leading-6 text-gray-900">
+              Görev Geçmişi
+            </dt>
+            <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
+              <div className="flex justify-start">
+                <div className="flex flex-col items-center">
+                  <div className="text-sm font-medium text-green-700">
+                    Tamamlanan
+                  </div>
+                  <div className="mt-1 text-sm leading-6 text-gray-700">
+                    {completedProjects.length}
+                  </div>
+                </div>
+                <div className="flex flex-col items-center px-32">
+                  <div className="text-sm font-medium text-yellow-600">
+                    Devam Eden
+                  </div>
+                  <div className="mt-1 text-sm leading-6 text-gray-700">
+                    {ongoingProjects.length}
+                  </div>
+                </div>
+                <div className="flex flex-col items-center">
+                  <div className="text-sm font-medium text-red-700">
+                    Gecikmiş
+                  </div>
+                  <div className="mt-1 text-sm leading-6 text-gray-700">
+                    {delayedProjects.length}
+                  </div>
+                </div>
+
+              </div>
             </dd>
           </div>
           <div className="bg-gray-50 px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-3">
