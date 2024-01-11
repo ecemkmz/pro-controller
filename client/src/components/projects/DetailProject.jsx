@@ -11,7 +11,7 @@ function DetailProject({ OnProjectClick }) {
   const { projectID } = useParams();
   const [TaskList, setTaskList] = useState([
     {
-      taskID:"",
+      taskID: "",
       taskName: "",
       taskStatus: "",
       taskEndDate: "",
@@ -77,25 +77,25 @@ function DetailProject({ OnProjectClick }) {
 
   const [formData, setFormData] = useState({
     projName: "",
-    projStatus: ""
+    projStatus: "",
   });
   const [taskEditingID, setTaskEditingID] = useState(null);
 
   const [taskFormData, setTaskFormData] = useState({
     taskName: "",
-    taskStatus: ""
+    taskStatus: "",
   });
 
   const handleEditClick = async (e) => {
     if (editingMode) {
       try {
-        const userid=localStorage.getItem('user');
+        const userid = localStorage.getItem("user");
         console.log(userid);
         const response = await fetch(
           `http://localhost:5000/api/EditProject/${projectID}`,
           {
             method: "PUT",
-            headers: { "Content-Type": "application/json", userid:userid },
+            headers: { "Content-Type": "application/json", userid: userid },
             body: JSON.stringify({ ...formData }),
           }
         );
@@ -106,26 +106,30 @@ function DetailProject({ OnProjectClick }) {
         console.error("Error fetching data:", error);
       }
       setEditingMode(false);
-      // window.location.reload();
+      window.location.reload();
     } else {
       setFormData({
         projName: ProjectInfo.projName,
-        projStatus: ProjectInfo.projStatus
+        projStatus: ProjectInfo.projStatus,
       });
       // Düzenle butonuna tıklandığında yapılacak işlemler
       setEditingMode(true);
     }
   };
   const handleTaskEditClick = async (taskID) => {
-    if (taskEditingID === taskID)  {
+    if (taskEditingID === taskID) {
       try {
-        const userid=localStorage.getItem('user');
+        const userid = localStorage.getItem("user");
         console.log(taskID);
         const response = await fetch(
           `http://localhost:5000/api/EditTask/${taskID}`,
           {
             method: "PUT",
-            headers: { "Content-Type": "application/json", userid:userid,projectid:projectID},
+            headers: {
+              "Content-Type": "application/json",
+              userid: userid,
+              projectid: projectID,
+            },
             body: JSON.stringify({ ...taskFormData }),
           }
         );
@@ -137,21 +141,20 @@ function DetailProject({ OnProjectClick }) {
           window.location.reload();
           return;
         }
-  
+
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
-  
       } catch (error) {
         console.error("Error fetching data:", error);
       }
       setTaskEditingID(null);
       window.location.reload();
     } else {
-      const selectedTask = TaskList.find(task => task.taskID === taskID);
+      const selectedTask = TaskList.find((task) => task.taskID === taskID);
       setTaskFormData({
         taskName: selectedTask.taskName,
-        taskStatus: selectedTask.taskStatus
+        taskStatus: selectedTask.taskStatus,
       });
       setTaskEditingID(taskID);
     }
@@ -207,12 +210,14 @@ function DetailProject({ OnProjectClick }) {
               </h1>
             </div>
             <div className="flex items-center gap-x-4 sm:gap-x-6">
-              <span
-                className="text-sm font-semibold leading-6 text-gray-900 sm:block cursor-pointer"
-                onClick={handleEditClick}
-              >
-                {editingMode ? "Kaydet" : "Düzenle"}
-              </span>
+
+                <button
+                  type="button"
+                  onClick={handleEditClick}
+                  className="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                >
+                  {editingMode ? "Kaydet" : "Düzenle"}
+                </button>
             </div>
           </div>
         </div>
@@ -228,7 +233,7 @@ function DetailProject({ OnProjectClick }) {
             {editingMode ? (
               <div className="mt-6 grid grid-cols-1 text-sm leading-6 sm:grid-cols-2">
                 <div className="sm:pr-4">
-                <dt className="inline text-gray-500">Başlama Tarihi:</dt>{" "}
+                  <dt className="inline text-gray-500">Başlama Tarihi:</dt>{" "}
                   <dd className="inline text-gray-700">
                     {ProjectInfo.projStartDate ? (
                       <time dateTime={ProjectInfo.projStartDate}>
@@ -240,7 +245,7 @@ function DetailProject({ OnProjectClick }) {
                   </dd>
                 </div>
                 <div className="mt-2 sm:mt-0 sm:pl-4">
-                <dt className="inline text-gray-500">Bitiş Tarihi:</dt>{" "}
+                  <dt className="inline text-gray-500">Bitiş Tarihi:</dt>{" "}
                   <dd className="inline text-gray-700">
                     {ProjectInfo.projEndDate ? (
                       <time dateTime={ProjectInfo.projEndDate}>
@@ -249,7 +254,7 @@ function DetailProject({ OnProjectClick }) {
                     ) : (
                       <span>Bitiş tarihi mevcut değil.</span>
                     )}
-                    </dd>
+                  </dd>
                 </div>
                 <div className="mt-6 border-t border-gray-900/5 pt-6 sm:pr-4">
                   <dt className="inline text-gray-500">
@@ -336,14 +341,7 @@ function DetailProject({ OnProjectClick }) {
                     bulunmaktadır.
                   </p>
                 </div>
-                <div className="mt-4 sm:mt-0 sm:mt-4">
-                  <button
-                    type="button"
-                    className="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                  >
-                    Görev Ekle
-                  </button>
-                </div>
+                <div className="mt-4 sm:mt-0 sm:mt-4"></div>
               </div>
 
               <div className="mt-8 flow-root">
@@ -367,44 +365,52 @@ function DetailProject({ OnProjectClick }) {
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-gray-200">
-                     {TaskList.map((task) => (
+                        {TaskList.map((task) => (
                           <tr key={task.taskID}>
-
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                            {taskEditingID === task.taskID ? (
-          <input
-            type="text"
-            value={taskFormData.taskName}
-            onChange={(e) => setTaskFormData((prevData)=>({ ...prevData, taskName: e.target.value }))}
-          />
-        ) : (
-          task.taskName
-        )}
+                              {taskEditingID === task.taskID ? (
+                                <input
+                                  type="text"
+                                  value={taskFormData.taskName}
+                                  onChange={(e) =>
+                                    setTaskFormData((prevData) => ({
+                                      ...prevData,
+                                      taskName: e.target.value,
+                                    }))
+                                  }
+                                />
+                              ) : (
+                                task.taskName
+                              )}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                               {task.empName} {task.empSurname}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm">
-                            {taskEditingID === task.taskID ? (
-          <select
-            id="status"
-            name="status"
-            value={taskFormData.taskStatus}
-            onChange={(e) =>
-              setTaskFormData((prevData) => ({
-                ...prevData,
-                taskStatus: e.target.value,
-              }))
-            }
-          >
-            {/* Burada durum seçeneklerini ekleyin */}
-            <option value="Tamamlanmış">Tamamlanmış</option>
-                    <option value="Devam Ediyor">Devam Ediyor</option>
-                    <option value="Gecikmiş">Gecikmiş</option>
-                  </select>
-        ) : (
-          renderTaskStatus(task.taskStatus)
-        )}
+                              {taskEditingID === task.taskID ? (
+                                <select
+                                  id="status"
+                                  name="status"
+                                  value={taskFormData.taskStatus}
+                                  onChange={(e) =>
+                                    setTaskFormData((prevData) => ({
+                                      ...prevData,
+                                      taskStatus: e.target.value,
+                                    }))
+                                  }
+                                >
+                                  {/* Burada durum seçeneklerini ekleyin */}
+                                  <option value="Tamamlanmış">
+                                    Tamamlanmış
+                                  </option>
+                                  <option value="Devam Ediyor">
+                                    Devam Ediyor
+                                  </option>
+                                  <option value="Gecikmiş">Gecikmiş</option>
+                                </select>
+                              ) : (
+                                renderTaskStatus(task.taskStatus)
+                              )}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                               {task.taskEndDate ? (
@@ -416,8 +422,10 @@ function DetailProject({ OnProjectClick }) {
                               )}
                             </td>
                             <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
-                              <a className="text-indigo-600 hover:text-indigo-900"
-                              onClick={() => handleTaskEditClick(task.taskID)}>
+                              <a
+                                className="text-indigo-600 hover:text-indigo-900"
+                                onClick={() => handleTaskEditClick(task.taskID)}
+                              >
                                 <svg
                                   xmlns="http://www.w3.org/2000/svg"
                                   fill="none"
