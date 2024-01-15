@@ -35,7 +35,6 @@ const ongoingTasksCount = taskCounts.find(task => task.taskStatus === 'Devam Edi
           `http://localhost:5000/api/projects/taskAttendedUser/${id}`
         );
         const dataProjects = await responseProjects.json();
-        console.log(dataProjects);
         if (dataProjects) {
           setProjectsArray(dataProjects);
         }
@@ -43,7 +42,6 @@ const ongoingTasksCount = taskCounts.find(task => task.taskStatus === 'Devam Edi
           `http://localhost:5000/api/taskCountByStatus/${id}`
         );
         const taskCounts = await taskCountByStatus.json();
-        console.log(taskCounts);
         if (taskCounts) {
           setTaskCounts(taskCounts);
         }

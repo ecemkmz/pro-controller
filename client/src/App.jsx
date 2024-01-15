@@ -29,11 +29,6 @@ function App() {
           <Route path="Project/:projectID" element={<DetailProject />} />
           <Route path="Task/:taskID" element={<DetailTask />} />
         </Route>
-        
-        {/* <Route path="/userEdit" element={<UserEdit />} />
-              <Route path="/listProjects" element={<ListProjects />} />
-              <Route path="/employee/:empID" element={<EmpInfo />} /> */}
-        {/* Add other routes as needed */}
       </Routes>
     </BrowserRouter>
   );

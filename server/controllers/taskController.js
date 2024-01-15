@@ -46,7 +46,6 @@ exports.getTaskByTaskAttendedId = (req, res) => {
       res.status(500).json({ error: "Internal Server Error" });
       return;
     }
-    console.log(result);
 
     res.status(200).json(result)
   });
@@ -78,7 +77,6 @@ exports.createTask = async (req, res) => {
       }
 
       if (result.length > 0) {
-        console.log("Bu görev adı zaten kayıtlı.");
         res.status(400).json({ error: "Bu görev adı zaten kayıtlı." });
       } else {
         const insertQuery = `
@@ -105,10 +103,6 @@ exports.createTask = async (req, res) => {
               res.status(500).json({ error: "Internal Server Error" });
               return;
             }
-
-            console.log("Görev Eklendi.");
-
-            // Token'ı yanıt olarak döndür
             res.status(201).json({ message: "Görev başarıyla eklendi." });
           }
         );
@@ -120,7 +114,6 @@ exports.createTask = async (req, res) => {
   }
 }
 exports.deleteTask = (req, res) => {
-  console.log(`Task delete request received. ID: ${req.params.taskId}`);
   const deleteProjectQuery = `DELETE FROM Tasks WHERE taskID = ?`;
 
   connection.query(deleteProjectQuery, [req.params.taskId], (err, result) => {
@@ -130,13 +123,12 @@ exports.deleteTask = (req, res) => {
       return;
     }
     console.log(
-      `Proje silindi. ${result.affectedRows} satır silindi.ID: ${req.params.taskId}`
+      ` ${result.affectedRows} row deleted.ID: ${req.params.taskId}`
     );
     res.status(200).json(result);
   });
 }
 exports.getTaskByProjectId = (req, res) => {
-  console.log("Task list request received.", req.params.projectID);
   const getTaskQuery = `SELECT empName, empSurname, taskID, taskName, taskStatus, taskEndDate  FROM Tasks JOIN Projects ON Tasks.projectID = Projects.projID JOIN Employees ON Tasks.taskAttendedId = Employees.empID WHERE projectID = ?`;
 
   connection.query(getTaskQuery, [req.params.projectID], (err, result) => {
@@ -151,7 +143,6 @@ exports.getTaskByProjectId = (req, res) => {
 }
 
 exports.updateTask = (req, res) => {
-  console.log("Task Project info update request received.");
   const { taskName, taskStatus } = req.body;
   const projectId = req.headers.projectid;
   const updateTaskQuery = `UPDATE Tasks SET taskName = ?, taskStatus = ? WHERE taskID = ?`;
@@ -162,7 +153,7 @@ exports.updateTask = (req, res) => {
           res.status(500).json({ error: 'Internal Server Error' });
           return;
       }
-      console.log(`Görev bilgileri değişiklikleri kaydedildi. ${result.affectedRows} satır güncellendi.ID: ${req.params.taskID}`);
+      console.log(` ${result.affectedRows} row updated.ID: ${req.params.taskID}`);
 
       if (taskStatus === 'Tamamlanmış') {
           checkAndUpdateProjectStatus(projectId, res, () => {
@@ -200,7 +191,6 @@ function checkAndUpdateProjectStatus(projectId, res, callback) {
   });
 }
 exports.getTaskById = (req, res) =>{
-  console.log("Task info request received for ID:", req.params.taskID, "...");
   const getTaskQuery = `
   SELECT 
     Tasks.taskID, 
@@ -242,14 +232,12 @@ exports.getTaskStatusCount= (req, res) => {
   GROUP BY a.taskStatus
 `;
 
- console.log(req.params.id)
   connection.query(getTasksQuery,[req.params.empID], (err, result) => {
     if (err) {
       console.error(err);
       res.status(500).json({ error: "Internal Server Error" });
       return;
     }
-    console.log(result);
 
     res.status(200).json(result)
   });

@@ -3,27 +3,20 @@ const router = express.Router();
 const projectController = require("../controllers/projectController")
 const verifyAdmin = require("../middleware/verifyAdmin")
 
-// Project list
 router.get('/projects', projectController.getProjects );
 
-// Get Project by CreatorId
 router.get('/projects/:id',projectController.getProjectByCreatorId);
 
-// Create Project
 router.post('/create-project', projectController.createProject);
 
-// Delete Project
 router.delete('/delete-project/:id', verifyAdmin, projectController.deleteProject);
-// Get Project by taskAttendedUserId
+
 router.get('/projects/taskAttendedUser/:id', projectController.getProjectByTaskAttendedId)
 
-//Get Project by Id
 router.get('/projectDetail/:projectID',projectController.getProjectById)
 
-//Update Project By Id
 router.put('/EditProject/:projectID',verifyAdmin, projectController.updateProject)
 
-//Update Status And Deadlines of Projects That Passed Deadline
 router.get('/projects-passed-deadline', projectController.updateProjectsPassedDeadline);
 
 router.get('/AddTask/Projects',projectController.getProjectForAddTask)

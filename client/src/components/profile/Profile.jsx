@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import NoProject from "../projects/NoProject";
 import NoTask from "../tasks/NoTask";
 
-function Profile({ onProjectClick }) {
+function Profile({ onProjectClick, onTaskClick}) {
   const [employee, setEmployee] = useState(null);
   const [employeeProjects, setEmployeeProjects] = useState([]);
   const [employeeTasks, setEmployeeTasks] = useState([]);
@@ -158,6 +158,7 @@ function Profile({ onProjectClick }) {
                 <button
                   type="button"
                   className="font-semibold text-indigo-600 hover:text-indigo-500"
+                  onClick={() => onTaskClick(employeeTask.taskID)}
                 >
                   Düzenle
                 </button>

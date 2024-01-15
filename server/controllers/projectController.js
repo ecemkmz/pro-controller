@@ -73,7 +73,7 @@ JOIN Employees e ON p.projCreatorID = e.empID WHERE p.projCreatorID=?
   });
 }
 
-//Proje Oluşturma   
+//Create Project
 exports.createProject = async (req, res) => {
   const {
     projName,
@@ -98,7 +98,6 @@ exports.createProject = async (req, res) => {
       }
 
       if (result.length > 0) {
-        console.log("Bu proje adı zaten kayıtlı.");
         res.status(400).json({ error: "Bu proje adı zaten kayıtlı." });
       } else {
         const insertQuery = `
@@ -116,9 +115,6 @@ exports.createProject = async (req, res) => {
               return;
             }
 
-            console.log("Proje Eklendi.");
-
-            // Token'ı yanıt olarak döndür
             res.status(201).json({ message: "Proje başarıyla eklendi." });
           }
         );
@@ -134,14 +130,14 @@ exports.createProject = async (req, res) => {
 exports.deleteProject = (req, res) => {
   const projectId = req.params.id;
 
-  const deleteTasksQuery = `DELETE FROM Tasks WHERE projectID = ?`; // Assuming projectID is the foreign key in Tasks table
+  const deleteTasksQuery = `DELETE FROM Tasks WHERE projectID = ?`; 
 
   connection.query(deleteTasksQuery, [projectId], (err, taskDeleteResult) => {
     if (err) {
       console.error(err);
       return res.status(500).json({ error: 'Error deleting project tasks' });
     }
-    console.log(`Tasks of Project ID: ${projectId} are deleted`);
+
 
     const deleteProjectQuery = `DELETE FROM Projects WHERE projID = ?`;
 
@@ -157,7 +153,6 @@ exports.deleteProject = (req, res) => {
 };
 
 
-//Atanılan görevlerin proje bilgilerini getirme
 exports.getProjectByTaskAttendedId = (req, res) => {
   let getProjectsQueryById = `SELECT 
   p.projID,
@@ -185,13 +180,11 @@ GROUP BY
       res.status(500).json({ error: "Internal Server Error" });
       return;
     }
-    console.log(result);
     res.status(200).json(result);
   });
 }
 
 exports.getProjectById = (req, res) =>{
-  console.log("Project info request received for ID:", req.params.projectID, "...");
   const getProjectQuery = `SELECT projName, projStatus, projStartDate, projEndDate, empName, empSurname FROM Projects JOIN Employees ON Projects.projCreatorID = Employees.empID WHERE projID = ?`;
   connection.query(getProjectQuery, [req.params.projectID], (err, result) => {
     if (err) {
@@ -204,7 +197,6 @@ exports.getProjectById = (req, res) =>{
 }
 
 exports.updateProject = (req, res) => {
-  console.log("Project info update request received.");
   const { projName, projStatus} = req.body;
   const updateProjectQuery = `UPDATE Projects SET projName = ?, projStatus = ? WHERE projID = ?`;
 
@@ -214,9 +206,7 @@ exports.updateProject = (req, res) => {
       res.status(500).json({ error: 'Internal Server Error' });
       return;
     }
-    console.log(`Proje bilgileri değişiklikleri kaydedildi. ${result.affectedRows} satır güncellendi.ID: ${req.params.projectID}`);
-    console.clear();
-    console.log(result);
+    console.log(`${result.affectedRows} row updated.ID: ${req.params.projectID}`);
     res.status(200).json(result);
   });
 }

@@ -1,5 +1,5 @@
 const connection = require('../config/dbConfig');
-// Çalışanları Getirme
+// Get Employee
 exports.getEmployees = (req, res) => {
   const getEmployeesQuery = `SELECT empID, empName, empSurname, empEmail, empPosition, empImageUrl FROM Employees`;
 
