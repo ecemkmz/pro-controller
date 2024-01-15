@@ -202,7 +202,7 @@ function EmpInfo() {
                         : ""
                     }
                     ${
-                      projectArray.projStatus === "Tamamlandı"
+                      projectArray.projStatus === "Tamamlanmış"
                         ? "text-green-700 bg-green-50 ring-green-600/20"
                         : ""
                     }`}

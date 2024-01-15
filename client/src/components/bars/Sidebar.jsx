@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import {
   AppstoreOutlined,
   TeamOutlined,
-  SettingOutlined,
+  UserOutlined,
   PlusOutlined,
   DownOutlined,
   UpOutlined,
@@ -26,9 +26,9 @@ function Sidebar({ onMenuClick, activeMenu, activeSubMenu, navigate }) {
     },
     { title: "Çalışanlar", icon: <TeamOutlined />, route: "/Home/Employees" },
     {
-      title: "Ayarlar",
-      icon: <SettingOutlined />,
-      route: "/Home/Settings",
+      title: "Hesabım",
+      icon: <UserOutlined />,
+      route: "/Home/Profile",
       bottom: true,
     },
     // Diğer ana menüler
