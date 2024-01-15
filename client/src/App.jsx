@@ -23,7 +23,7 @@ function App() {
           <Route path="Employees" element={<Employees />} />
           <Route path="Tasks" element={<ListTasks />} />
           <Route path="Projects" element={<ListProjects />} />
-          <Route path="Settings" element={<Profile />} />
+          <Route path="Profile" element={<Profile />} />
           <Route path="Employees/Employee/:empID" element={<EmpInfo />} />
           <Route path="Employees/UserEdit/:empID" element={<UserEdit />} />
           <Route path="Project/:projectID" element={<DetailProject />} />
