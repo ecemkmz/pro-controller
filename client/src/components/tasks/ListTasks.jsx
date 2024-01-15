@@ -69,7 +69,6 @@ export default function ListTasks({ onTaskClick }) {
       );
 
       setTasks(filteredTasks);
-      console.log(filteredTasks);
     } catch (error) {
       console.error("Veri çekme hatası:", error);
     }
@@ -92,19 +91,17 @@ export default function ListTasks({ onTaskClick }) {
 
   const handleDeleteTask = (taskID, projectId) => {
     const userId = localStorage.getItem("user");
-    console.log(projectId);
     if (window.confirm("Bu Görevleri Silmek İstediğinize Emin Misiniz?")) {
       axios
         .delete(`http://localhost:5000/api/delete-task/${taskID}`, {
           headers: {
             userid: userId,
-            projectid: projectId, // Kullanıcı ID'sini header olarak
+            projectid: projectId
           },
         })
         .then((response) => {
           console.log("Success:", response.data);
           fetchData();
-          // window.location.reload(); // Sayfayı yenileme işlemini buradan kaldır
         })
         .catch((error) => {
           alert(error.response.data.error);

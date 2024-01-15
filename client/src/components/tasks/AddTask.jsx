@@ -67,7 +67,6 @@ function AddTask({ setAddTaskOpen }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData);
     const userId = localStorage.getItem("user");
     try {
       const response = await fetch("http://localhost:5000/api/create-task", {
@@ -113,7 +112,6 @@ function AddTask({ setAddTaskOpen }) {
   const handleClose = () => {
     setOpen(false);
     setAddTaskOpen(false);
-    console.log(selectedEmployee);
   };
 
   return (

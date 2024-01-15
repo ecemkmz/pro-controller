@@ -16,9 +16,9 @@ router.get('/task-list-by-projID/:projectID', taskController.getTaskByProjectId)
 router.put('/EditTask/:taskID',verifyAdmin,taskController.updateTask)
 
 router.get('/taskDetail/:taskID',taskController.getTaskById)
+
 router.get('/taskCountByStatus/:empID',taskController.getTaskStatusCount)
 
-//Update Status And Deadlines of Tasks That Passed Deadline
 router.get('/tasks-passed-deadline', taskController.updateTasksPassedDeadline);
 
 module.exports = router

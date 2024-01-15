@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 
 import { useParams } from "react-router-dom";
 
-
 function DetailTask({ OnTaskClick }) {
   const { taskID } = useParams();
   const [TaskList, setTaskList] = useState([
@@ -31,7 +30,6 @@ function DetailTask({ OnTaskClick }) {
       })
       .then((data) => {
         setTaskList(data);
-        console.log(TaskList);
       })
       .catch((error) => {
         console.error("Error fetching data:", error);

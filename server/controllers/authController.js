@@ -4,7 +4,7 @@ const connection = require("../config/dbConfig");
 
 const saltRounds = 10;
 
-// Kullanıcı kaydı için fonksiyon
+// Func for User Register
 exports.registerPerson = async (person) => {
   const hash = await bcrypt.hash(person.password, saltRounds);
   const registerQuery = `INSERT INTO Employees (empName, empSurname, empEmail, empRole, empPassword) VALUES (?, ?, ?, ?, ?)`;
@@ -18,7 +18,7 @@ exports.registerPerson = async (person) => {
   ]);
 };
 
-// Veritabanından kullanıcı şifresini alma
+// Get User Password from Database
 async function getUserPassword(person) {
   return new Promise((resolve, reject) => {
     connection.query(
@@ -32,15 +32,15 @@ async function getUserPassword(person) {
   });
 }
 
-// Kullanıcı şifresini doğrulama
+// Validate User Password
 exports.validateUserPassword = async (person) => {
   try {
     const hash = await getUserPassword(person);
     const result = await bcrypt.compare(person.password, hash);
-    return result; // Doğrulama sonucunu döndür
+    return result;
   } catch (error) {
     console.error("Password validation error:", error);
-    throw error; // Hata durumunda hatayı yukarıya ilet
+    throw error;
   }
 };
 

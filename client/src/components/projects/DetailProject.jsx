@@ -90,7 +90,6 @@ function DetailProject({ OnProjectClick }) {
     if (editingMode) {
       try {
         const userid = localStorage.getItem("user");
-        console.log(userid);
         const response = await fetch(
           `http://localhost:5000/api/EditProject/${projectID}`,
           {
@@ -120,7 +119,6 @@ function DetailProject({ OnProjectClick }) {
     if (taskEditingID === taskID) {
       try {
         const userid = localStorage.getItem("user");
-        console.log(taskID);
         const response = await fetch(
           `http://localhost:5000/api/EditTask/${taskID}`,
           {

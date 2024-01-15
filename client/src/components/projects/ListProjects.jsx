@@ -63,7 +63,6 @@ const ListProjects = ({ onProjectClick }) => {
       });
 
       setProjects(filteredProjects);
-      console.log(projects);
     } catch (error) {
       console.error("Veri çekme hatası:", error);
     }
@@ -89,7 +88,6 @@ const ListProjects = ({ onProjectClick }) => {
 
   const handleDeleteProject = (projID) => {
     const userId = localStorage.getItem('user');
-    console.log(userId)
     if (window.confirm("Bu Projeyi Silmek İstediğinize Emin Misiniz?")) {
       axios
         .delete(`http://localhost:5000/api/delete-project/${projID}`, {
