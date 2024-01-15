@@ -72,12 +72,10 @@ function EmpInfo() {
     <div className="bg-gray-50 px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-3">
       <dt className="text-sm font-medium leading-6 text-gray-900">{label}</dt>
       <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
-        {isEditingField ? (
+        {isEditingField && fieldName !== "numOfProjects" ? (
           <div className="flex items-center justify-between">
             {fieldName === "empPosition" ? (
-              
               <select
-
                 value={value}
                 onChange={(e) =>
                   setPersonInfo((prevInfo) => ({
@@ -93,16 +91,16 @@ function EmpInfo() {
               </select>
             ) : (
               <input
-              type="text"
-              value={value}
-              onChange={(e) =>
-                setPersonInfo((prevInfo) => ({
-                  ...prevInfo,
-                  [fieldName]: e.target.value,
-                }))
-              }
-              className="border h-8 border-gray-500 focus:outline-none focus:border-blue-500 w-3/4"
-            />
+                type="text"
+                value={value}
+                onChange={(e) =>
+                  setPersonInfo((prevInfo) => ({
+                    ...prevInfo,
+                    [fieldName]: e.target.value,
+                  }))
+                }
+                className="border h-8 border-gray-500 focus:outline-none focus:border-blue-500 w-3/4"
+              />
             )}
 
             <div>
@@ -117,18 +115,19 @@ function EmpInfo() {
         ) : (
           <div className="flex items-center justify-between">
             <span>{value}</span>
-            <span
-              className="text-end cursor-pointer hover:text-gray-700 hover:font-semibold"
-              onClick={() => handleEditClick(fieldName)}
-            >
-              Düzenle
-            </span>
+            {fieldName !== "numOfProjects" && (
+              <span
+                className="text-end cursor-pointer hover:text-gray-700 hover:font-semibold"
+                onClick={() => handleEditClick(fieldName)}
+              >
+                Düzenle
+              </span>
+            )}
           </div>
         )}
       </dd>
     </div>
   );
-
   const renderProjects = () => (
     <div>
       <div className="sm:flex-auto">
