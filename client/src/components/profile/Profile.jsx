@@ -49,7 +49,7 @@ function Profile({ onProjectClick }) {
     };
 
     fetchEmployeeInfo();
-  }, [projID, taskID]);
+  }, [userId]);
 
   if (!employee) {
     return <div>Yükleniyor...</div>;
