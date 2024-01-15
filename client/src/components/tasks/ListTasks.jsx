@@ -69,13 +69,25 @@ export default function ListTasks({ onTaskClick }) {
       );
 
       setTasks(filteredTasks);
+      console.log(filteredTasks);
     } catch (error) {
       console.error("Veri çekme hatası:", error);
     }
+    updateTasksDeadline();
   };
-
+  const updateTasksDeadline = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:5000/api/tasks-passed-deadline"
+      );
+      alert("Görev süreleri güncellendi");
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
   useEffect(() => {
     fetchData();
+    updateTasksDeadline();
   }, [selectedSortOption, selectedTaskStatus]);
 
   const handleDeleteTask = (taskID, projectId) => {
@@ -426,6 +438,18 @@ export default function ListTasks({ onTaskClick }) {
                     </span>
                   </dd>
                 </div>
+                {task.taskDelayedDays > 0 ? (
+                  <div className="flex justify-between gap-x-4 py-3">
+                    <dt className="text-gray-500">Gecikmiş Gün Sayısı</dt>
+                    <dd className="flex items-start gap-x-2">
+                      <div className="text-gray-700">
+                        {task.taskDelayedDays}
+                      </div>
+                    </dd>
+                  </div>
+                ) : (
+                  ""
+                )}
                 <div className="flex justify-between gap-x-4 py-3">
                   <dt className="text-gray-500">Durumu</dt>
                   <dd className="flex items-start gap-x-2">

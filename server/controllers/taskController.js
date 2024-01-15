@@ -4,7 +4,7 @@ exports.getTasks = (req, res) => {
   const { sortKey, sortOrder, taskStatus } = req.query;
 
   let getTasksQuery = `
-    SELECT a.taskID,a.taskName, a.taskAttendedId, a.projectID, a.taskStatus, a.taskStartDate, a.taskEndDate, a.taskDesc, p.projName, e.empName, e.empSurname
+    SELECT a.taskID,a.taskName, a.taskAttendedId, a.projectID, a.taskStatus, a.taskStartDate, a.taskEndDate, a.taskDesc, p.projName, e.empName, e.empSurname,a.taskDelayedDays
     FROM Tasks a JOIN Projects p ON a.projectID = p.projID JOIN Employees e ON a.taskAttendedId = e.empId
   `;
 
@@ -82,8 +82,8 @@ exports.createTask = async (req, res) => {
         res.status(400).json({ error: "Bu görev adı zaten kayıtlı." });
       } else {
         const insertQuery = `
-          INSERT INTO Tasks (taskName ,projectID, taskAttendedId,taskAttenderID, taskStartDate, taskEndDate, taskDesc, taskStatus)
-          VALUES (?, ?, ?, ?, ?, ?,?,?)
+          INSERT INTO Tasks (taskName ,projectID, taskAttendedId,taskAttenderID, taskStartDate, taskEndDate, taskDesc, taskStatus,taskDefaultEndDate)
+          VALUES (?, ?, ?, ?, ?, ?,?,?,?)
         `;
 
         connection.query(
@@ -97,6 +97,7 @@ exports.createTask = async (req, res) => {
             taskEndDate,
             taskDesc,
             taskStatus,
+            taskEndDate
           ],
           (err, result) => {
             if (err) {
@@ -151,22 +152,53 @@ exports.getTaskByProjectId = (req, res) => {
 
 exports.updateTask = (req, res) => {
   console.log("Task Project info update request received.");
-  const { taskName, taskStatus} = req.body;
-  console.log(req.body,req.params)
+  const { taskName, taskStatus } = req.body;
+  const projectId = req.headers.projectid;
   const updateTaskQuery = `UPDATE Tasks SET taskName = ?, taskStatus = ? WHERE taskID = ?`;
 
   connection.query(updateTaskQuery, [taskName, taskStatus, req.params.taskID], (err, result) => {
-    if (err) {
-      console.error(err);
-      res.status(500).json({ error: 'Internal Server Error' });
-      return;
-    }
-    console.log(`Görev bilgileri değişiklikleri kaydedildi. ${result.affectedRows} satır güncellendi.ID: ${req.params.taskID}`);    console.log(result);
-    res.status(200).json(result);
+      if (err) {
+          console.error(err);
+          res.status(500).json({ error: 'Internal Server Error' });
+          return;
+      }
+      console.log(`Görev bilgileri değişiklikleri kaydedildi. ${result.affectedRows} satır güncellendi.ID: ${req.params.taskID}`);
+
+      if (taskStatus === 'Tamamlanmış') {
+          checkAndUpdateProjectStatus(projectId, res, () => {
+              res.status(200).json(result);
+          });
+      } else {
+          res.status(200).json(result);
+      }
   });
+};
 
+function checkAndUpdateProjectStatus(projectId, res, callback) {
+  const checkTasksQuery = `SELECT COUNT(*) AS remainingTasks FROM Tasks WHERE projectID = ? AND taskStatus != 'Tamamlanmış'`;
+
+  connection.query(checkTasksQuery, [projectId], (err, tasksResult) => {
+      if (err) {
+          console.error(err);
+          res.status(500).json({ error: 'Internal Server Error' });
+          return;
+      }
+
+      if (tasksResult[0].remainingTasks === 0) {
+          const updateProjectQuery = `UPDATE Projects SET projStatus = 'Tamamlanmış' WHERE projID = ?`;
+          connection.query(updateProjectQuery, [projectId], (err, updateResult) => {
+              if (err) {
+                  console.error(err);
+                  res.status(500).json({ error: 'Internal Server Error' });
+                  return;
+              }
+              callback();
+          });
+      } else {
+          callback();
+      }
+  });
 }
-
 exports.getTaskById = (req, res) =>{
   console.log("Task info request received for ID:", req.params.taskID, "...");
   const getTaskQuery = `
@@ -221,4 +253,26 @@ exports.getTaskStatusCount= (req, res) => {
 
     res.status(200).json(result)
   });
+}
+
+const getTasksPassedDeadlineQuery = `SELECT taskID, taskName, taskStatus, taskStartDate, taskEndDate FROM Tasks WHERE taskEndDate < CURDATE()`;
+
+const updateTaskPassedDeadlineQuery = `UPDATE Tasks SET taskEndDate = CURDATE(), taskEndDate = DATE_ADD(taskEndDate, INTERVAL 1 DAY), taskStatus = 'Gecikmiş', taskDelayedDays = DATEDIFF(CURDATE(), taskDefaultEndDate) WHERE taskID = ?`;
+
+exports.updateTasksPassedDeadline = (req, res) => {
+  connection.query(getTasksPassedDeadlineQuery, (err, result) => {
+    if (err) {
+        console.log(err);
+    } else {
+        result.forEach((row) => {
+            connection.query(updateTaskPassedDeadlineQuery, [row.taskID], (err, result) => {
+                if (err) {
+                    console.log(err);
+                } else {
+                    console.log(`Task updated. ID: ${row.taskID}`);
+                }
+            });
+        });
+    }
+})
 }

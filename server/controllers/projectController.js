@@ -230,7 +230,6 @@ exports.updateProjectsPassedDeadline = (req, res) => {
     if (err) {
         console.log(err);
     } else {
-      console.log("Projects passed deadline: ", result);
         result.forEach((row) => {
             connection.query(updateProjectPassedDeadlineQuery, [row.projID], (err, result) => {
                 if (err) {
