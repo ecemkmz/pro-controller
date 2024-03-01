@@ -19,6 +19,6 @@ router.get('/taskDetail/:taskID',taskController.getTaskById)
 
 router.get('/taskCountByStatus/:empID',taskController.getTaskStatusCount)
 
-router.get('/tasks-passed-deadline', taskController.updateTasksPassedDeadline);
+// router.get('/tasks-passed-deadline', taskController.updateTasksPassedDeadline);
 
 module.exports = router

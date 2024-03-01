@@ -72,21 +72,21 @@ export default function ListTasks({ onTaskClick }) {
     } catch (error) {
       console.error("Veri çekme hatası:", error);
     }
-    updateTasksDeadline();
+    // updateTasksDeadline();
   };
-  const updateTasksDeadline = async () => {
-    try {
-      const response = await axios.get(
-        "http://localhost:5000/api/tasks-passed-deadline"
-      );
-      alert("Görev süreleri güncellendi");
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  };
+  // const updateTasksDeadline = async () => {
+  //   try {
+  //     const response = await axios.get(
+  //       "http://localhost:5000/api/tasks-passed-deadline"
+  //     );
+  //     alert("Görev süreleri güncellendi");
+  //   } catch (error) {
+  //     console.error("Error:", error);
+  //   }
+  // };
   useEffect(() => {
     fetchData();
-    updateTasksDeadline();
+    // updateTasksDeadline();
   }, [selectedSortOption, selectedTaskStatus]);
 
   const handleDeleteTask = (taskID, projectId) => {

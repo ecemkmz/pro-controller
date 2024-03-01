@@ -29,7 +29,6 @@ function Sidebar({ onMenuClick, activeMenu, activeSubMenu, navigate }) {
       title: "Hesabım",
       icon: <UserOutlined />,
       route: "/Home/Profile",
-      bottom: true,
     },
     // Diğer ana menüler
   ];
@@ -82,7 +81,11 @@ function Sidebar({ onMenuClick, activeMenu, activeSubMenu, navigate }) {
               </span>
               {open && Menu.subMenu && (
                 <span className="ml-auto">
-                  {activeMenu === Menu.title ? <UpOutlined /> : <DownOutlined />}
+                  {activeMenu === Menu.title ? (
+                    <UpOutlined />
+                  ) : (
+                    <DownOutlined />
+                  )}
                 </span>
               )}
             </li>

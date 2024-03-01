@@ -243,24 +243,24 @@ exports.getTaskStatusCount= (req, res) => {
   });
 }
 
-const getTasksPassedDeadlineQuery = `SELECT taskID, taskName, taskStatus, taskStartDate, taskEndDate FROM Tasks WHERE taskEndDate < CURDATE()`;
+// const getTasksPassedDeadlineQuery = `SELECT taskID, taskName, taskStatus, taskStartDate, taskEndDate FROM Tasks WHERE taskEndDate < CURDATE()`;
 
-const updateTaskPassedDeadlineQuery = `UPDATE Tasks SET taskEndDate = CURDATE(), taskEndDate = DATE_ADD(taskEndDate, INTERVAL 1 DAY), taskStatus = 'Gecikmiş', taskDelayedDays = DATEDIFF(CURDATE(), taskDefaultEndDate) WHERE taskID = ?`;
+// const updateTaskPassedDeadlineQuery = `UPDATE Tasks SET taskEndDate = CURDATE(), taskEndDate = DATE_ADD(taskEndDate, INTERVAL 1 DAY), taskStatus = 'Gecikmiş', taskDelayedDays = DATEDIFF(CURDATE(), taskDefaultEndDate) WHERE taskID = ?`;
 
-exports.updateTasksPassedDeadline = (req, res) => {
-  connection.query(getTasksPassedDeadlineQuery, (err, result) => {
-    if (err) {
-        console.log(err);
-    } else {
-        result.forEach((row) => {
-            connection.query(updateTaskPassedDeadlineQuery, [row.taskID], (err, result) => {
-                if (err) {
-                    console.log(err);
-                } else {
-                    console.log(`Task updated. ID: ${row.taskID}`);
-                }
-            });
-        });
-    }
-})
-}
+// exports.updateTasksPassedDeadline = (req, res) => {
+//   connection.query(getTasksPassedDeadlineQuery, (err, result) => {
+//     if (err) {
+//         console.log(err);
+//     } else {
+//         result.forEach((row) => {
+//             connection.query(updateTaskPassedDeadlineQuery, [row.taskID], (err, result) => {
+//                 if (err) {
+//                     console.log(err);
+//                 } else {
+//                     console.log(`Task updated. ID: ${row.taskID}`);
+//                 }
+//             });
+//         });
+//     }
+// })
+// }

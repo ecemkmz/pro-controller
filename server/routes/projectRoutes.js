@@ -17,7 +17,7 @@ router.get('/projectDetail/:projectID',projectController.getProjectById)
 
 router.put('/EditProject/:projectID',verifyAdmin, projectController.updateProject)
 
-router.get('/projects-passed-deadline', projectController.updateProjectsPassedDeadline);
+// router.get('/projects-passed-deadline', projectController.updateProjectsPassedDeadline);
 
 router.get('/AddTask/Projects',projectController.getProjectForAddTask)
 
